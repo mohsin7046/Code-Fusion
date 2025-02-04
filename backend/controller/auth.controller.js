@@ -31,8 +31,13 @@ export const signup = async (req, res) => {
                 confirmpassword: confirmHashedPassword
             }
         });
-        const token = generateToken(newUser.id);
-        res.status(201).json({ message: "User created successfully" });
+        newUser.password = undefined;
+        newUser.confirmpassword = undefined;
+        if(newUser){
+           generateToken(res,newUser.id);
+         return res.status(201).json({ message: "User created successfully" ,newUser});
+        }
+        
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     }
@@ -51,9 +56,32 @@ export const login = async (req, res) => {
             res.status(400).json({ message: "Invalid credentials" });
             return;
         }
-        const token = generateToken(user.id);
-        res.status(200).json({ message: "Login successful", token });
+        user.password = undefined;
+        generateToken(res,user.id);
+        return res.status(200).json({ message: "Login successful" ,user});
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const logout = async (req, res) => {
+    try {
+        res.clearCookie("token");
+        return res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const me = async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+        if(!user){
+            return res.status(400).json({ message: "User does not exist" });
+        }
+
+       return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

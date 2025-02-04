@@ -5,7 +5,7 @@ import Navbar from "./common_Page/navBar";
 import Footer from "./common_Page/footer";
 import SidebarLayout from "./User_Section/Pages/SideBar/sideLayouts";
 import Login from "./User_Section/Pages/signIn";
-import SignUp from "./User_Section/pages/signUp";
+import SignUp from "./User_Section/Pages/signUp.jsx";
 import { Routes, Route } from "react-router-dom";
 
 function App() {

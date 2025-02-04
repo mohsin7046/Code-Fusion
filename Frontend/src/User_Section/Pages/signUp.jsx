@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import SignupAnimation from "../../Utilities/signUpAnimation";
+import UseSignupHooks from "../../hooks/useSignupHooks";
 
 const Signup = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmpassword, setConfirmPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
+  const { signup } = UseSignupHooks();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (password !== confirmpassword) {
       alert('Passwords do not match!');
       return;
     }
-    console.log('Username:', username, 'Email:', email, 'Password:', password);
+    signup({ username, email, password, confirmpassword });
+   
   };
 
   return (
@@ -87,7 +90,7 @@ const Signup = () => {
               <input
                 type="password"
                 id="confirmPassword"
-                value={confirmPassword}
+                value={confirmpassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Confirm your password"

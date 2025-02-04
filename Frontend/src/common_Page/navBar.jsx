@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import  {UseOnLogout}  from "../hooks/useOnLogout";
 
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+
+   const { logout } = UseOnLogout();
+
+   const onLogout = () =>{
+        logout();
+   }
+
 
     return (
         <nav className="bg-white shadow-md top-0 left-0 fixed w-full z-10">
@@ -51,6 +59,9 @@ function Navbar() {
                         <Link to="/signup" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
                             Sign up
                         </Link>
+                        <button onClick={onLogout} className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
+                            logout
+                        </button>
                     </div>
 
                     {/* Mobile Menu Toggle */}
@@ -114,6 +125,9 @@ function Navbar() {
                         <Link to="/signup" className="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
                             Sign up
                         </Link>
+                        <button onClick={onLogout} className="w-full px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
+                            logout
+                        </button>
                     </div>
                 </div>
             )}
