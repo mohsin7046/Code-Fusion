@@ -36,10 +36,10 @@ export const signup = async (req, res) => {
         if(newUser){
            generateToken(res,newUser.id);
          return res.status(201).json({ message: "User created successfully" ,newUser});
-        }
+        } 
         
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error by signUp " });
     }
 };
 

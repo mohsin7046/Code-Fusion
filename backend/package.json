@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules ./backend/index.js",
+    "dev": "nodemon -r dotenv/config --experimental-json-modules index.js",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
@@ -12,7 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.1.0",
+    "@prisma/client": "^6.3.1",
+    "@shadcn/ui": "^0.0.4",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
@@ -20,7 +21,10 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.1.9"
+    "lucide-react": "^0.474.0",
+    "nodemailer": "^6.10.0",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -30,6 +34,6 @@
     "eslint-plugin-react": "^7.37.3",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
-    "prisma": "^6.1.0"
+    "prisma": "^6.3.1"
   }
 }

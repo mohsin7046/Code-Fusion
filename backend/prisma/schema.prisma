@@ -1,0 +1,35 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model User{
+  id       String   @map("_id") @id @default(cuid())
+  username     String
+  email    String  @unique
+  password String
+  confirmpassword String
+}
+
+model VideoCall {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  callerId   String
+  receiverId String
+  startTime  DateTime @default(now())
+  endTime    DateTime?
+  status     String   // 'initiated', 'accepted', 'ended'
+}
+
+model Room {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId    String   @unique
+  host      String
+  members   String[]
+  createdAt DateTime @default(now())
+}
