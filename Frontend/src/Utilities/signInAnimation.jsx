@@ -1,4 +1,4 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 import LottiePlayer from "react-lottie-player";
 import LoginAnimation from "./AnimationLogin.json";
 

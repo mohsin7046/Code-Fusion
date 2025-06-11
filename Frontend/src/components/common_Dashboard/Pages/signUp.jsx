@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import SignupAnimation from "../../Utilities/signUpAnimation";
-import UseSignupHooks from "../../hooks/useSignupHooks";
+import  { useState } from "react";
+import SignupAnimation from "../../../Utilities/signUpAnimation";
+import UseSignupHooks from "../../../hooks/useSignupHooks";
 
 const Signup = () => {
   const [username, setUsername] = useState('');

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link } from "react-router-dom";
-import  {UseOnLogout}  from "../hooks/useOnLogout";
+import  {UseOnLogout}  from "../../hooks/useOnLogout";
 
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);

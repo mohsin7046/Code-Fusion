@@ -1,5 +1,3 @@
-import React from 'react';
-
 const meetings = [
     {
         icon: (
@@ -33,7 +31,8 @@ const meetings = [
     },
 ];
 
-const MeetingOptions = ({ isSidebarOpen }) => {
+// eslint-disable-next-line react/prop-types
+const CuurentInterview = ({ isSidebarOpen }) => {
     return (
         <section className={`transition-all ${isSidebarOpen ? 'sm:ml-64' : 'sm:ml-0'} px-4 py-6 bg-gray-100 min-h-screen`}>
             <div className={`max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-md ${isSidebarOpen ? 'sm:ml-0' : 'ml-4'}`}>
@@ -55,4 +54,4 @@ const MeetingOptions = ({ isSidebarOpen }) => {
     );
 };
 
-export default MeetingOptions;
+export default CuurentInterview;

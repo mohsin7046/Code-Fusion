@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import  { useState } from 'react';
 
 const CommunitySidebar = ({ channels, selectedChannelId, onChannelSelect, onAddChannel }) => {
   const [newChannelName, setNewChannelName] = useState('');

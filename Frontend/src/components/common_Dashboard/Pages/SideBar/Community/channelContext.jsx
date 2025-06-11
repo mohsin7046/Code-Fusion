@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { ChannelContext } from './UseContext';
 
+// eslint-disable-next-line react/prop-types
 const ChannelProvider = ({ children }) => {
   const [channels, setChannels] = useState([
     { id: '1', name: 'General' },

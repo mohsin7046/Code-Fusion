@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import LoginAnimationHelper from "../../Utilities/signInAnimation";
-import useSignInHooks from "../../hooks/useSignInHooks";
+import  { useState } from "react";
+import LoginAnimationHelper from "../../../Utilities/signInAnimation";
+import useSignInHooks from "../../../hooks/useSignInHooks";
 
 const Login = () => {
   const [email, setEmail] = useState('');

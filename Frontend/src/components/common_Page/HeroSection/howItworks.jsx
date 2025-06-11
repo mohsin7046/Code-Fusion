@@ -1,7 +1,6 @@
-import React from "react";
-import googleSvg from "../../assets/google.svg";
-import customizeSvg from "../../assets/customize.svg";
-import codeSvg from "../../assets/code.svg";
+import googleSvg from "../../../assets/google.svg";
+import customizeSvg from "../../../assets/customize.svg";
+import codeSvg from "../../../assets/code.svg";
 
 function HowItWorks() {
   return (

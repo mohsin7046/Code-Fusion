@@ -1,14 +1,14 @@
-import LandingPage from "./common_Page/landingPage";
+import LandingPage from "./components/common_Page/landingPage.jsx";
 import "./index.css";
-import Navbar from "./common_Page/navBar";
-import Footer from "./common_Page/footer";
-import SidebarLayout from "./User_Section/Pages/SideBar/sideLayouts";
-import Login from "./User_Section/Pages/signIn";
-import SignUp from "./User_Section/Pages/signUp.jsx";
+import Navbar from "./components/common_Page/navbar.jsx";
+import Footer from "./components/common_Page/footer.jsx";
+import RecuriterSideLayouts from "./components/recuriter_Components/RecuriterSideLayouts.jsx";
+import Login from "./components/common_Dashboard/Pages/signIn";
+import SignUp from "./components/common_Dashboard/Pages/signUp.jsx";
 import { Routes, Route } from "react-router-dom";
-import Home from './VideoCalling/lobby.jsx';
-import Room from './VideoCalling/Screen.jsx';
-import EmailPage from "./VideoCalling/EmailPage.jsx";
+import Home from './components/VideoCalling/lobby.jsx';
+import Room from './components/VideoCalling/Screen.jsx';
+import EmailPage from "./components/VideoCalling/EmailPage.jsx";
 
 function App() {
   return (
@@ -27,7 +27,7 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/dashboard/*" element={<SidebarLayout />} />
+        <Route path="/dashboard/*" element={<RecuriterSideLayouts />} />
         <Route path="/home" element={<Home />} />
         <Route path="/room/:roomId" element={<Room />} />
         <Route path='/email-page/:roomId' element={<EmailPage />} />

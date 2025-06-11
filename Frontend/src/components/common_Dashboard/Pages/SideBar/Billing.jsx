@@ -23,7 +23,7 @@ const settings = [
     },
 ];
 
-function Settings() {
+function Billing() {
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
@@ -51,4 +51,4 @@ function Settings() {
     );
 }
 
-export default Settings;
+export default Billing;

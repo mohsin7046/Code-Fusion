@@ -4,11 +4,11 @@ import Navbar from './Navbar/navbar';
 import UserProfile from './UserProfile/userProfile';
 
 const navigation = [
-    { name: 'Tracking', icon: Home, href: '/dashboard/tracking' },
-    { name: 'Meeting', icon: BarChart2, href: '/dashboard/meeting' },
-    { name: 'Community', icon: Users, href: '/dashboard/community' },
-    { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
-    { name: 'Help', icon: HelpCircle, href: '/dashboard/help' },
+    { name: 'Dashboard', icon: Home, href: '/dashboard' },
+    { name: 'Current Interview', icon: BarChart2, href: '/dashboard/current_interview' },
+    { name: 'All Interviews', icon: Users, href: '/dashboard/interviews' },
+    { name: 'All Meetings', icon: Settings, href: '/dashboard/meetings' },
+    { name: 'Billing', icon: HelpCircle, href: '/dashboard/billings' },
 ];
 
 function Sidebar() {
