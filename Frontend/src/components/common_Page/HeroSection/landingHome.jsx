@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import AnimationHome from '../../../Utilities/homeAnimation';
 
@@ -17,7 +16,7 @@ function LandingHome() {
               Built for Teams, Perfected for Coders.
             </p>
             <div className="mt-8 flex justify-center md:justify-start space-x-4">
-              <Link to="/dashboard" className="py-3 w-48 text-center bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-700">
+              <Link to="/user/dashboard" className="py-3 w-48 text-center bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-700">
                 Get Started
               </Link>
               <button className="py-3 w-44 border border-blue-600 text-blue-600 font-medium rounded-xl hover:bg-blue-50">

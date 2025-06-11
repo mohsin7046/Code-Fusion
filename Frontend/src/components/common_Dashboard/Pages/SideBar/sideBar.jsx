@@ -11,9 +11,16 @@ const navigation = [
     { name: 'Billing', icon: HelpCircle, href: '/dashboard/billings' },
 ];
 
+const usernavigation = [
+    { name: 'Dashboard', icon: Home, href: '/user/dashboard' },
+    {name: 'All Interviews', icon: Users, href: '/user/dashboard/all-interview'},
+    { name: 'Billing', icon: HelpCircle, href: '/user/dashboard/billings' },
+]
+
 function Sidebar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const toogle = 'user';
 
     const toggleMobileSidebar = () => setIsMobileOpen(!isMobileOpen);
     const toggleCollapse = () => setIsCollapsed(!isCollapsed);
@@ -42,7 +49,11 @@ function Sidebar() {
                         </button>
                     </div>
                     <nav className="flex-1 p-4 space-y-1">
-                        {navigation.map((item) => (
+                        {toogle === 'user' ? usernavigation.map((item) => (
+                            <Navbar key={item.name} name={item.name} href={item.href} icon={item.icon} isCollapsed={isCollapsed && !isMobileOpen}/>
+                        )) 
+                        :
+                        navigation.map((item) => (
                             <Navbar key={item.name} name={item.name} href={item.href} icon={item.icon} isCollapsed={isCollapsed && !isMobileOpen}/>
                         ))}
                     </nav>

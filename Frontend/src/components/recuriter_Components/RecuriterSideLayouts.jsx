@@ -37,8 +37,6 @@ function RecuriterSideLayouts() {
                             <Route path='interviews-summary' element = { <InterviewSummary />} />
                             <Route path='info' element = { <BasicInfo />} />
                             
-                            
-                            
                         </Routes>
                     </div>
                 </main>
