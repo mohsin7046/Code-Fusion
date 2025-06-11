@@ -1,28 +1,28 @@
 import { ArrowLeft } from "lucide-react"
-import { Link } from "react-router-dom" 
-function currentInterview() {
-    const interviews = [
+import {Link} from 'react-router-dom'
+function AllInterviews() {
+     const interviews = [
     {
-      name: "Full stack role",
+      name: "AI role",
       description: "This is for frontend, backend, database expert",
       date : "2023-10-15",
       time: "10:00 AM",
-      status: "Ongoing",
+      status: "completed",
     },{
-      name: "Mern stack role",
-      description: "This is for frontend, backend, database expert using MERN stack",
+      name: "PERN stack role",
+      description: "This is for frontend, backend, database expert using PERN stack",
       date : "2023-10-16",
       time: "12:00 AM",
-      status: "Ongoing",
+      status: "completed",
     }
     ]
-    
+
   return (
-    <>
+        <>
     <div className="p-6 text-black">
         <div className="flex flex-row items-center  font-semibold text-3xl self-start "> 
             <ArrowLeft onClick={()=> window.location.href='/dashboard'} className="w-8 h-5 mb-4"  />
-            <h2 className="text-2xl font-semibold mb-4">Current Interview</h2>
+            <h2 className="text-2xl font-semibold mb-4">All Interview</h2>
         </div>
       
       <div className="overflow-x-auto">
@@ -48,8 +48,8 @@ function currentInterview() {
                 <td className="px-4 py-2 border">{item.time}</td>
                 <td className="px-4 py-2 border">{item.status}</td>
                 <td className="px-4 py-2 border">
-                  <Link to={`/dashboard/current_interview/${index+1}`}>
-                  <button  className="bg-gray-700 text-white px-3 py-1 rounded">
+                  <Link to={`/dashboard/all-interview/${index+1}`}>
+                  <button className="bg-gray-700 text-white px-3 py-1 rounded">
                     Detailed Overview
                   </button>
                   </Link>
@@ -64,4 +64,4 @@ function currentInterview() {
   )
 }
 
-export default currentInterview
+export default AllInterviews

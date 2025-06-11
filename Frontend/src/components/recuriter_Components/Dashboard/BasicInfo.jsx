@@ -5,7 +5,7 @@ function BasicInfo(props) {
       <h1 className="font-semibold text-3xl text-gray-800 mb-8">
         Basic Information about Interview
       </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-gray-700 font-medium mb-1" htmlFor="company">
               Company Name
@@ -29,7 +29,7 @@ function BasicInfo(props) {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
-
+      
           <div>
             <label className="block text-gray-700 font-medium mb-1" htmlFor="date">
               Date
@@ -37,6 +37,15 @@ function BasicInfo(props) {
             <input
               type="date"
               id="date"
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <label className="block text-gray-700 font-medium mb-1" htmlFor="date">
+              Time
+            </label>
+            <input
+              type="time"
+              id="time"
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />

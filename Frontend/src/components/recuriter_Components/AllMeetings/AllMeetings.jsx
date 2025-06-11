@@ -1,28 +1,26 @@
-import { ArrowLeft } from "lucide-react"
-import { Link } from "react-router-dom" 
-function currentInterview() {
-    const interviews = [
+import { ArrowLeft } from "lucide-react";
+
+ const meetings = [
     {
       name: "Full stack role",
-      description: "This is for frontend, backend, database expert",
       date : "2023-10-15",
       time: "10:00 AM",
-      status: "Ongoing",
+      status: "scheducled",
     },{
       name: "Mern stack role",
-      description: "This is for frontend, backend, database expert using MERN stack",
       date : "2023-10-16",
       time: "12:00 AM",
-      status: "Ongoing",
+      status: "completed",
     }
     ]
-    
+
+function AllMeetings() {
   return (
-    <>
+        <>
     <div className="p-6 text-black">
         <div className="flex flex-row items-center  font-semibold text-3xl self-start "> 
             <ArrowLeft onClick={()=> window.location.href='/dashboard'} className="w-8 h-5 mb-4"  />
-            <h2 className="text-2xl font-semibold mb-4">Current Interview</h2>
+            <h2 className="text-2xl font-semibold mb-4">All Meeting</h2>
         </div>
       
       <div className="overflow-x-auto">
@@ -31,7 +29,6 @@ function currentInterview() {
             <tr>
               <th className="px-4 py-2 border">ID</th>
               <th className="px-4 py-2 border">Name</th>
-              <th className="px-4 py-2 border">Description</th>
               <th className="px-4 py-2 border">Date</th>
               <th className="px-4 py-2 border">Time</th>
               <th className="px-4 py-2 border">Status</th>
@@ -39,20 +36,17 @@ function currentInterview() {
             </tr>
           </thead>
           <tbody className="bg-white">
-            {interviews.map((item,index) => (
+            {meetings.map((item,index) => (
               <tr key={item.id} className="transition">
                 <td className="px-4 py-2 border">{index+1}</td>
                 <td className="px-4 py-2 border">{item.name}</td>
-                <td className="px-4 py-2 border">{item.description}</td>
                 <td className="px-4 py-2 border">{item.date}</td>
                 <td className="px-4 py-2 border">{item.time}</td>
                 <td className="px-4 py-2 border">{item.status}</td>
                 <td className="px-4 py-2 border">
-                  <Link to={`/dashboard/current_interview/${index+1}`}>
-                  <button  className="bg-gray-700 text-white px-3 py-1 rounded">
+                  <button className="bg-gray-700 text-white px-3 py-1 rounded">
                     Detailed Overview
                   </button>
-                  </Link>
                 </td>
               </tr>
             ))}
@@ -62,6 +56,6 @@ function currentInterview() {
     </div>
     </>
   )
-}
 
-export default currentInterview
+}
+export default AllMeetings;

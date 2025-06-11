@@ -6,7 +6,7 @@ import UserProfile from './UserProfile/userProfile';
 const navigation = [
     { name: 'Dashboard', icon: Home, href: '/dashboard' },
     { name: 'Current Interview', icon: BarChart2, href: '/dashboard/current_interview' },
-    { name: 'All Interviews', icon: Users, href: '/dashboard/interviews' },
+    { name: 'All Interviews', icon: Users, href: '/dashboard/all-interview' },
     { name: 'All Meetings', icon: Settings, href: '/dashboard/meetings' },
     { name: 'Billing', icon: HelpCircle, href: '/dashboard/billings' },
 ];
