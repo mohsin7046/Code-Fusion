@@ -6,7 +6,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js'
 import chatUser from './routes/chat.route.js'
 import { PrismaClient } from '@prisma/client';
-
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 dotenv.config();
 
 const app = express();
@@ -19,6 +20,8 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 const rooms = new Map();
 

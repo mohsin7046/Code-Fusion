@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,22 +7,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                  String             @id @default(cuid()) @map("_id")
+  username            String
+  email               String             @unique
+  password            String
+  confirmpassword     String
+  isVerified          Boolean            @default(false)
+  role                Role
+  profilePicture      String?            @default("https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1749699722~exp=1749703322~hmac=39f48a05e7eaabd3b0686036e2a2ede1e605a7bd97d5d7a20a1c7892d42b075d&w=2000")
+  bio                 String?
+  location            String?
+  skills              String[]
+  socialLinks         String[]
+  company_name        String?
+  company_description String?
+  company_role        String?
+  company_website     String?
+  company_location    String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  EmailVerification   EmailVerification?
+}
 
-model User{
-  id       String   @map("_id") @id @default(cuid())
-  username     String
-  email    String  @unique
-  password String
-  confirmpassword String
+model EmailVerification {
+  id        String   @id @default(cuid()) @map("_id")
+  userId    String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  CANDIDATE
+  RECRUITER
 }
 
 model VideoCall {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   callerId   String
   receiverId String
-  startTime  DateTime @default(now())
+  startTime  DateTime  @default(now())
   endTime    DateTime?
-  status     String   // 'initiated', 'accepted', 'ended'
+  status     String // 'initiated', 'accepted', 'ended'
 }
 
 model Room {

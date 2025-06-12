@@ -16,20 +16,13 @@ function Navbar() {
         <nav className="bg-white shadow-md top-0 left-0 fixed w-full z-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    {/* Logo Section */}
                     <div className="flex-shrink-0 flex items-center">
-                        {/* Uncomment and update if you want to use a logo image */}
-                        {/* <img
-                            className="h-8 w-auto"
-                            src="/logo.png"
-                            alt="Rate it"
-                        /> */}
+                      
                         <span className="ml-2 text-2xl font-bold text-gray-800">
                             Code Fusion
                         </span>
                     </div>
 
-                    {/* Desktop Menu */}
                     <div className="lg:flex hidden md:flex space-x-8">
                         <a href="#home" className="text-gray-600 hover:text-blue-600">
                             Home
@@ -51,12 +44,11 @@ function Navbar() {
                         </a>
                     </div>
 
-                    {/* Desktop Buttons */}
                     <div className="hidden md:flex items-center space-x-4">
                         <Link to="/login" className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50">
                             Login
                         </Link>
-                        <Link to="/signup" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
+                        <Link to="/recuriter-signup" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
                             Sign up
                         </Link>
                         <button onClick={onLogout} className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
@@ -64,7 +56,6 @@ function Navbar() {
                         </button>
                     </div>
 
-                    {/* Mobile Menu Toggle */}
                     <div className="md:hidden flex items-center">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
@@ -98,7 +89,6 @@ function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
             {isOpen && (
                 <div className="md:hidden bg-white shadow-md">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
