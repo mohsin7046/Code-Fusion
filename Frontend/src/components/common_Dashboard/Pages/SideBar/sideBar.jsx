@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Home, BarChart2, Users, Settings, HelpCircle, Menu, X, ChevronRight, ChevronLeft } from 'lucide-react';
 import Navbar from './Navbar/navbar';
 import UserProfile from './UserProfile/userProfile';
+import { Link } from 'react-router-dom';
+import getToken from '../../../../hooks/role.js';
+
 
 const navigation = [
     { name: 'Dashboard', icon: Home, href: '/dashboard' },
@@ -20,11 +23,11 @@ const usernavigation = [
 function Sidebar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const toogle = 'user';
 
     const toggleMobileSidebar = () => setIsMobileOpen(!isMobileOpen);
     const toggleCollapse = () => setIsCollapsed(!isCollapsed);
-
+    
+    const role = getToken();
     return (
         <>
             
@@ -43,15 +46,15 @@ function Sidebar() {
                 <div className="flex flex-col h-full">
                     
                     <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-                        {(!isCollapsed || isMobileOpen) && (<h1 className="text-xl font-bold text-gray-800">Your App</h1>)}
+                        {(!isCollapsed || isMobileOpen) && (<Link to='/'><h1 className="text-xl font-bold text-gray-800">CodeFusion</h1></Link>)}
                         <button onClick={toggleCollapse} className="p-1.5 rounded-lg hover:bg-gray-100 focus:outline-none hidden lg:block" aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}>
                             {isCollapsed ? (<ChevronRight className="w-5 h-5 text-gray-500"/>) : (<ChevronLeft className="w-5 h-5 text-gray-500"/>)}
                         </button>
                     </div>
                     <nav className="flex-1 p-4 space-y-1">
-                        {toogle === 'user' ? usernavigation.map((item) => (
+                        {role === 'CANDIDATE' ? usernavigation.map((item) => (
                             <Navbar key={item.name} name={item.name} href={item.href} icon={item.icon} isCollapsed={isCollapsed && !isMobileOpen}/>
-                        )) 
+                        ))
                         :
                         navigation.map((item) => (
                             <Navbar key={item.name} name={item.name} href={item.href} icon={item.icon} isCollapsed={isCollapsed && !isMobileOpen}/>

@@ -5,7 +5,7 @@ import RecuriterDashboard from './Dashboard/RecruiterDashboard';
 import Billing from '../common_Dashboard/Pages/SideBar/Billing';
 import Profile from '../common_Dashboard/Pages/SideBar/UserProfile/profile';
 import AllMeetings from './AllMeetings/AllMeetings';
-import LevelSelection from './Dashboard/LevelSelectForm'
+import LevelSelection from './Dashboard/LevelSelectForm';
 import OnlineTest_Subject from './Dashboard/OnlineTest/OnlineTest_Subject';
 import GeneratedQuestion from './Dashboard/OnlineTest/GeneratedOnlineTest'
 import BehaviourSubject from './Dashboard/BehaviourTest/BehaviorSubject'

@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SignupAnimation from "../../Utilities/signUpAnimation";
 import { useNavigate } from "react-router-dom";
 import UseCandidateSignupHooks from "../../hooks/useCandidateSignupHooks";
+import { LoaderCircle } from 'lucide-react';
+import {validateUrl,validateUserEmail,checkPasswordCriteria} from '../../hooks/validations.js';
+import { toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserSignUp = () => {
   const [username, setUsername] = useState('');
@@ -16,13 +20,62 @@ const UserSignUp = () => {
   const [github, setGithub] = useState('');
   const [leetcode, setLeetcode] = useState('');
 
-  const { signup } = UseCandidateSignupHooks();
+  const [emailError, setEmailError] = useState('');
+  const [urlError, setUrlError] = useState('');
+  const [passwordCriteria, setPasswordCriteria] = useState({});
+
+  const { signup,loading } = UseCandidateSignupHooks();
   const navigate = useNavigate();
+
+  const validPassword = {
+    hasLowercase: "• Must include a lowercase letter",
+    hasUppercase: "• Must include an uppercase letter",
+    hasDigit: "• Must include a digit",
+    hasSpecialChar: "• Must include a special character",
+    isMinLength: "• Must be at least 6 characters long"
+  }
+
+  
+  const debouncePasswordValidation = useCallback((password) => {
+    const timeoutId = setTimeout(() => {
+      if (password) {
+        const criteria = checkPasswordCriteria(password);
+        setPasswordCriteria(criteria);
+      } else {
+        setPasswordCriteria({});
+      }
+    }, 1000); 
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+   useEffect(() => {
+    const cleanup = debouncePasswordValidation(password);
+    return cleanup;
+  }, [password, debouncePasswordValidation]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const isValidEmail = validateUserEmail(email);
+    if (!isValidEmail) {
+      setEmailError('Not an Organization email');
+      return;
+    } else {
+      setEmailError('');
+    }
+
+    const isUrlValid = validateUrl(linkedin);
+    if (!isUrlValid) {
+      setUrlError('Not a secure Website Url');
+      return;
+    } else {
+      setUrlError('');
+    }
+
     if (password !== confirmpassword) {
-      alert('Passwords do not match!');
+      toast.error('Passwords do not match!');
       return;
     }
 
@@ -50,20 +103,36 @@ const UserSignUp = () => {
         },
         body: JSON.stringify({ userId: res.newUser.id,email: res.newUser.email }),
       })
+
       if (!otpRes.ok) {
         const data = await otpRes.json();
-        alert(data.error || "Failed to send verification email");
+        toast.error(data.message || "Failed to send verification email");
         return; 
       }
+
+      toast.success("Signup successful! Please verify your email.");
       navigate("/email-verification", {
         state: { userId: res.newUser.id, email: res.newUser.email },
       });
     } else {
-      alert("Signup failed. Try again.");
+       toast.error(res.message || "Signup failed. Please try again.");
     }
   };
 
   return (
+    <>
+    <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl bg-white shadow-lg rounded-lg p-8 gap-8">
         
@@ -90,12 +159,20 @@ const UserSignUp = () => {
                 <label className="text-sm font-medium text-gray-700">Email<span className="text-red-500">*</span></label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} 
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" placeholder="Enter email" required/>
+                  {emailError && <p className="text-red-500">{emailError}</p>}
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Password<span className="text-red-500">*</span></label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} 
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" placeholder="Password" required/>
-              </div>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" placeholder="Password" required />
+                  <ul className="text-red-600 text-sm">
+                {Object.entries(passwordCriteria)
+                 .filter(([, passed]) => !passed)
+                .map(([key]) => (
+                  <li key={key}>{validPassword[key]}</li>
+              ))}
+              </ul>
+            </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Confirm Password<span className="text-red-500">*</span></label>
                 <input type="password" value={confirmpassword} onChange={(e) => setConfirmPassword(e.target.value)} 
@@ -118,16 +195,19 @@ const UserSignUp = () => {
                 <label className="text-sm font-medium text-gray-700">LinkedIn<span className="text-red-500">*</span></label>
                 <input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" placeholder="https://linkedin.com/in/yourprofile" required/>
+                  {urlError && <p className="text-red-500">{urlError}</p>}
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">GitHub</label>
                 <input type="url" value={github} onChange={(e) => setGithub(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" placeholder="https://github.com/yourhandle" />
+                  {urlError && <p className="text-red-500">{urlError}</p>}
               </div>
               <div className="md:col-span-2">
                 <label className="text-sm font-medium text-gray-700">LeetCode</label>
                 <input type="url" value={leetcode} onChange={(e) => setLeetcode(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" placeholder="https://leetcode.com/yourhandle" />
+                  {urlError && <p className="text-red-500">{urlError}</p>}
               </div>
             </div>
 
@@ -139,24 +219,27 @@ const UserSignUp = () => {
               </label>
             </div>
             <div>
+              
               <button type="submit"
                 className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
-                Signup
+                {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "SignUp"}
               </button>
+              
             </div>
             <p className="text-sm text-center text-gray-700 mt-4">
-  Want to hire instead?{" "}
-  <span
-    onClick={() => navigate("/recuriter-signup")}
-    className="text-blue-500 hover:underline cursor-pointer"
-  >
-    Go to Recruiter Signup
-  </span>
-</p>
+              Want to hire instead?{" "}
+            <span
+              onClick={() => navigate("/recuriter-signup")}
+              className="text-blue-500 hover:underline cursor-pointer"
+            >
+              Go to Recruiter Signup
+            </span>
+          </p>
           </form>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

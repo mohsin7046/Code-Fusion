@@ -1,18 +1,44 @@
 import  { useState } from "react";
 import LoginAnimationHelper from "../../../Utilities/signInAnimation";
 import useSignInHooks from "../../../hooks/useSignInHooks";
-
+import { Link } from "react-router-dom";
+import { LoaderCircle } from 'lucide-react';
+import { toast,ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading , setLoading] = useState(false);
   const {signIn} = useSignInHooks();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    signIn({email, password});
+    setLoading(true);
+    const res = await signIn({email, password});
+
+    if(!res.ok){
+      setLoading(false);
+      toast.error(res.message || "Login failed");
+      return;
+    }
+    toast.success("Login successfully");
+    setLoading(false);
   };
 
   return (
+    <>
+     <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-5xl bg-white shadow-lg rounded-lg p-8 gap-8">
@@ -60,16 +86,23 @@ const Login = () => {
             
             <div>
               <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+             type="submit"
+             className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                Login
-              </button>
+                 {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Login"}
+             </button>
+            </div>
+            <div>
+              <p>
+                forgot your password? <Link to="/forgot-password" className="text-blue-500 hover:underline">Reset it here</Link>
+              </p>
             </div>
           </form>
         </div>
+
       </div>
     </div>
+    </>
   );
 };
 

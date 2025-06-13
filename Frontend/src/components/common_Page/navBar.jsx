@@ -1,16 +1,17 @@
 import  { useState } from "react";
 import { Link } from "react-router-dom";
 import  {UseOnLogout}  from "../../hooks/useOnLogout";
-
+import getToken from "../../hooks/role";
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
    const { logout } = UseOnLogout();
-
-   const onLogout = () =>{
+   
+    const onLogout = () =>{
         logout();
-   }
-
+    }
+     
+    const role = getToken();
 
     return (
         <nav className="bg-white shadow-md top-0 left-0 fixed w-full z-10">
@@ -45,15 +46,20 @@ function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-4">
+                        {role ? 
+                        <button onClick={onLogout} className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
+                            logout
+                        </button> :
+                        <>
                         <Link to="/login" className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50">
                             Login
                         </Link>
                         <Link to="/recuriter-signup" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
                             Sign up
                         </Link>
-                        <button onClick={onLogout} className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
-                            logout
-                        </button>
+                        </>
+                        }
+                        
                     </div>
 
                     <div className="md:hidden flex items-center">
@@ -109,15 +115,19 @@ function Navbar() {
                         </a>
                     </div>
                     <div className="px-4 py-4 space-x-4">
-                        <Link to="/login" className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50">
+                         {role ? 
+                        <button onClick={onLogout} className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
+                            logout
+                        </button> :
+                        <>
+                        <Link to="/login" className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50">
                             Login
                         </Link>
-                        <Link to="/signup" className="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
+                        <Link to="/recuriter-signup" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
                             Sign up
                         </Link>
-                        <button onClick={onLogout} className="w-full px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
-                            logout
-                        </button>
+                        </>
+                        }
                     </div>
                 </div>
             )}

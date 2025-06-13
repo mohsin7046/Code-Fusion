@@ -2,6 +2,7 @@
 import { useLocation } from 'react-router-dom';
 import Email from '../../assets/Email.png'
 import { useState } from 'react';
+import { toast ,ToastContainer} from 'react-toastify';
 
 
 function EmailVerificationCode() {
@@ -26,13 +27,15 @@ const [otp, setOtp] = useState('');
                 },
                 body: JSON.stringify({ userId, otp })
             })
+            const data = await res.json();
             if(!res.ok){
-                const data = await res.json();
-                setError(data.error || "Verification failed");
+                setError(data.message || "Verification failed");
+                toast.error(data.message || "Verification failed")
                 setLoading(false);
                 return;
             }
             setLoading(false);
+            toast.success(data.message);
             console.log("Email verified successfully");
             window.location.href = "/login";
             return;
@@ -42,6 +45,18 @@ const [otp, setOtp] = useState('');
     }
     return (
         <>
+        <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        />
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
                 <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                     <img src={Email} alt="Email Verification" className="w-40 h-auto mx-auto" />
@@ -63,8 +78,9 @@ const [otp, setOtp] = useState('');
                             type="submit"
                             onClick={handleSubmit}
                             className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition duration-200"
+                            disabled={loading}
                         >
-                            Verify Email
+                             {loading? "verifying..." : "Verify Email" }
                         </button>
                     </form>
                     {error && <p className="text-red-500 mt-4 text-center">{error}</p>}

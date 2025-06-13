@@ -10,6 +10,8 @@ export function UseOnLogout() {
             });
             const data = await res.json();
             console.log(data);
+            window.location.href = "/";
+            return;
         } catch (error) {
             console.log("Error in logout hook" + error);
         }
