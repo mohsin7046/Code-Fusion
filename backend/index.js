@@ -8,6 +8,10 @@ import chatUser from './routes/chat.route.js'
 import { PrismaClient } from '@prisma/client';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import OnlineTest from './routes/recruiterRoutes/onlineTest.route.js';
+import Summary from './routes/recruiterRoutes/summary.route.js'
+import BehaviourTest from './routes/recruiterRoutes/behaviouralTest.route.js';
+
 dotenv.config();
 
 const app = express();
@@ -27,6 +31,9 @@ const rooms = new Map();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat',chatUser);
+app.use('/api/recruiter',OnlineTest);
+app.use('/api/recruiter', Summary);
+app.use('/api/recruiter', BehaviourTest);
 
 const prisma = new PrismaClient();
 
