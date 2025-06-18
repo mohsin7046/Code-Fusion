@@ -1,82 +1,22 @@
 /* eslint-disable react/prop-types */
-import {useState} from 'react'
+import { useState } from 'react';
 
 const predefinedSubjects = [
- 'Data Structures',
-  'Algorithms',
-  'Computer Networks',
-  'Operating Systems',
-  'Database Management Systems',
-  'Software Engineering',
-  'Compiler Design',
-  'Web Development',
-  'Mobile App Development',
-  'Machine Learning',
-  'Artificial Intelligence',
-  'Cloud Computing',
-  'Cyber Security',
-  'Information Security',
-  'Data Science',
-  'Big Data',
-  'Internet of Things (IoT)',
-  'Blockchain',
-  'DevOps',
-  'System Design',
-  'Digital Electronics',
-  'Computer Architecture',
-  'Embedded Systems',
-  'Math',
-  'Aptitute',
-  'DBMS',
+  'Data Structures', 'Algorithms', 'Computer Networks', 'Operating Systems', 'Database Management Systems', 'Software Engineering', 'Compiler Design', 'Web Development', 'Mobile App Development', 'Machine Learning', 'Artificial Intelligence', 'Cloud Computing', 'Cyber Security', 'Information Security', 'Data Science', 'Big Data', 'Internet of Things (IoT)', 'Blockchain', 'DevOps', 'System Design', 'Digital Electronics', 'Computer Architecture', 'Embedded Systems', 'Math', 'Aptitute', 'DBMS',
+  'C', 'C++', 'Java', 'Python', 'JavaScript', 'TypeScript', 'Go', 'Rust', 'Kotlin', 'Swift', 'PHP', 'Ruby', 'SQL', 'HTML', 'CSS', 'R', 'MATLAB', 'Shell Scripting',
+  'React.js', 'Node.js', 'Express.js', 'Angular', 'Vue.js', 'Django', 'Flask', 'Spring Boot', 'Firebase', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'Git', 'GitHub', 'Jenkins', 'TensorFlow', 'PyTorch'
+];
 
-
-  // Programming Languages & Technologies
-  'C',
-  'C++',
-  'Java',
-  'Python',
-  'JavaScript',
-  'TypeScript',
-  'Go',
-  'Rust',
-  'Kotlin',
-  'Swift',
-  'PHP',
-  'Ruby',
-  'SQL',
-  'HTML',
-  'CSS',
-  'R',
-  'MATLAB',
-  'Shell Scripting',
-
-  // Frameworks & Tools
-  'React.js',
-  'Node.js',
-  'Express.js',
-  'Angular',
-  'Vue.js',
-  'Django',
-  'Flask',
-  'Spring Boot',
-  'Firebase',
-  'MongoDB',
-  'MySQL',
-  'PostgreSQL',
-  'Docker',
-  'Kubernetes',
-  'Git',
-  'GitHub',
-  'Jenkins',
-  'TensorFlow',
-  'PyTorch'
+const MARKS_SCHEME = [
+  { label: 'Easy', marks: 1 },
+  { label: 'Medium', marks: 2 },
+  { label: 'Difficult', marks: 3 }
 ];
 
 function OnlineTest_Subject(props) {
   const [subject, setSubject] = useState([
-    { name: 'Math', questions: 5 },
+    { name: 'Math', easy: 0, medium: 0, difficult: 0 }
   ]);
-  
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [inputIndex, setInputIndex] = useState(null);
 
@@ -93,7 +33,7 @@ function OnlineTest_Subject(props) {
 
   const updateInput = (index, fieldname, value) => {
     const newsub = [...subject];
-    newsub[index] = { ...newsub[index], [fieldname]: value };
+    newsub[index] = { ...newsub[index], [fieldname]: fieldname === 'name' ? value : Math.max(0, Number(value)) };
     setSubject(newsub);
   };
 
@@ -103,7 +43,7 @@ function OnlineTest_Subject(props) {
   };
 
   const increaseSubject = () => {
-    setSubject([...subject, { name: '', questions: 0 }]);
+    setSubject([...subject, { name: '', easy: 0, medium: 0, difficult: 0 }]);
   };
 
   const handleSuggestionClick = (suggestion) => {
@@ -114,64 +54,150 @@ function OnlineTest_Subject(props) {
     }
   };
 
+  const totalQuestions = subject.reduce(
+    (acc, sub) => acc + (sub.easy || 0) + (sub.medium || 0) + (sub.difficult || 0),
+    0
+  );
+  const totalMarks = subject.reduce(
+    (acc, sub) =>
+      acc +
+      (sub.easy || 0) * 1 +
+      (sub.medium || 0) * 2 +
+      (sub.difficult || 0) * 3,
+    0
+  );
+
   return (
-    <div className="mx-auto p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Online Test Phase</h2>
+    <div className="max-w-full mx-auto bg-white p-8 rounded-xl shadow-md space-y-4">
+      <div className="flex justify-end">
+        <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-2 text-sm flex gap-4">
+          <span className="font-semibold text-indigo-700">Marking Scheme:</span>
+          {MARKS_SCHEME.map((s, i) => (
+            <span key={i} className="text-gray-700">
+              <span className={`font-semibold ${s.label === 'Easy' ? 'text-green-600' : s.label === 'Medium' ? 'text-yellow-600' : 'text-red-600'}`}>
+                {s.label}
+              </span>: {s.marks} mark{s.marks > 1 ? 's' : ''}
+            </span>
+          ))}
+        </div>
+      </div>
 
-      {subject.map((sub, index) => (
-        <div key={index} className="flex items-start gap-2 mb-4 relative">
-          <div className="w-full">
-            <input
-              type="text"
-              value={sub.name}
-              onChange={(e) => handleInputChange(e, index)}
-              placeholder="Subject name"
-              className="w-full p-2 border rounded-lg"
-            />
-            {inputIndex === index && sub.name && filteredSuggestions.length > 0 && (
-              <ul className="absolute left-0 top-full w-full bg-white border rounded mt-1 max-h-40 overflow-y-auto z-10">
-                {filteredSuggestions.map((suggestion, i) => (
-                  <li
-                    key={i}
-                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            )}
+      <h2 className="text-2xl font-bold text-indigo-700">Online Test Configuration</h2>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block font-medium mb-1">Title</label>
+          <input type="text" className="w-full h-12 p-3 border rounded-lg" placeholder="Enter test title" required />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Description</label>
+          <textarea className="w-full h-24 p-3 border rounded-lg resize-none" placeholder="Test description" required />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="grid grid-cols-12 gap-2 font-semibold text-gray-700">
+          <div className="col-span-4">Subject</div>
+          <div className="col-span-2 text-center text-green-600">Easy</div>
+          <div className="col-span-2 text-center text-yellow-600">Medium</div>
+          <div className="col-span-2 text-center text-red-600">Difficult</div>
+          <div className="col-span-2 text-center">Remove</div>
+        </div>
+
+        {subject.map((sub, index) => (
+          <div key={index} className="grid grid-cols-12 gap-2 items-center relative">
+            <div className="col-span-4 relative">
+              <input
+                type="text"
+                value={sub.name}
+                onChange={(e) => handleInputChange(e, index)}
+                placeholder="Subject name"
+                className="w-full p-2 border rounded-lg"
+              />
+              {inputIndex === index && sub.name && filteredSuggestions.length > 0 && (
+                <ul className="absolute top-full left-0 z-10 w-full bg-white border rounded max-h-48 overflow-y-auto shadow">
+                  {filteredSuggestions.map((s, i) => (
+                    <li
+                      key={i}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleSuggestionClick(s)}
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {['easy', 'medium', 'difficult'].map((level, i) => (
+              <input
+                key={i}
+                type="number"
+                min={0}
+                value={sub[level]}
+                onChange={(e) => updateInput(index, level, e.target.value)}
+                className="col-span-2 p-2 border rounded-lg text-center"
+                placeholder={level}
+              />
+            ))}
+
+            <button
+              type="button"
+              onClick={() => removeSubject(index)}
+              className="col-span-2 text-center text-red-600 hover:text-red-800 text-lg"
+              title="Remove subject"
+            >
+              🗑️
+            </button>
           </div>
+        ))}
 
+        <button
+          type="button"
+          className="text-purple-600 hover:underline mt-2"
+          onClick={increaseSubject}
+        >
+          + Add Subject
+        </button>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block font-medium mb-1">Duration (in minutes)</label>
+          <input type="number" className="w-full p-2 border rounded-lg" placeholder="60" required />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Passing Score</label>
+          <input type="number" className="w-full p-2 border rounded-lg" placeholder="40" required />
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block font-medium mb-1">Total Questions</label>
           <input
             type="number"
-            value={sub.questions}
-            onChange={(e) => updateInput(index, 'questions', e.target.value)}
-            className="w-24 p-2 border rounded-lg"
-            placeholder="Qs"
+            value={totalQuestions}
+            className="w-full p-2 border rounded-lg bg-gray-100"
+            disabled
           />
-
-          <button
-            onClick={() => removeSubject(index)}
-            className="text-red-500 text-xl"
-          >
-            🗑️
-          </button>
         </div>
-      ))}
-
+        <div>
+          <label className="block font-medium mb-1">Total Marks</label>
+          <input
+            type="number"
+            value={totalMarks}
+            className="w-full p-2 border rounded-lg bg-gray-100"
+            disabled
+          />
+        </div>
+      </div>
       <button
-        className="text-purple-600 hover:underline mb-6"
-        onClick={increaseSubject}
+        type="button"
+        onClick={props.Next}
+        className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
       >
-        + Add Subject
-      </button>
-
-      <button className="bg-indigo-600 text-white w-full py-3 rounded-lg shadow hover:bg-indigo-700 transition" onClick={props.Next}>
         Generate Test
       </button>
     </div>
   );
 }
 
-export default OnlineTest_Subject
+export default OnlineTest_Subject;
