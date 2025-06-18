@@ -31,7 +31,7 @@ model User {
   PasswordReset       PasswordReset?
   job                Job[]
   onlineTests        OnlineTest[]
-  behavioralInterviews BehavioralInterview[]
+  behavioralInterview BehavioralInterview[]
 }
 
 model EmailVerification {
@@ -97,7 +97,7 @@ model Job{
  model OnlineTest{
   id          String   @id @default(cuid()) @map("_id")
   jobId String
-  recruiterId String
+  recruiterId String 
   title       String
   description String
   password   String
@@ -105,12 +105,12 @@ model Job{
   totalQuestions Int
   passingScore Int
   subjects Subject[]
+  questions   OnlineTestQuestion[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   expiresAt   DateTime
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  recruiter   User     @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
-  questions   OnlineTestQuestion[]
+  user   User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
  }
 
 
@@ -155,7 +155,7 @@ model OnlineTestQuestion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   jobs Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  recruiter User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
  }
 model Keyword{
   id         String   @id @default(cuid()) @map("_id")
