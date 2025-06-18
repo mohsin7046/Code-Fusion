@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const createBehaviourTest = async(req,res) =>{
     try {
         const {jobId,recruiterId,totalQuestions,subjects,questions,duration,passingScore,OverallFeedback,keyWords,evaluationCriteria} = req.body;
-    
+          
         if (
           !jobId ||
           !recruiterId ||
@@ -20,25 +20,25 @@ const createBehaviourTest = async(req,res) =>{
           return res.status(400).json({ message: "All fields are required!" });
         }
 
-        const JobCreated = await prisma.job.findUnique({
-            where:{id:jobId}
-        });
+        // const JobCreated = await prisma.job.findUnique({
+        //     where:{id:jobId}
+        // });
 
-        if(!JobCreated){
-            return res.status(400).json({message:"Job is not created!!!"})
-        }
-        if(!JobCreated.hasAIInterview){
-            return res.status(400).json({message:"Behaviour Test isnot selected"})
-        }
+        // if(!JobCreated){
+        //     return res.status(400).json({message:"Job is not created!!!"})
+        // }
+        // if(!JobCreated.hasAIInterview){
+        //     return res.status(400).json({message:"Behaviour Test isnot selected"})
+        // }
 
 
-        const recruiterCreated = await prisma.job.findUnique({
-            where:{id:recruiterId},
-        })
+        // const recruiterCreated = await prisma.job.findUnique({
+        //     where:{id:recruiterId},
+        // })
 
-        if(!recruiterCreated){
-            return res.status(400).json({message:"Recuriter not found"})
-        }
+        // if(!recruiterCreated){
+        //     return res.status(400).json({message:"Recuriter not found"})
+        // }
     
         const behavouirTest = await prisma.behavioralInterview.create({
            data: {

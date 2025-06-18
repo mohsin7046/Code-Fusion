@@ -3,14 +3,14 @@ import jwt from 'jsonwebtoken';
 const JWT_TOKEN = process.env.JWT_SECRET;
 
 export const generateToken = (res,data) => {
-  const token = jwt.sign(data, JWT_TOKEN, { expiresIn:"20min" });
+  const token = jwt.sign(data, JWT_TOKEN, { expiresIn:"1hr" });
 
   console.log(token);
   
 
    res.cookie('token', token, {
     httpOnly: false,
-    maxAge: 20 * 60*1000,
+    maxAge: 60 * 60*1000,
     secure:false,
     sameSite: 'strict',
   });

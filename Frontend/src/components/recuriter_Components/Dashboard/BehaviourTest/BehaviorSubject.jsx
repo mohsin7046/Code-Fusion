@@ -2,6 +2,10 @@ import { useState } from "react";
 
 function BehaviorSubject(props) {
   const [selected, setSelected] = useState([]);
+  const [maxScore,setmaxScore] = useState(0);
+  const [totalQuestion,settotalQuestion] = useState(0);
+  const [duration,setDuration] = useState(0);
+  
 
 const behaviors = [
   {
@@ -47,6 +51,104 @@ const behaviors = [
 ];
 
 
+const allQuestions = [
+  "Describe a time when your communication helped avoid a major misunderstanding in a project.",
+  "How do you ensure that non-technical stakeholders understand the implications of technical decisions?",
+  "Tell me about a time when you had to debug a critical issue under pressure. How did you approach it?",
+  "Give an example of how you managed conflicting priorities in a fast-paced development cycle.",
+  "Tell me about a technical challenge you faced that required you to learn something new quickly.",
+  "Describe a situation where you disagreed with a teammate's technical approach. How did you resolve it?",
+  "Can you describe a situation where you mentored a junior developer or onboarded a new team member?",
+  "Tell me about a time you missed a deadline. What happened, and how did you handle it with your team or client?",
+  "Have you ever received negative feedback on your code during a code review? How did you handle it?",
+  "Can you share an experience where you had to refactor legacy code? What was your approach, and what were the outcomes?"
+];
+
+
+const keywordData = [
+  {
+    name: "Communication",
+    subKeywords: [
+      "clarity of thought",
+      "active listening",
+      "explaining complex ideas",
+      "audience awareness",
+      "non-verbal cues",
+      "asking clarifying questions"
+    ]
+  },
+  {
+    name: "Problem Solving",
+    subKeywords: [
+      "critical thinking",
+      "root cause analysis",
+      "logical reasoning",
+      "troubleshooting",
+      "debugging under pressure"
+    ]
+  },
+  {
+    name: "Teamwork",
+    subKeywords: [
+      "collaboration",
+      "respecting diverse opinions",
+      "constructive feedback",
+      "supporting teammates",
+      "peer programming"
+    ]
+  },
+  {
+    name: "Leadership",
+    subKeywords: [
+      "decision making",
+      "delegation",
+      "motivating team",
+      "vision sharing",
+      "leading by example"
+    ]
+  },
+  {
+    name: "Accountability",
+    subKeywords: [
+      "owning mistakes",
+      "meeting deadlines",
+      "reliable commitments",
+      "transparency",
+      "work ethic"
+    ]
+  }
+];
+
+
+const evaluationCriteria = "clarity of thought, active listening, explaining complex ideas, audience awareness, non-verbal cues, asking clarifying questions"
+
+
+const handleSubmit = async() => {
+  const data = {
+    jobId: 1234,
+    recruiterId: 1234,
+    totalQuestion: totalQuestion,
+    subjects : selected,
+    maxScore: maxScore,
+    duration: duration,
+    questions: allQuestions,
+    evaluationCriteria: evaluationCriteria,
+    keyWords: keywordData,
+  }
+  const res = await fetch('/api//create-behaviour-test',{
+    method:'POST',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify({data})
+  })
+
+  const resdata = res.json();
+  if (!resdata) {
+    console.error("Failed to create behavioral test");
+  }
+}
+
+  
+
   const handleCheckboxChange = (title) => {
     setSelected((prev) =>
       prev.includes(title)
@@ -55,17 +157,19 @@ const behaviors = [
     );
   };
   console.log(selected);
+  console.log(totalQuestion);
+  
   
 
   return (
-    <div className="mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="mx-auto p-6 max-w-full bg-white rounded-lg shadow-lg">
       <h2 className="text-xl font-bold text-black mb-2">Behavioral Categories</h2>
       <p className="text-gray-600 mb-6">
         Select the behavioral categories you want to assess during the AI interview.
         Our AI will generate targeted questions to evaluate these aspects.
       </p>
 
-      <div className=" h-[450px] overflow-y-auto space-y-4">
+      <div className=" h-[280px] overflow-y-auto space-y-4">
         {behaviors.map((behavior, index) => (
           <label
             key={index}
@@ -88,10 +192,45 @@ const behaviors = [
           </label>
         ))}
       </div>
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Total Questions</label>
+    <input
+      type="number"
+      value={totalQuestion}
+      onChange={(e) => settotalQuestion(e.target.value)}
+      placeholder="e.g., 10"
+      className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Max Score</label>
+    <input
+      type="number"
+      value={maxScore}
+      onChange={(e) => setmaxScore(e.target.value)}
+      placeholder="e.g., 100"
+      className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Test Duration (mins)</label>
+    <input
+      type="number"
+      value={duration}
+      onChange={(e) => setDuration(e.target.value)}
+      placeholder="e.g., 30"
+      className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+</div>
 
       <div className="mt-8 flex justify-end w-full">
        
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={props.Next}>
+        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={() => {
+    handleSubmit();
+    props.Next();  // Call Next only if needed after submit
+  }} >
           Next ▶️
         </button>
       </div>
