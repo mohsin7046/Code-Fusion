@@ -157,6 +157,7 @@ model OnlineTestQuestion {
   jobs Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
  }
+ 
 model Keyword{
   id         String   @id @default(cuid()) @map("_id")
   behavioralInterviewId String
