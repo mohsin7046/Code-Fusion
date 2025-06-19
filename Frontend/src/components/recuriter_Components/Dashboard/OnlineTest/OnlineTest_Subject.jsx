@@ -153,10 +153,10 @@ Constraints:
        questions.map((q) => ({
         question: q.question,
         options: q.options,
-        correctAnswer: q.correctAnswer,
+        correctAnswer: parseInt(q.correctAnswer),
         subject: q.subject,
         difficulty: q.difficulty,
-        points: q.points
+        points: parseInt(q.points)
       })),
       expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), 
     };

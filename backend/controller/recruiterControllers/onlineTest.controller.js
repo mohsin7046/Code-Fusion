@@ -52,7 +52,7 @@ const createJob = async(req,res) =>{
 const createOnlineTest = async(req,res) =>{
     const {jobId,recruiterId,title,description,password,duration,totalQuestions,passingScore,subjects,questions,expiresAt} = req.body;
     try {
-        if(!jobId || !recruiterId || !title || !description || !password || !duration || !totalQuestions || !passingScore || !subjects || !questions || !expiresAt) {
+        if(!jobId || !recruiterId || !title || !description || !password || !duration || !totalQuestions || !passingScore || !subjects || !questions || !questions.length === 0 || !expiresAt) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const jobExists = await prisma.job.findUnique({
@@ -108,4 +108,34 @@ const createOnlineTest = async(req,res) =>{
     }
 }
 
-export { createJob, createOnlineTest };
+const getOnlineTest = async(req,res)=>{
+    const {jobId, recruiterId} = req.body;
+    try {
+//TODO: Give response on the latest createdAt test field 
+        const test = await prisma.onlineTest.findMany({
+            where:{
+                jobId: jobId,
+                recruiterId: recruiterId
+            },
+            include:{
+                questions: {
+                    select:{
+                        question: true,
+                        correctAnswer: true,
+                        options: true,
+                        points: true
+                    }
+                }        
+            }
+        })
+        if(!test) {
+            return res.status(404).json({ message: "Online Test not found" });
+        }
+        return res.status(200).json({ message: "Online Test retrieved successfully", test });
+    } catch (error) {
+        console.error("Error retrieving Online Test:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export { createJob, createOnlineTest,getOnlineTest};

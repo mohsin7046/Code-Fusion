@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+
 const getToken = () => {
    const token = Cookies.get("token");
    if(!token){
