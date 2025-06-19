@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^1.5.1",
+    "@google/generative-ai": "^0.24.1",
     "@monaco-editor/react": "^4.6.0",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",

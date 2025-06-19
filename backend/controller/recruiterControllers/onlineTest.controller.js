@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import { generateToken } from "../../utilities/jwtUtility.js";
 const prisma = new PrismaClient();
 
 const createJob = async(req,res) =>{
@@ -28,6 +28,20 @@ const createJob = async(req,res) =>{
                 hasCodingTest: hasCodingTest || false
             }
         })
+        if (!job) {
+            return res.status(500).json({ message: "Failed to create Job" });
+        }
+        const data = {
+            jobId: job.id,
+            recruiterId: job.recruiterId,
+        }
+        const token =   generateToken(res, data);
+        res.cookie('jobToken', token, {
+            httpOnly: false,
+            maxAge: 60 * 60*1000,
+            sameSite: 'strict',
+            secure:false,
+        });
         return res.status(201).json({ message: "Job created successfully", job });
     } catch (error) {
         console.error("Error creating Job:", error);
@@ -60,8 +74,10 @@ const createOnlineTest = async(req,res) =>{
                 duration,
                 totalQuestions,
                 passingScore,
-                subjects :{
-                    create: subjects.map((subject) => ({
+                expiresAt: new Date(expiresAt),
+                subjects : {
+                create: 
+                    subjects.map((subject) => ({
                         name: subject.name,
                         easyQuestions: subject.easyQuestions,
                         mediumQuestions: subject.mediumQuestions,
@@ -69,8 +85,9 @@ const createOnlineTest = async(req,res) =>{
                         totalQuestions: subject.totalQuestions,
                     })),
                 },
-                questions :{
-                    create: questions.map((question) => ({
+                questions : {
+                create :
+                    questions.map((question) => ({
                         question: question.question,
                         correctAnswer: question.correctAnswer,
                         options: question.options,

@@ -3,7 +3,8 @@ import AnimationHome from '../../../Utilities/homeAnimation';
 import getToken from "../../../hooks/role.js";
 
 function LandingHome() {
-  const role = getToken();
+  const tokenData = getToken();
+  const role = tokenData ? tokenData.role : null;
   return (
     <section className="bg-white py-16 mt-5 h-screen content-center items-center" id="home">
       <div className="mx-auto px-4 sm:px-8 lg:px-8 max-w-7xl">
@@ -20,10 +21,15 @@ function LandingHome() {
             <div className="mt-8 flex justify-center md:justify-start space-x-4">
               {role == 'RECRUITER' ? <Link to="/dashboard" className="py-3 w-48 text-center bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-700">
                 Get Started
-              </Link>: <Link to="/user/dashboard" className="py-3 w-48 text-center bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-700">
+              </Link>: 
+              
+              ( role === 'CANDIDATE' ? <Link to="/user/dashboard" className="py-3 w-48 text-center bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-700">
+                Get Started
+              </Link> : 
+              <Link to="/login" className="py-3 w-48 text-center bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-700">
                 Get Started
               </Link>
-              }
+              )}
               <button className="py-3 w-44 border border-blue-600 text-blue-600 font-medium rounded-xl hover:bg-blue-50">
                 Sign up with Google
               </button>

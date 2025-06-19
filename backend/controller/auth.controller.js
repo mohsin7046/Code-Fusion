@@ -200,7 +200,13 @@ export const login = async (req, res) => {
             isVerified: user.isVerified,
             email: user.email,
         }
-        generateToken(res, data);
+       const token =  generateToken(res, data);
+        res.cookie('token', token, {
+            httpOnly: false,
+            maxAge: 60 * 60*1000,
+            sameSite: 'strict',
+            secure:false,
+        });
         return res.status(200).json({ message: "Login successful", user });
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });

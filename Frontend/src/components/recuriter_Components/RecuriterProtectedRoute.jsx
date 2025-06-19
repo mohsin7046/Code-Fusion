@@ -4,13 +4,15 @@ import getToken from "../../hooks/role.js";
 
 const RecuriterProtectedRoute = ({ children }) => {
   
-    const role = getToken();
+    const tokenData = getToken();
+    console.log("Recruiter token data:", tokenData);
     
-    if (!role) {
+    
+    if (!tokenData.role) {
         return <Navigate to="/login" replace />;
     }
     
-    if (role === "RECRUITER") {
+    if (tokenData.role === "RECRUITER") {
         return children;
     }
     

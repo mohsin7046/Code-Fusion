@@ -2,12 +2,12 @@
 import { Navigate } from "react-router-dom";
 import getToken from "../../hooks/role.js";
 const UserProtectedRoute = ({ children }) => {
-    const role = getToken();
-    if (!role) {
+    const tokenData = getToken();
+    if (!tokenData.role ) {
         return <Navigate to="/login" replace />;
     }
     
-    if (role === "CANDIDATE") {
+    if (tokenData.role === "CANDIDATE") {
         return children;
     }
     

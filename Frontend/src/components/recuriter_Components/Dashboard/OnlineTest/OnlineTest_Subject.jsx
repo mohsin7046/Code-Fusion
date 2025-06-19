@@ -1,5 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
+import { systemPrompt } from '../../../../hooks/GeminiApi/geminiPrompt.js';
+import { generateResponse } from '../../../../hooks/GeminiApi/gemini.js';
+import {getRecruiterToken} from '../../../../hooks/role.js';
+
 
 const predefinedSubjects = [
   'Data Structures', 'Algorithms', 'Computer Networks', 'Operating Systems', 'Database Management Systems', 'Software Engineering', 'Compiler Design', 'Web Development', 'Mobile App Development', 'Machine Learning', 'Artificial Intelligence', 'Cloud Computing', 'Cyber Security', 'Information Security', 'Data Science', 'Big Data', 'Internet of Things (IoT)', 'Blockchain', 'DevOps', 'System Design', 'Digital Electronics', 'Computer Architecture', 'Embedded Systems', 'Math', 'Aptitute', 'DBMS',
@@ -7,11 +11,13 @@ const predefinedSubjects = [
   'React.js', 'Node.js', 'Express.js', 'Angular', 'Vue.js', 'Django', 'Flask', 'Spring Boot', 'Firebase', 'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Kubernetes', 'Git', 'GitHub', 'Jenkins', 'TensorFlow', 'PyTorch'
 ];
 
+
 const MARKS_SCHEME = [
   { label: 'Easy', marks: 1 },
   { label: 'Medium', marks: 2 },
   { label: 'Difficult', marks: 3 }
 ];
+
 
 function OnlineTest_Subject(props) {
   const [subject, setSubject] = useState([
@@ -19,6 +25,12 @@ function OnlineTest_Subject(props) {
   ]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [inputIndex, setInputIndex] = useState(null);
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [duration, setDuration] = useState(60); 
+  const [passingScore, setPassingScore] = useState(40); 
+  const [questions,setQuestions] = useState([]);
 
   const handleInputChange = (e, index) => {
     const value = e.target.value;
@@ -67,8 +79,112 @@ function OnlineTest_Subject(props) {
     0
   );
 
+const prompt = `
+You are an AI question generation assistant for an online interview platform. Based on the provided configuration, generate subject-wise multiple-choice questions.
+Requirements:
+
+* Total questions per subject = easy + medium + difficult
+* Each question must have:
+
+  * 4 distinct options
+  * Fields:
+    * question: string
+    * options: array of 4 strings
+    * correctAnswer: number (0–3)
+    * subject: string
+    * difficulty: "EASY" | "MEDIUM" | "HARD"
+    * points: 1 (easy), 2 (medium), 3 (hard)
+  
+  Subjects and their difficulty wise questions:
+    ${JSON.stringify(subject)},
+
+  Given the questions on the subjects mentioned above with the following distribution easy ,medium, and difficult. Not Give the improper distribution of questions like for example if react has total of 6 questions so  give more than 6 questions of react or do not give less than of it in response.
+
+  Total Questions: ${totalQuestions},
+  Total Marks: ${totalMarks},
+Constraints:
+* Follow the subject names and difficulty distribution exactly.
+* Questions must be original, relevant, and match the difficulty.
+* Output strictly valid JSON with no markdown, comments, or formatting.
+  `
+
+  const fullPrompt =`
+  ${systemPrompt}
+
+  USER: ${prompt}
+  `
+
+
+  const tokenData = getRecruiterToken();
+ 
+  const handleSubmit = async (e) => {
+    let generateRes;
+    e.preventDefault();
+    console.log(prompt);
+    try {
+      const response = await generateResponse(fullPrompt);
+      generateRes = JSON.parse(response);
+      console.log(generateRes.questions);
+      
+    setQuestions(generateRes.questions);
+      
+      // if (!Array.isArray(questions) || questions.length === 0) {
+      //   throw new Error('Invalid or empty questions array');
+      // }
+
+    const payload = {
+      jobId: tokenData.jobId,
+      recruiterId: tokenData.recruiterId,
+      title: title, 
+      description: description, 
+      password: Math.random().toString(36).slice(-8), 
+      duration: duration, 
+      totalQuestions: totalQuestions,
+      passingScore: passingScore, 
+      subjects:
+         subject.map((sub) => ({
+          name: sub.name,
+          easyQuestions: sub.easy,
+          hardQuestions: sub.difficult,
+          mediumQuestions: sub.medium,
+          totalQuestions: sub.easy + sub.medium + sub.difficult,
+        })),
+      questions: 
+       questions.map((q) => ({
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        subject: q.subject,
+        difficulty: q.difficulty,
+        points: q.points
+      })),
+      expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), 
+    };
+
+    console.log("Payload to be sent:", payload);
+    const res = await fetch('/api/recruiter/create-online-test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', 
+      },
+      body: JSON.stringify(payload),
+    });
+    console.log("Response from server:", res);
+    const data = await res.json();
+    if (!res.ok) { 
+      throw new Error(data.message || 'Failed to create online test');
+    }
+      props.Next(); 
+    } catch (error) {
+      console.error("Error generating questions:", error);
+    }
+  };
+
   return (
-    <div className="max-w-full mx-auto bg-white p-8 rounded-xl shadow-md space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-full mx-auto bg-white p-8 rounded-xl shadow-md space-y-4"
+    >
       <div className="flex justify-end">
         <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-2 text-sm flex gap-4">
           <span className="font-semibold text-indigo-700">Marking Scheme:</span>
@@ -83,14 +199,15 @@ function OnlineTest_Subject(props) {
       </div>
 
       <h2 className="text-2xl font-bold text-indigo-700">Online Test Configuration</h2>
+
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label className="block font-medium mb-1">Title</label>
-          <input type="text" className="w-full h-12 p-3 border rounded-lg" placeholder="Enter test title" required />
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full h-12 p-3 border rounded-lg" placeholder="Enter test title" required />
         </div>
         <div>
           <label className="block font-medium mb-1">Description</label>
-          <textarea className="w-full h-24 p-3 border rounded-lg resize-none" placeholder="Test description" required />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full h-24 p-3 border rounded-lg resize-none" placeholder="Test description" required />
         </div>
       </div>
 
@@ -138,7 +255,6 @@ function OnlineTest_Subject(props) {
                 placeholder={level}
               />
             ))}
-
             <button
               type="button"
               onClick={() => removeSubject(index)}
@@ -162,41 +278,32 @@ function OnlineTest_Subject(props) {
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label className="block font-medium mb-1">Duration (in minutes)</label>
-          <input type="number" className="w-full p-2 border rounded-lg" placeholder="60" required />
+          <input value={duration} onChange={(e) => setDuration(e.target.value)} type="number" className="w-full p-2 border rounded-lg" placeholder="60" required />
         </div>
         <div>
           <label className="block font-medium mb-1">Passing Score</label>
-          <input type="number" className="w-full p-2 border rounded-lg" placeholder="40" required />
+          <input value={passingScore} onChange={(e) => setPassingScore(e.target.value)} type="number" className="w-full p-2 border rounded-lg" placeholder="40" required />
         </div>
       </div>
+
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label className="block font-medium mb-1">Total Questions</label>
-          <input
-            type="number"
-            value={totalQuestions}
-            className="w-full p-2 border rounded-lg bg-gray-100"
-            disabled
-          />
+          <input  type="number"  className="w-full p-2 border rounded-lg bg-gray-100" value={totalQuestions} disabled />
         </div>
         <div>
           <label className="block font-medium mb-1">Total Marks</label>
-          <input
-            type="number"
-            value={totalMarks}
-            className="w-full p-2 border rounded-lg bg-gray-100"
-            disabled
-          />
+          <input  type="number" value={totalMarks} className="w-full p-2 border rounded-lg bg-gray-100" disabled />
         </div>
       </div>
+
       <button
-        type="button"
-        onClick={props.Next}
+        type="submit"
         className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
       >
         Generate Test
       </button>
-    </div>
+    </form>
   );
 }
 

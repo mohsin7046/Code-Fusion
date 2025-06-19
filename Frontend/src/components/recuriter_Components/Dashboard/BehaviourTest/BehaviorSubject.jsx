@@ -1,12 +1,26 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { generateResponse } from "../../../../hooks/GeminiApi/gemini.js";
+import { systemPrompt } from "../../../../hooks/GeminiApi/geminiPrompt.js";
 
 function BehaviorSubject(props) {
   const [selected, setSelected] = useState([]);
   const [maxScore,setmaxScore] = useState(0);
   const [totalQuestion,settotalQuestion] = useState(0);
   const [duration,setDuration] = useState(0);
-  
+  const [selectedKeyword,setSelectedKeyword] = useState([]);
+  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+
+useEffect(()=>{
+  const selectedKeywords = keywordData.filter((item) =>
+    selected.includes(item.name)
+  ).map((item) => ({
+    name: item.name,
+    subKeywords: item.subKeywords
+  }));
+  setSelectedKeyword(selectedKeywords);
+},[selected]);
 
 const behaviors = [
   {
@@ -50,21 +64,6 @@ const behaviors = [
     desc: "Evaluate self-awareness, empathy, and ability to manage interpersonal relationships thoughtfully",
   }
 ];
-
-
-const allQuestions = [
-  "Describe a time when your communication helped avoid a major misunderstanding in a project.",
-  "How do you ensure that non-technical stakeholders understand the implications of technical decisions?",
-  "Tell me about a time when you had to debug a critical issue under pressure. How did you approach it?",
-  "Give an example of how you managed conflicting priorities in a fast-paced development cycle.",
-  "Tell me about a technical challenge you faced that required you to learn something new quickly.",
-  "Describe a situation where you disagreed with a teammate's technical approach. How did you resolve it?",
-  "Can you describe a situation where you mentored a junior developer or onboarded a new team member?",
-  "Tell me about a time you missed a deadline. What happened, and how did you handle it with your team or client?",
-  "Have you ever received negative feedback on your code during a code review? How did you handle it?",
-  "Can you share an experience where you had to refactor legacy code? What was your approach, and what were the outcomes?"
-];
-
 
 const keywordData = [
   {
@@ -121,30 +120,44 @@ const keywordData = [
 ];
 
 
-const evaluationCriteria = "clarity of thought, active listening, explaining complex ideas, audience awareness, non-verbal cues, asking clarifying questions"
+
+const prompt = `
+You are an AI question generation assistant for a professional interview platform. Based on the provided configuration, generate a set of behavioral interview questions.
+Requirements:
+
+Use the following configuration:
+• Title: ${title}.
+• Description: ${description}.
+• TotalQuestions: ${totalQuestion}
+• Keywords : ${JSON.stringify(selected)}
+• SubKeywords: ${JSON.stringify(selectedKeyword)}
+
+Generate exactly the total number of behavioral questions as specified by TotalQuestions.
+
+For Generating the questions you have to use the description and title to know on which topics you have to include in the generating questions but generate the questions based on the keywords and sub-keywords provided.
+
+Each question should be original, professional, and incorporate the behavioral aspects outlined in the keyword data. Focus on areas such as Communication, Problem Solving, and Teamwork, using the associated sub-keywords (e.g., "clarity of thought", "critical thinking", "collaboration", etc.) to inspire the questions.
+
+Do not provide questions that exceed or fall short of the given total number.
+
+Output must be a valid raw JSON array of question strings with no markdown, code fences, or extra formatting.
+`
+
+
+const fullPrompt = `
+${systemPrompt}
+USER : ${prompt}
+`
 
 
 const handleSubmit = async() => {
-  const data = {
-    jobId: 1234,
-    recruiterId: 1234,
-    totalQuestion: totalQuestion,
-    subjects : selected,
-    maxScore: maxScore,
-    duration: duration,
-    questions: allQuestions,
-    evaluationCriteria: evaluationCriteria,
-    keyWords: keywordData,
-  }
-  const res = await fetch('/api//create-behaviour-test',{
-    method:'POST',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({data})
-  })
+  try {
+    const response = await generateResponse(fullPrompt);
+    const questions = JSON.parse(response);
+    console.log(questions);
+  } catch (error) {
+    console.error("Error generating questions:", error);
 
-  const resdata = res.json();
-  if (!resdata) {
-    console.error("Failed to create behavioral test");
   }
 }
 
@@ -169,6 +182,28 @@ const handleSubmit = async() => {
         Select the behavioral categories you want to assess during the AI interview.
         Our AI will generate targeted questions to evaluate these aspects.
       </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Interview Title</label>
+    <input
+      type="text"
+      onChange={(e) => setTitle(e.target.value)}
+      placeholder="e.g., Leadership Assessment"
+      className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+    <input
+      type="text"
+      onChange={(e) => setDescription(e.target.value)}
+      placeholder="Short description of the interview"
+      className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
+</div>
+
 
       <div className=" h-[280px] overflow-y-auto space-y-4">
         {behaviors.map((behavior, index) => (
@@ -230,7 +265,7 @@ const handleSubmit = async() => {
        
         <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={() => {
     handleSubmit();
-    props.Next
+    props.Next()
   }} >
           Next ▶️
         </button>

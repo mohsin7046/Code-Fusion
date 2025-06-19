@@ -22,7 +22,7 @@ const protectedRecruiter = async (req,res,next) =>{
     if(decodedToken.role !== 'RECRUITER'){
         return res.status(403).json({message: 'Access denied, not a recruiter'});
     }
-    req.user = decodedToken;
+   
     next();
     } catch (error) {
     return res.status(500).json({message: 'Internal Server Error'});
