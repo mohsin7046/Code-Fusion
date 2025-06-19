@@ -2,15 +2,21 @@
 import { useState,useEffect } from "react";
 import { generateResponse } from "../../../../hooks/GeminiApi/gemini.js";
 import { systemPrompt } from "../../../../hooks/GeminiApi/geminiPrompt.js";
+import {getRecruiterToken} from "../../../../hooks/role.js";
 
 function BehaviorSubject(props) {
   const [selected, setSelected] = useState([]);
-  const [maxScore,setmaxScore] = useState(0);
+  const [passingScore,setPassingScore] = useState(0);
   const [totalQuestion,settotalQuestion] = useState(0);
   const [duration,setDuration] = useState(0);
   const [selectedKeyword,setSelectedKeyword] = useState([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
+  const [generatedQuestions, setGeneratedQuestions] = useState([]);
+  const [evaluatedCriteria, setEvaluatedCriteria] = useState("");
+  const tokenData = getRecruiterToken();
+  const jobId = tokenData.jobId;
+  const recruiterId = tokenData.recruiterId;
 
 useEffect(()=>{
   const selectedKeywords = keywordData.filter((item) =>
@@ -134,9 +140,13 @@ Use the following configuration:
 
 Generate exactly the total number of behavioral questions as specified by TotalQuestions.
 
-For Generating the questions you have to use the description and title to know on which topics you have to include in the generating questions but generate the questions based on the keywords and sub-keywords provided.
+For Generating the questions you have to use the description and title to know on which topics you have to include in the generating questions but generate the questions based on the keywords and sub-keywords provided and add difficulty level from EASY,MEDIUM,HARD for each question response and also add subject for that generated question.
+
+Also give the evaluation criteria for the overall questions generated based on the keywords and sub-keywords provided and give the evaluation criteria in comma seperated a string not in array and name it as  evaluationCriteria. 
 
 Each question should be original, professional, and incorporate the behavioral aspects outlined in the keyword data. Focus on areas such as Communication, Problem Solving, and Teamwork, using the associated sub-keywords (e.g., "clarity of thought", "critical thinking", "collaboration", etc.) to inspire the questions.
+
+Not generate the keywords and sub-keywords in the questions, just use them to generate the questions.
 
 Do not provide questions that exceed or fall short of the given total number.
 
@@ -154,14 +164,49 @@ const handleSubmit = async() => {
   try {
     const response = await generateResponse(fullPrompt);
     const questions = JSON.parse(response);
+    setGeneratedQuestions(questions.questions);
+    setEvaluatedCriteria(questions.evaluationCriteria || "");
+    
     console.log(questions);
+
+    const res=  await fetch("/api/recruiter/create-behaviour-test", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jobId,
+        recruiterId,
+        totalQuestions: parseInt(totalQuestion),
+        passingScore: parseInt(passingScore),
+        duration : parseInt(duration),
+        questions: generatedQuestions.map((question) => ({
+          question : question.question,
+          subject: question.subject,
+          difficulty: question.difficulty || "EASY", 
+        })),
+        keyWords : selectedKeyword.map((kw) => ({
+          name: kw.name,
+          subKeywords: kw.subKeywords || [],
+        })),
+        evaluationCriteria: evaluatedCriteria
+      }),
+    })
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log("Behavioral Test Created Successfully:", data);
+      props.Next();
+    } else {
+      console.error("Error creating behavioral test:", data.message);
+      alert(data.message || "Failed to create behavioral test");
+    }
+
   } catch (error) {
     console.error("Error generating questions:", error);
-
   }
 }
 
-  
 
   const handleCheckboxChange = (title) => {
     setSelected((prev) =>
@@ -240,12 +285,12 @@ const handleSubmit = async() => {
     />
   </div>
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">Max Score</label>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Passing Score</label>
     <input
       type="number"
-      value={maxScore}
-      onChange={(e) => setmaxScore(e.target.value)}
-      placeholder="e.g., 100"
+      value={passingScore}
+      onChange={(e) => setPassingScore(e.target.value)}
+      placeholder="e.g. Out of 100"
       className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
   </div>

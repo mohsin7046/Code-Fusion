@@ -3,7 +3,7 @@ import {createSummary,getSummary} from '../../controller/recruiterControllers/su
 import protectedRecruiter from '../../middleware/recruiter.middleware.js';
 const router = Router();
 
-router.post('/create-summary', protectedRecruiter, createSummary);
-router.get('/get-summary/:jobId', protectedRecruiter, getSummary);
+router.post('/create-summary', createSummary);
+router.post('/get-summary', getSummary);
 
 export default router;

@@ -10,7 +10,15 @@ function InterviewSummary() {
         const fetchSummary = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`/api/recuriter/get-summary/${jobId}`);
+                const response = await fetch('/api/recruiter/get-summary',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body : JSON.stringify({ jobId: "cmc2vg7zq0003v98kvzxf7kea" })
+                    }
+                );
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch summary');
@@ -27,7 +35,7 @@ function InterviewSummary() {
         };
 
         fetchSummary();
-    }, [jobId]);
+    }, []);
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('en-US', {
@@ -128,8 +136,8 @@ function InterviewSummary() {
                                 <User className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <p className="font-medium text-gray-900">{data.recruiter.name}</p>
-                                <p className="text-gray-600 text-sm">{data.recruiter.email}</p>
+                                <p className="font-medium text-gray-900">{data.user.username}</p>
+                                <p className="text-gray-600 text-sm">{data.user.email}</p>
                             </div>
                         </div>
                     </div>
@@ -176,19 +184,25 @@ function InterviewSummary() {
                                 </div>
                             </div>
 
-                            <div className="mb-4">
-                                <h4 className="font-medium text-gray-900 mb-2">Topics Covered:</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {data.onlineTest.subjects.map((subject, index) => (
-                                        <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                                            {subject}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+                            <div className="mb-6">
+  <h4 className="font-semibold text-gray-900 text-lg mb-3">Topics Covered:</h4>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {data.onlineTest.subjects.map((subject, index) => (
+      <div
+        key={index}
+        className="flex justify-center bg-green-50 border border-green-200 rounded-full p-2 shadow-sm"
+      >
+        <h6 className="text-green-800 font-bold text-md mb-1">{subject.name}</h6>
+        
+      </div>
+    ))}
+  </div>
+</div>
+
                         </div>
                     </div>
 
+                {data.behavioralInterview &&
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                         <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6">
                             <div className="flex items-center">
@@ -199,6 +213,7 @@ function InterviewSummary() {
                                 </div>
                             </div>
                         </div>
+
                         <div className="p-6">
                             <div className="mb-4">
                                 <p className="text-gray-600 mb-4">AI-driven assessment of your communication skills and cultural alignment</p>
@@ -250,8 +265,11 @@ function InterviewSummary() {
                                 </div>
                             </div>
                         </div>
+                    
                     </div>
+}
                 </div>
+
 
                 {data.job.hasCodingTest && (
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const createSummary = async (req, res) => {
     const {jobId,recruiterId,onlineTestId,behavioralInterviewId,estimatedTime} = req.body;
     try {
-        if(!jobId || !recruiterId || !onlineTestId || !behavioralInterviewId || !estimatedTime) {
+        if(!jobId || !recruiterId || !estimatedTime) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const jobExists = await prisma.job.findUnique({
@@ -26,19 +26,19 @@ const createSummary = async (req, res) => {
         if (!onlineTestExists) {
             return res.status(404).json({ message: "Online test not found" });
         }
-        const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
-            where: { id: behavioralInterviewId }
-        });
-        if (!behavioralInterviewExists) {
-            return res.status(404).json({ message: "Behavioral interview not found" });
-        }
+        // const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
+        //     where: { id: behavioralInterviewId }
+        // });
+        // if (!behavioralInterviewExists) {
+        //     return res.status(404).json({ message: "Behavioral interview not found" });
+        // }
 
         const summary = await prisma.summary.create({
             data: {
                 jobId: jobId,
                 recruiterId: recruiterId,
-                onlineTestId: onlineTestId,
-                behavioralInterviewId: behavioralInterviewId,
+                onlineTestId: onlineTestId || null,
+                behavioralInterviewId: behavioralInterviewId || null,
                 estimatedTime: estimatedTime
             }
         });
@@ -54,15 +54,16 @@ const createSummary = async (req, res) => {
 
 
 
-export const getSummary = async (req, res) => {
-    const { jobId } = req.params;
+ const getSummary = async (req, res) => {
+    const { jobId } = req.body;
     try {
         if (!jobId) {
             return res.status(400).json({ message: "Job ID is required" });
         }
+
         
         const summary = await prisma.summary.findMany({
-            where: { jobId: jobId },
+            where: { jobId },
             include: {
                 job: {
                     select: {
@@ -76,10 +77,10 @@ export const getSummary = async (req, res) => {
                         hasCodingTest: true
                     }
                 },
-                recruiter: {
+                user: {
                     select: {
                         id: true,
-                        name: true,
+                        username: true,
                         email: true
                     }
                 },
@@ -104,7 +105,7 @@ export const getSummary = async (req, res) => {
                         keyWords: true
                     }
                 }
-            }
+        }
         });
         
         if (summary.length === 0) {
@@ -118,4 +119,4 @@ export const getSummary = async (req, res) => {
     }
 };
 
-export { createSummary };
+export { createSummary ,getSummary};

@@ -38,7 +38,7 @@ const createJob = async(req,res) =>{
         const token =   generateToken(res, data);
         res.cookie('jobToken', token, {
             httpOnly: false,
-            maxAge: 60 * 60*1000,
+            maxAge: 60 * 60 * 60*1000,
             sameSite: 'strict',
             secure:false,
         });
