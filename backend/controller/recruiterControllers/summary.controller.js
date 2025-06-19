@@ -52,4 +52,70 @@ const createSummary = async (req, res) => {
     }
 }
 
+
+
+export const getSummary = async (req, res) => {
+    const { jobId } = req.params;
+    try {
+        if (!jobId) {
+            return res.status(400).json({ message: "Job ID is required" });
+        }
+        
+        const summary = await prisma.summary.findMany({
+            where: { jobId: jobId },
+            include: {
+                job: {
+                    select: {
+                        companyName: true,
+                        interviewRole: true,
+                        date: true,
+                        time: true,
+                        description: true,
+                        hasOnlineTest: true,
+                        hasAIInterview: true,
+                        hasCodingTest: true
+                    }
+                },
+                recruiter: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                },
+                onlineTest: {
+                    select: {
+                        title: true,
+                        description: true,
+                        duration: true,
+                        totalQuestions: true,
+                        passingScore: true,
+                        subjects: true,
+                        expiresAt: true
+                    }
+                },
+                behavioralInterview: {
+                    select: {
+                        totalQuestions: true,
+                        subjects: true,
+                        duration: true,
+                        passingScore: true,
+                        evaluationCriteria: true,
+                        keyWords: true
+                    }
+                }
+            }
+        });
+        
+        if (summary.length === 0) {
+            return res.status(404).json({ message: "No summaries found for this job" });
+        }
+        
+        return res.status(200).json(summary);
+    } catch (error) {
+        console.error("Error fetching summary:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 export { createSummary };
