@@ -64,4 +64,44 @@ const createBehaviourTest = async(req,res) =>{
         return res.status(500).json({message:"Internal Server Error"});
     }
 }
+
+
+export const getBehaviourTest = async(req,res) =>{
+  try {
+    const {jobId,recruiterId} = req.body;
+
+    if (!jobId || !recruiterId) {
+      return res.status(400).json({ message: "Job ID and Recruiter ID are required!" });
+    }
+
+    const getquestions = await prisma.behavioralInterview.findMany({
+        where: {
+          jobId: jobId,
+          recruiterId: recruiterId
+        },
+        include: {
+          questions: {
+            select:{
+              question: true,
+              subject: true,
+              difficulty: true
+            }
+          },
+        },
+        
+    });
+
+
+    if(!getquestions) {
+      return res.status(404).json({ message: "Behavioural Test not found!" });
+    }
+    console.log(getquestions);
+    return res.status(200).json({ message: "Behavioural Test retrieved successfully", getquestions });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({message:"Internal Server Error"});
+  }
+}
+
 export { createBehaviourTest };
