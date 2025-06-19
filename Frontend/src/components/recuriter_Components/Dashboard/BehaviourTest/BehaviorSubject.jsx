@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 
 function BehaviorSubject(props) {
@@ -229,7 +230,7 @@ const handleSubmit = async() => {
        
         <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={() => {
     handleSubmit();
-    props.Next();  // Call Next only if needed after submit
+    props.Next
   }} >
           Next ▶️
         </button>
