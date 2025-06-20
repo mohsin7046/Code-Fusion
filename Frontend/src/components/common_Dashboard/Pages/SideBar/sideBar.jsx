@@ -14,6 +14,8 @@ const navigation = [
     { name: 'Billing', icon: HelpCircle, href: '/dashboard/billings' },
 ];
 
+const tokenData = getToken();
+
 const usernavigation = [
     { name: 'Dashboard', icon: Home, href: '/user/dashboard' },
     {name: 'All Interviews', icon: Users, href: '/user/dashboard/all-interview'},
@@ -27,7 +29,6 @@ function Sidebar() {
     const toggleMobileSidebar = () => setIsMobileOpen(!isMobileOpen);
     const toggleCollapse = () => setIsCollapsed(!isCollapsed);
     
-    const role = getToken();
     return (
         <>
             
@@ -52,7 +53,7 @@ function Sidebar() {
                         </button>
                     </div>
                     <nav className="flex-1 p-4 space-y-1">
-                        {role === 'CANDIDATE' ? usernavigation.map((item) => (
+                        {tokenData.role === 'CANDIDATE' ? usernavigation.map((item) => (
                             <Navbar key={item.name} name={item.name} href={item.href} icon={item.icon} isCollapsed={isCollapsed && !isMobileOpen}/>
                         ))
                         :

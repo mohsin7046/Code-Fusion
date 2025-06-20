@@ -87,7 +87,7 @@ function InterviewSummary() {
     return `${mins}m`;
   };
 
-  // Helper function to safely render array items
+
   const renderSubjects = (subjects) => {
     if (!subjects || !Array.isArray(subjects) || subjects.length === 0) {
       return <p className="text-gray-500">No subjects available</p>;
@@ -105,7 +105,8 @@ function InterviewSummary() {
     ));
   };
 
-  // Helper function to safely render behavioral interview subjects
+  
+
   const renderBehavioralSubjects = (subjects) => {
     if (!subjects || !Array.isArray(subjects) || subjects.length === 0) {
       return <span className="text-gray-500">No focus areas available</span>;
@@ -121,7 +122,8 @@ function InterviewSummary() {
     ));
   };
 
-  // Helper function to safely render keywords
+ 
+
   const renderKeywords = (keywords) => {
     if (!keywords || !Array.isArray(keywords) || keywords.length === 0) {
       return <span className="text-gray-500">No evaluation points available</span>;
@@ -137,7 +139,8 @@ function InterviewSummary() {
     ));
   };
 
-  // Function to save emails only
+  
+
   const handleSaveEmails = () => {
     const emailsArray = configText
       .split(",")
@@ -149,7 +152,7 @@ function InterviewSummary() {
     setIsEditing(false);
   };
 
-  // Function to start the interview process and send emails
+  
   const handleStartInterviewProcess = async () => {
     const emailsArray = configText
       .split(",")
