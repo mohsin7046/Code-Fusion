@@ -1,10 +1,13 @@
 import  { useEffect, useState } from "react";
+import { getRecruiterToken } from "../../../../hooks/role.js";
 
 
-function InterviewSummary(props) {
+function GeneratedBehavior(props) {
   const [behavioralTest, setBehavioralTest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const tokenData = getRecruiterToken();
   
   const [selectedDifficulty, setSelectedDifficulty] = useState('ALL');
   const [selectedSubject, setSelectedSubject] = useState('ALL');
@@ -18,12 +21,14 @@ function InterviewSummary(props) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            jobId: "cmc364e3p0001v9gk25mon4gm", 
-            recruiterId: "cmbupfbj50003v92ghblpjwz4", 
+            jobId:tokenData.jobId,
+            recruiterId:tokenData.recruiterId
           }),
         });
 
         const data = await behavioralRes.json();
+        console.log("Behavioral GET Test Data:", data);
+        
         setBehavioralTest(data.getquestions[0]);
       } catch (err) {
         console.error(err);
@@ -156,4 +161,4 @@ function InterviewSummary(props) {
   );
 }
 
-export default InterviewSummary;
+export default GeneratedBehavior;

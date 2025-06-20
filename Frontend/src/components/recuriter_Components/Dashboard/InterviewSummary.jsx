@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Clock, Users, FileText, Brain, Code, Calendar, Building, User, CheckCircle, AlertCircle, Star } from 'lucide-react';
+import {getRecruiterToken} from "../../../hooks/role.js";
 
 function InterviewSummary() {
     const [summaryData, setSummaryData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const tokenData = getRecruiterToken();
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -16,7 +19,7 @@ function InterviewSummary() {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body : JSON.stringify({ jobId: "cmc2vg7zq0003v98kvzxf7kea" })
+                        body : JSON.stringify({ jobId: tokenData.jobId }),
                     }
                 );
                 

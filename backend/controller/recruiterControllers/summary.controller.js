@@ -3,9 +3,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const createSummary = async (req, res) => {
-    const {jobId,recruiterId,onlineTestId,behavioralInterviewId,estimatedTime} = req.body;
+    const {jobId,recruiterId,onlineTestId,behavioralInterviewId} = req.body;
     try {
-        if(!jobId || !recruiterId || !estimatedTime) {
+        if(!jobId || !recruiterId) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const jobExists = await prisma.job.findUnique({
@@ -39,7 +39,6 @@ const createSummary = async (req, res) => {
                 recruiterId: recruiterId,
                 onlineTestId: onlineTestId || null,
                 behavioralInterviewId: behavioralInterviewId || null,
-                estimatedTime: estimatedTime
             }
         });
         if (!summary) {

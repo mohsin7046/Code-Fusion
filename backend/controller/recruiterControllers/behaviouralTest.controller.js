@@ -10,7 +10,7 @@ const createBehaviourTest = async(req,res) =>{
           !jobId ||
           !recruiterId ||
           !totalQuestions ||
-          !Array.isArray(questions) || questions.length === 0 ||
+          !Array.isArray(questions) ||questions.length === 0 || !questions ||
           !duration ||
           !Array.isArray(keyWords) || keyWords.length === 0  || 
           !passingScore ||

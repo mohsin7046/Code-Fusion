@@ -12,11 +12,9 @@ function BehaviorSubject(props) {
   const [selectedKeyword,setSelectedKeyword] = useState([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
-  const [generatedQuestions, setGeneratedQuestions] = useState([]);
-  const [evaluatedCriteria, setEvaluatedCriteria] = useState("");
+
   const tokenData = getRecruiterToken();
-  const jobId = tokenData.jobId;
-  const recruiterId = tokenData.recruiterId;
+  
 
 useEffect(()=>{
   const selectedKeywords = keywordData.filter((item) =>
@@ -160,12 +158,14 @@ USER : ${prompt}
 `
 
 
+
 const handleSubmit = async() => {
   try {
     const response = await generateResponse(fullPrompt);
     const questions = JSON.parse(response);
-    setGeneratedQuestions(questions.questions);
-    setEvaluatedCriteria(questions.evaluationCriteria || "");
+    const generatedQuestions = questions.questions || [];
+    console.log("Generated Questions:", generatedQuestions);
+    const evaluatedCriteria = questions.evaluationCriteria || "";
     
     console.log(questions);
 
@@ -175,8 +175,8 @@ const handleSubmit = async() => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        jobId,
-        recruiterId,
+        jobId:tokenData.jobId,
+        recruiterId:tokenData.recruiterId,
         totalQuestions: parseInt(totalQuestion),
         passingScore: parseInt(passingScore),
         duration : parseInt(duration),
@@ -308,10 +308,10 @@ const handleSubmit = async() => {
 
       <div className="mt-8 flex justify-end w-full">
        
-        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={() => {
-    handleSubmit();
-    props.Next()
-  }} >
+        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={ 
+    handleSubmit
+
+  } >
           Next ▶️
         </button>
       </div>

@@ -189,7 +189,6 @@ model Summary{
   recruiterId String
   onlineTestId String?
   behavioralInterviewId String?
-  estimatedTime Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)

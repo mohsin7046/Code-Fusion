@@ -30,7 +30,6 @@ function OnlineTest_Subject(props) {
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(60); 
   const [passingScore, setPassingScore] = useState(40); 
-  const [questions,setQuestions] = useState([]);
 
   const handleInputChange = (e, index) => {
     const value = e.target.value;
@@ -124,9 +123,12 @@ Constraints:
     try {
       const response = await generateResponse(fullPrompt);
       generateRes = JSON.parse(response);
-      console.log(generateRes.questions);
+
+      const generatedQuestions = generateRes.questions;
+      console.log(generatedQuestions);
       
-    setQuestions(generateRes.questions);
+   
+
       
       // if (!Array.isArray(questions) || questions.length === 0) {
       //   throw new Error('Invalid or empty questions array');
@@ -138,9 +140,9 @@ Constraints:
       title: title, 
       description: description, 
       password: Math.random().toString(36).slice(-8), 
-      duration: duration, 
-      totalQuestions: totalQuestions,
-      passingScore: passingScore, 
+      duration: parseInt(duration), 
+      totalQuestions: parseInt(totalQuestions),
+      passingScore: parseInt(passingScore), 
       subjects:
          subject.map((sub) => ({
           name: sub.name,
@@ -150,7 +152,7 @@ Constraints:
           totalQuestions: sub.easy + sub.medium + sub.difficult,
         })),
       questions: 
-       questions.map((q) => ({
+       generatedQuestions.map((q) => ({
         question: q.question,
         options: q.options,
         correctAnswer: parseInt(q.correctAnswer),

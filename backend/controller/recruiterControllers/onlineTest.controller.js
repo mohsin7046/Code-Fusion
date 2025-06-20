@@ -34,6 +34,9 @@ const createJob = async(req,res) =>{
         const data = {
             jobId: job.id,
             recruiterId: job.recruiterId,
+            hasAIInterview: job.hasAIInterview,
+            hasOnlineTest: job.hasOnlineTest,
+            hasCodingTest: job.hasCodingTest,
         }
         const token =   generateToken(res, data);
         res.cookie('jobToken', token, {
