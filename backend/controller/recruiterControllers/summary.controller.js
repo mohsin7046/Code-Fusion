@@ -59,8 +59,6 @@ const createSummary = async (req, res) => {
         if (!jobId) {
             return res.status(400).json({ message: "Job ID is required" });
         }
-
-        
         const summary = await prisma.summary.findMany({
             where: { jobId },
             include: {
@@ -94,16 +92,16 @@ const createSummary = async (req, res) => {
                         expiresAt: true
                     }
                 },
-                behavioralInterview: {
-                    select: {
-                        totalQuestions: true,
-                        subjects: true,
-                        duration: true,
-                        passingScore: true,
-                        evaluationCriteria: true,
-                        keyWords: true
-                    }
-                }
+                // behavioralInterview: {
+                //     select: {
+                //         totalQuestions: true,
+                //         subjects: true,
+                //         duration: true,
+                //         passingScore: true,
+                //         evaluationCriteria: true,
+                //         keyWords: true
+                //     }
+                // }
         }
         });
         

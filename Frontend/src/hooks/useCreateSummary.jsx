@@ -1,5 +1,5 @@
 function useCreateSummary() {
-    const createSummary = async(jobId,recruiterId,onlineTestId,behavioralInterviewId)=>{
+    const createSummary = async (jobId,recruiterId,onlineTestId,behavioralInterviewId)=>{
 
         try {
             const response = await fetch('/api/recruiter/create-summary', {
@@ -8,10 +8,10 @@ function useCreateSummary() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    jobId,
-                    recruiterId,
-                    onlineTestId,
-                    behavioralInterviewId
+                    jobId : jobId,
+                    recruiterId : recruiterId,
+                    onlineTestId : onlineTestId || null,
+                    behavioralInterviewId : behavioralInterviewId || null,
                 }),
             });
             if(!response.ok) {

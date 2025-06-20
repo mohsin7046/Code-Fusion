@@ -189,7 +189,8 @@ const handleSubmit = async() => {
           name: kw.name,
           subKeywords: kw.subKeywords || [],
         })),
-        evaluationCriteria: evaluatedCriteria
+        evaluationCriteria: evaluatedCriteria,
+        onlineTestId: tokenData.onlineTestId || null,
       }),
     })
 

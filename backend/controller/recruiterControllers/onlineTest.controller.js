@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { generateToken } from "../../utilities/jwtUtility.js";
-const prisma = new PrismaClient();
+import { generateToken,updateToken } from "../../utilities/jwtUtility.js";
 
+const prisma = new PrismaClient();
 const createJob = async(req,res) =>{
     const {recruiterId,companyName,interviewRole, date, time,description, hasOnlineTest,hasAIInterview,hasCodingTest} = req.body;
     try {
@@ -104,6 +104,15 @@ const createOnlineTest = async(req,res) =>{
         if(!onlineTest){
             return res.status(500).json({ message: "Failed to create Online Test" });
         }
+        const data = {
+            jobId: onlineTest.jobId,
+            recruiterId: onlineTest.recruiterId,
+            hasAIInterview: jobExists.hasAIInterview,
+            hasOnlineTest: jobExists.hasOnlineTest,
+            hasCodingTest: jobExists.hasCodingTest,
+            onlineTestId: onlineTest.id,
+        }
+        updateToken(res, data);
         return res.status(201).json({ message: "Online Test created successfully", test: onlineTest });
     } catch (error) {
         console.error("Error creating Online Test:", error);

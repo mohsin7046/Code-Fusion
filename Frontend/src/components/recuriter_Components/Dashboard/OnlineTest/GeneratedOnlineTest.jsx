@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useState,useEffect } from "react";
 import {getRecruiterToken} from "../../../../hooks/role.js";
+import useCreateSummary from "../../../../hooks/useCreateSummary.jsx";
 
 function GeneratedOnlineTest(props) {
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
   const tokenData = getRecruiterToken();
+
+  const { createSummary } = useCreateSummary();
 
   const data = {
     jobId: tokenData.jobId,
@@ -36,8 +39,28 @@ function GeneratedOnlineTest(props) {
     handleSubmit();
   }, []);
 
+
+  const handleCheck = async ()=>{
+    if(tokenData.hasAiInterview){
+      props.Next();
+    }else{
+      const response = await createSummary(
+        tokenData.jobId,
+        tokenData.recruiterId,
+        tokenData.onlineTestId,
+        tokenData.behaviourTestId
+      )
+      if(response.success){
+        alert(response.message);
+        props.Next();
+      }
+      else{
+        alert(response.message);
+      }
+    }
+  }
   return (
-    <div className="mx-auto p-6 bg-white rounded-xl shadow-md">
+  <div className="mx-auto p-6 bg-white rounded-xl shadow-md">
   <h2 className="text-2xl font-bold mb-6">Generated Questions</h2>
   <div className="h-[500px] overflow-y-auto pr-2">
     <ol className="list-decimal pl-5 space-y-6">
@@ -82,7 +105,7 @@ function GeneratedOnlineTest(props) {
     <button
       className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200"
       onClick={
-        props.Next
+        handleCheck
       }
     >
       Confirm

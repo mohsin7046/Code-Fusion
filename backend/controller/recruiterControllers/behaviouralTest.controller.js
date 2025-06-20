@@ -1,10 +1,11 @@
 import {PrismaClient} from '@prisma/client'
+import { updateToken } from '../../utilities/jwtUtility.js';
 
 const prisma = new PrismaClient();
 
 const createBehaviourTest = async(req,res) =>{
     try {
-        const {jobId,recruiterId,totalQuestions,questions,duration,passingScore,keyWords,evaluationCriteria} = req.body;
+        const {jobId,recruiterId,totalQuestions,questions,duration,passingScore,keyWords,evaluationCriteria,onlineTestId} = req.body;
           
         if (
           !jobId ||
@@ -14,7 +15,8 @@ const createBehaviourTest = async(req,res) =>{
           !duration ||
           !Array.isArray(keyWords) || keyWords.length === 0  || 
           !passingScore ||
-          !evaluationCriteria
+          !evaluationCriteria ||
+          !onlineTestId
         ) {
           return res.status(400).json({ message: "All fields are required!" });
         }
@@ -27,7 +29,7 @@ const createBehaviourTest = async(req,res) =>{
             return res.status(400).json({message:"Job is not created!!!"})
         }
         if(!JobCreated.hasAIInterview){
-            return res.status(400).json({message:"Behaviour Test is not selected"})
+          return res.status(400).json({message:"Behaviour Test is not selected"})
         }
 
         const behaviourTest = await prisma.behavioralInterview.create({
@@ -58,6 +60,15 @@ const createBehaviourTest = async(req,res) =>{
        if(!behaviourTest){
         return res.status(400).json({message:"Behaviour Test not Created!!!!"})
        }
+       const data = {
+        jobId: behaviourTest.jobId,
+        recruiterId: behaviourTest.recruiterId,
+        hasAIInterview: JobCreated.hasAIInterview,
+        hasOnlineTest: JobCreated.hasOnlineTest,
+        onlineTestId: onlineTestId,
+        behaviourTestId: behaviourTest.id,
+       }
+        updateToken(res, data);
         return res.status(201).json({message:"Behaviour Test Created Successfully",behaviourTest});
     } catch (error) {
         console.log(error);

@@ -1,5 +1,7 @@
+/* eslint-disable react/prop-types */
 import  { useEffect, useState } from "react";
 import { getRecruiterToken } from "../../../../hooks/role.js";
+import useCreateSummary from "../../../../hooks/useCreateSummary.jsx";
 
 
 function GeneratedBehavior(props) {
@@ -8,6 +10,7 @@ function GeneratedBehavior(props) {
   const [error, setError] = useState("");
 
   const tokenData = getRecruiterToken();
+  const { createSummary } = useCreateSummary();
   
   const [selectedDifficulty, setSelectedDifficulty] = useState('ALL');
   const [selectedSubject, setSelectedSubject] = useState('ALL');
@@ -40,6 +43,21 @@ function GeneratedBehavior(props) {
 
     fetchData();
   }, []);
+
+const handleCheck = async () => {
+  const response = await createSummary(
+        tokenData.jobId,
+        tokenData.recruiterId,
+        tokenData.onlineTestId,
+        tokenData.behaviourTestId
+  )
+  if(response.success){
+    alert(response.message);
+    props.Next();
+  }else{
+    alert(response.message);
+  }
+}
 
   if (loading) return (
     <div className="flex justify-center items-center h-32">
@@ -155,7 +173,7 @@ function GeneratedBehavior(props) {
       )}
 
       <div className="mt-8 flex justify-end w-full">
-      <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={props.Next}>Confirm</button>
+      <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={handleCheck}>Confirm</button>
       </div>
     </div>
   );
