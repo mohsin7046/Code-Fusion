@@ -33,6 +33,7 @@ model User {
   onlineTests        OnlineTest[]
   behavioralInterview BehavioralInterview[]
   summary           Summary[]
+  studentEmails     StudentEmails[]
 }
 
 model EmailVerification {
@@ -78,6 +79,7 @@ model Job{
   onlineTests OnlineTest[]
   behavioralInterviews BehavioralInterview[]
   summary Summary[]
+  studentEmails StudentEmails[]
  }
 
  model  JobApplication {
@@ -114,6 +116,7 @@ model Job{
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user   User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
   summary Summary[]
+  studentEmails StudentEmails[]
  }
 
 
@@ -159,6 +162,7 @@ model OnlineTestQuestion {
   jobs Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
   summary Summary[]
+  studentEmails StudentEmails[]
  }
  
 model Keyword{
@@ -198,6 +202,21 @@ model Summary{
 
 }
 
+
+model StudentEmails {
+  id        String   @id @default(cuid()) @map("_id")
+  jobId     String
+  recruiterId String
+  onlineTestId String?
+  behavioralInterviewId String?
+  emails     String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  onlineTest OnlineTest? @relation(fields: [onlineTestId], references: [id], onDelete: Cascade)
+  behavioralInterview BehavioralInterview? @relation(fields: [behavioralInterviewId], references: [id], onDelete: Cascade)
+}
 
 
  enum DifficultyLevel {

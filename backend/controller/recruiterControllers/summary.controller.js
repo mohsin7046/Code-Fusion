@@ -26,12 +26,12 @@ const createSummary = async (req, res) => {
         if (!onlineTestExists) {
             return res.status(404).json({ message: "Online test not found" });
         }
-        // const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
-        //     where: { id: behavioralInterviewId }
-        // });
-        // if (!behavioralInterviewExists) {
-        //     return res.status(404).json({ message: "Behavioral interview not found" });
-        // }
+        const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
+            where: { id: behavioralInterviewId }
+        });
+        if (!behavioralInterviewExists) {
+            return res.status(404).json({ message: "Behavioral interview not found" });
+        }
 
         const summary = await prisma.summary.create({
             data: {
@@ -92,19 +92,21 @@ const createSummary = async (req, res) => {
                         expiresAt: true
                     }
                 },
-                // behavioralInterview: {
-                //     select: {
-                //         totalQuestions: true,
-                //         subjects: true,
-                //         duration: true,
-                //         passingScore: true,
-                //         evaluationCriteria: true,
-                //         keyWords: true
-                //     }
-                // }
+                behavioralInterview: {
+                    select: {
+                        totalQuestions: true,
+                        duration: true,
+                        passingScore: true,
+                        evaluationCriteria: true,
+                        keyWords: true
+                    }
+                }
         }
         });
+
+        console.log("Summary fetched successfully:", summary[0]);
         
+
         if (summary.length === 0) {
             return res.status(404).json({ message: "No summaries found for this job" });
         }
