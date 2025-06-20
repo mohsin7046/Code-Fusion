@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import PhaseSelection from "./PhaseSelection";
 import BehaviorSubject from "./BehaviourTest/BehaviorSubject";
 import OnlineTest_Subject from "./OnlineTest/OnlineTest_Subject";
@@ -13,13 +13,20 @@ import { getRecruiterToken } from "../../../hooks/role";
 function LevelSelectForm() {
   const [step, setStep] = useState(1);
 
-  const tokenData = getRecruiterToken();
-  const hasAIInterview = tokenData.hasAiInterview;
-  const hasOnlineTest = tokenData.hasOnlineTest;
+  const [tokenData, setTokenData] = useState(null);
+
+    const hasAIInterview = tokenData?.hasAiInterview;
+  const hasOnlineTest = tokenData?.hasOnlineTest;
+
+  useEffect(() => {
+    const token = getRecruiterToken();
+    setTokenData(token);
+  }, []);
+
 
   const steps = useMemo(() => {
     const dynamicSteps = [<BasicInfo Next={() => GoToNext()} />, <PhaseSelection Next={() => GoToNext()} />];
-
+    if(tokenData){
     if (hasOnlineTest) {
       dynamicSteps.push(
         <OnlineTest_Subject Next={() => GoToNext()} />,
@@ -35,9 +42,10 @@ function LevelSelectForm() {
     }
 
     dynamicSteps.push(<InterviewSummary />);
+  }
 
     return dynamicSteps;
-  }, [hasAIInterview, hasOnlineTest]);
+  }, [tokenData]);
 
   const totalSteps = steps.length;
 

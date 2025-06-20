@@ -73,6 +73,7 @@ function InterviewSummary() {
         day: "numeric",
       });
     } catch (error) {
+      console.error("Error formatting date:", error);
       return "Invalid Date";
     }
   };
@@ -86,8 +87,6 @@ function InterviewSummary() {
     }
     return `${mins}m`;
   };
-
-
   const renderSubjects = (subjects) => {
     if (!subjects || !Array.isArray(subjects) || subjects.length === 0) {
       return <p className="text-gray-500">No subjects available</p>;
