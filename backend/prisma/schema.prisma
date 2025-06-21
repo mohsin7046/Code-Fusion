@@ -87,7 +87,11 @@ model Job{
   jobId       String
   candidateId String
   status      JobApplicationStatus @default(APPLIED) 
-  currentPhase TestPhase
+currentPhase TestPhase? @default(YET_TO_START)
+
+  onlineTestResponse OnlineTestResponse[]
+  aiInterviewResponse AIInterviewResponse[]
+
   onlineTestCompleted Boolean @default(false)
   aiInterviewCompleted Boolean @default(false)
   codingTestCompleted Boolean @default(false)
@@ -241,6 +245,7 @@ model StudentEmails {
  }
 
  enum TestPhase {
+  YET_TO_START
   ONLINE_TEST
   AI_INTERVIEW
   CODING_TEST
@@ -262,4 +267,76 @@ model Room {
   host      String
   members   String[]
   createdAt DateTime @default(now())
+}
+
+
+//Candidate Schemas
+
+model OnlineTestResponse{
+  id         String   @id @default(cuid()) @map("_id")
+  onlineTestId String
+  candidateId String
+  jobApplicationId String
+  answers    StudentAnswers[]
+  score       Int
+  percentage  Float
+  totalQuestions Int
+  totalCorrectAnswers Int
+  cheatingDetected Boolean @default(false)
+  cheatingReason String?
+  passed Boolean @default(false)
+  timeTaken Int
+  submittedAt DateTime @default(now())
+  jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+}
+
+model StudentAnswers {
+  id          String   @id @default(cuid()) @map("_id")
+  onlineTestResponseId String
+  questionId String
+  selectedOption Int
+  isCorrect Boolean
+  points Int @default(0)
+  onlineTestResponse OnlineTestResponse @relation(fields: [onlineTestResponseId], references: [id], onDelete: Cascade)
+}
+
+model AIInterviewResponse {
+  id          String   @id @default(cuid()) @map("_id")
+  behavioralInterviewId String
+  candidateId String
+  jobApplicationId String
+  answers    AIInterviewAnswers[]
+  overallScore       Int
+  subjectiveScore Json?
+  strengths String[]
+  weaknesses String[]
+  recommendations String[]
+  status AIInterviewStatus @default(PENDING)
+  passed Boolean @default(false)
+  feedback String?
+  submittedAt DateTime @default(now())
+  jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+}
+
+model AIInterviewAnswers {
+  id          String   @id @default(cuid()) @map("_id")
+  aiInterviewResponseId String
+  questionId String
+  transcript String?
+  response String?
+  score Int @default(0)
+  keywords String[]
+  sentiment String?
+  confidenceScore Float @default(0.0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  aiInterviewResponse AIInterviewResponse @relation(fields: [aiInterviewResponseId], references: [id], onDelete: Cascade)
+}
+
+enum AIInterviewStatus {
+  PENDING
+  COMPLETED
+  UNDER_REVIEW
+  REJECTED
+  SELECTED
 }

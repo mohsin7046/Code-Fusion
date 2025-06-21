@@ -187,6 +187,30 @@ function InterviewSummary() {
       console.error("Error starting interview process:", error);
       alert("An error occurred while sending invitations.");
     }
+
+    try {
+      const response = await fetch("/api/job-applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jobId: summaryData?.jobId,
+          emails: emailsArray,
+        }),
+      });
+
+      if (!response.ok) {
+        alert("Failed to create job applications. Please try again.");
+        throw new Error("Failed to create job applications");
+      }
+
+      alert("Job applications created successfully!");
+      
+    } catch (error) {
+      console.error("Error creating Job applications", error);
+      alert("An error occurred while creating job applications.");
+    }
   };
 
   if (loading) {

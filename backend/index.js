@@ -11,7 +11,6 @@ import bodyParser from 'body-parser';
 import OnlineTest from './routes/recruiterRoutes/onlineTest.route.js';
 import Summary from './routes/recruiterRoutes/summary.route.js'
 import BehaviourTest from './routes/recruiterRoutes/behaviouralTest.route.js';
-import OnlineTestResponse from './routes/userRoutes/onlineTest_response.route.js';
 
 dotenv.config();
 
@@ -35,7 +34,6 @@ app.use('/api/chat',chatUser);
 app.use('/api/recruiter',OnlineTest);
 app.use('/api/recruiter', Summary);
 app.use('/api/recruiter', BehaviourTest);
-app.use('/api/user/onlinetest', OnlineTestResponse);
 
 const prisma = new PrismaClient();
 
