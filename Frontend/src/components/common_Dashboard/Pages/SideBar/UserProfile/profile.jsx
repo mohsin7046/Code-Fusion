@@ -46,7 +46,7 @@ function Profile() {
 
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Profile Picture */}
+          
           <div className="flex items-center space-x-4">
             <img
               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"

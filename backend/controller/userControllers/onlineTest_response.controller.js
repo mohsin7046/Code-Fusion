@@ -1,0 +1,310 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export const getALLQuestions = async (req, res) => {
+    try {
+        const {jobId} = req.body;
+        
+        const questions = await prisma.onlineTest.findFirst({
+            where:{
+                jobId: jobId
+            },
+            select:{
+                questions:{
+                    select:{
+                        question:true,
+                        options:true,
+                        points:true,
+                    }
+                },
+                duration:true
+            },
+
+        });
+
+        if (questions.length === 0 || !questions) {
+            return res.status(404).json({
+                success: false,
+                message: "No questions found for the given job ID",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Questions retrieved successfully",
+            data: questions,
+        });
+
+
+    } catch (error) {
+        console.log("Error in getALLQuestions:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+        
+    }
+}
+
+
+export const getDescription = async (req, res) => {
+    try {
+        const {jobId} = req.body;
+        
+        const description = await prisma.onlineTest.findFirst({
+            where:{
+                jobId: jobId
+            }
+            ,select:{
+                description:true,
+                title:true,
+                duration:true,
+                password:true,
+                totalQuestions:true,
+            }
+        });
+
+        if (description.length === 0 || !description) {
+            return res.status(404).json({
+                success: false,
+                message: "No description found for the given job ID",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Descriptions retrieved successfully",
+            data: description,
+        });
+
+
+    } catch (error) {
+        console.log("Error in getting ALLDescription:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+}
+
+export const validateUser = async (req, res) => {
+    try {
+        
+        const {email,password,JobId} = req.body;
+        console.log("Request body in validateUser:", req.body);
+        
+
+        if (!email || !password || !JobId) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required",
+            });
+        }
+
+        
+        const user = await prisma.studentEmails.findFirst({
+            where: {
+                jobId: JobId,
+                password: password,
+            },
+        })
+
+
+        const matchingEmail = user?.emails?.find(e => e.email === email && e.isValidated === false);
+
+        if (!matchingEmail) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found or email not validated",
+            });
+        }
+
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "User validated successfully",
+            
+        });
+
+    } catch (error) {
+        console.log("Error in validateUser:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+}
+
+
+export const isValidatedCheck = async (req, res) => {
+    try {
+        const { email, JobId } = req.body;
+
+        if (!email || !JobId) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and Job ID are required",
+            });
+        }
+
+        // Step 1: Find record matching jobId and email (inside JSON)
+        const user = await prisma.studentEmails.findFirst({
+            where: {
+                jobId: JobId,
+            },
+        });
+
+        // Step 2: Filter to find that email in JSON
+        const matchedEmail = user?.emails?.find(
+            (e) => e.email === email && e.isValidated === false
+        );
+
+        if (!user || !matchedEmail) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found or email already validated",
+            });
+        }
+
+        // Step 3: Update that specific email in array
+        const updatedEmails = user.emails.map((e) =>
+            e.email === email ? { ...e, isValidated: true } : e
+        );
+
+        await prisma.studentEmails.update({
+            where: { id: user.id },
+            data: { emails: updatedEmails },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Email marked as validated",
+        });
+
+    } catch (error) {
+        console.error("Error in isValidatedCheck:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};
+
+
+
+export const OnlineTest_Response = async (req, res) => {
+  try {
+    const {
+      onlineTestId,
+      email,
+      jobId,
+      answers,
+      totalQuestions,
+      cheatingDetected = false,
+      cheatingReason = "",
+      timeTaken,
+    } = req.body;
+
+    if (
+      !onlineTestId ||
+      !email ||
+      !jobId ||
+      !answers ||
+      answers.length === 0 ||
+      !totalQuestions ||
+      !timeTaken
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Missing required fields: onlineTestId, email, jobId, answers, totalQuestions, or timeTaken.",
+      });
+    }
+
+    
+    const onlineTest = await prisma.onlineTest.findFirst({
+      where: { jobId },
+      select: {
+        id: true,
+        passingScore: true,
+        questions: {
+          select: {
+            id: true,
+            correctAnswer: true,
+            points: true,
+          },
+        },
+      },
+    });
+
+    if (!onlineTest || !onlineTest.questions || onlineTest.questions.length === 0) {
+      return res.status(404).json({ success: false, message: "Online test not found or has no questions." });
+    }
+
+
+    const totalMarks = onlineTest.questions.reduce((acc, q) => acc + q.points, 0);
+
+    let score = 0;
+    let totalCorrectAnswers = 0;
+
+    
+    answers.forEach((ans) => {
+      const question = onlineTest.questions.find((q) => q.id === ans.questionId);
+      if (question && question.correctAnswer === ans.selectedOption) {
+        score += question.points;
+        totalCorrectAnswers += 1;
+      }
+    });
+
+    const percentage = ((score / totalMarks) * 100).toFixed(2);
+    const passed = score >= onlineTest.passingScore;
+
+    
+    const response = await prisma.onlineTestResponse.create({
+      data: {
+        onlineTestId,
+        candidateId:email,
+        jobId,
+        answers: JSON.stringify(answers),
+        totalQuestions,
+        cheatingDetected,
+        cheatingReason,
+        timeTaken,
+        score,
+        totalCorrectAnswers,
+        percentage: parseFloat(percentage),
+        passed,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Test response submitted successfully.",
+      data: {
+        response,
+        score,
+        totalCorrectAnswers,
+        percentage,
+        passed,
+      },
+    });
+  } catch (error) {
+    console.error("Error saving test response:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error while saving test response.",
+    });
+  }
+};

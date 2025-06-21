@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ function UserProfile({ isCollapsed }) {
     }, []);
 
     const handleLogout = () => {
-        // Add logout logic here
+        
         console.log('Logging out...');
     };
 
@@ -49,7 +49,7 @@ function UserProfile({ isCollapsed }) {
                     <button
                         onClick={() => {
                             setIsOpen(false);
-                            navigate('/dashboard/profile');
+                            navigate('/user/dashboard/profile');
                         }}
                         className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
                     >

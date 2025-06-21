@@ -16,6 +16,8 @@ import ForgotPassword from "./components/common_Dashboard/ForgotPassword.jsx";
 import ResetPassword from "./components/common_Dashboard/ResetPassword.jsx";
 import UserProtectedRoute from "./components/user_Components/UserProtectedRoute.jsx";
 import RecuriterProtectedRoute from "./components/recuriter_Components/RecuriterProtectedRoute.jsx";
+import OnlineTestDescription from "./components/user_Components/OnlineTest_Screen/OnlineTestDescription.jsx";
+import OnlineTest_StartScreen from "./components/user_Components/OnlineTest_Screen/OnlineTest_StartScreen.jsx";
 
 
 
@@ -45,6 +47,10 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/room/:roomId" element={<Room />} />
         <Route path='/email-page/:roomId' element={<EmailPage />} />
+        <Route path='/testdes/:JobId' element={<OnlineTestDescription />} />
+        <Route path='/test' element={<OnlineTest_StartScreen />} />
+
+
       </Routes>
     </>
   );

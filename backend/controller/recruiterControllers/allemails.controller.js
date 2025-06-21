@@ -11,13 +11,32 @@ export const Addallemails = async (req, res) => {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
         }
 
+        const password = await prisma.onlineTest.findUnique({
+            where: {
+                id: onlineTestId,
+            },
+            select: {
+                password: true,
+            },
+        });
+
+        let arrayEmails = [];
+
+        for (let email of emails) {
+           arrayEmails.push({
+              email: email,
+              isValidated: false
+     });
+    }
+
         const addemails = await prisma.studentEmails.create({
             data: {
                 jobId: jobId,
                 recruiterId: recruiterId,
                 onlineTestId: onlineTestId || null,
+                password: password.password,
                 behavioralInterviewId: behavioralInterviewId || null,
-                emails: emails
+                emails: arrayEmails
             },
         });
 
@@ -25,7 +44,7 @@ export const Addallemails = async (req, res) => {
             return res.status(400).json({ message: "Failed to add emails" });
         }
 
-        const interviewLink = `https://example.com/interview/${addemails.id}`;
+        const interviewLink = `http://localhost:5173/testdes/${addemails.jobId}`;
 
         for (const email of emails) {
       

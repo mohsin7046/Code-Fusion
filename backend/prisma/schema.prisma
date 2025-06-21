@@ -209,7 +209,8 @@ model StudentEmails {
   recruiterId String
   onlineTestId String?
   behavioralInterviewId String?
-  emails     String[]
+  password String
+  emails     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
