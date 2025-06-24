@@ -1,6 +1,7 @@
 import  { useState, useRef, useEffect } from 'react';
 import { Camera, User, Clock, Shield, CheckCircle, AlertCircle, Play } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const CommonTestAuthenticator = () => {
   const [currentStep, setCurrentStep] = useState('initial');
@@ -52,35 +53,22 @@ const CommonTestAuthenticator = () => {
         },
         body: JSON.stringify({jobId :  JobId })
       });
+
+      const data = await res.json();
       if(!res.ok) {
-        alert("Failed to fetch test description. Please try again later.");
+       toast.error(data.message || "Failed to fetch test description");
         throw new Error("Failed to fetch test description");
       }
-      const result = await res.json();
-
-      if(name === 'onlineTest' && result.data) {
       setData({
         title : result.data?.title,
         description : result.data?.description,
         duration : result.data?.duration,
         questions  : result.data?.totalQuestions
       })
-    }
-    
-    if(name === 'behaviouralTest' && result.data) {
-      setData({
-        title : result.data?.interviewRole,
-        description : result.data?.description,
-        duration : result.data?.duration,
-        questions  : result.data?.totalQuestions
-      })
-    }
-
-    console.log("Fetched test description:", data);
-
+      toast.success(data.message || "Test description fetched successfully");
     } catch (error) {
+    toast.error("An error occurred while fetching test description");
       console.error("Error in OnlineTestInterface:", error);
-      alert("An error occurred while initializing the test interface. Please try again later.");
     }
   }
 
@@ -124,18 +112,19 @@ const CommonTestAuthenticator = () => {
        body: JSON.stringify({ email, password, JobId })
      });
 
-     console.log(res);
-    
+     const data = await res.json();
+     
  
      if(!res.ok) {
-       alert('Failed to validate user');
+      toast.error(data.message || "Failed to validate user");
        return;
      }
 
-     alert('User validation successful');
+    toast.success(data.message || "User validated successfully");
 
    } catch (error) {
-    alert('An error occurred while validating user: ' + error.message);
+    toast.error("An error occurred while validating user");
+    console.log("Error in handleEmailAndPassword:", error);
    }
   }
 
@@ -154,7 +143,7 @@ const CommonTestAuthenticator = () => {
       }
 
      if (!studentData.email || !JobId) {
-       alert('Email not found');
+       toast.error('Email Not Found');
        return;
      }
 
@@ -170,14 +159,14 @@ const CommonTestAuthenticator = () => {
        },
        body: JSON.stringify({ email: studentData.email, JobId })
      });
+      const data = await res.json();
  
      if(!res.ok) {
-       alert('Failed to validate user');
+        toast.error(data.message || "User validation failed");
        return;
       }
 
-      alert('User isvalidation successful');
-
+      toast.success(data.message || "User validation successful");
      const formData = {
       JobId: JobId,
       email: studentData.email,
@@ -193,8 +182,8 @@ const CommonTestAuthenticator = () => {
     }
 
    } catch (error) {
-    alert('An error occurred while validating user: ' + error.message);
-   }
+    toast.error("An error occurred while checking validation");
+     console.error("Error in updateisValidating:", error);}
   }
   
 

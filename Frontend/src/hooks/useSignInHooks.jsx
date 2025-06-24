@@ -21,7 +21,8 @@ function useSignInHooks() {
             }
             setLoading(false);
             console.log(data);
-            
+            setError(data?.message || "Login failed");
+            return data;
         } catch (error) {
             setError(error);
             console.log("Error in signin hook"+error); 

@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import UseCandidateSignupHooks from "../../hooks/useCandidateSignupHooks";
 import { LoaderCircle } from 'lucide-react';
 import {validateUrl,validateUserEmail,checkPasswordCriteria} from '../../hooks/validations.js';
-import { toast, ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast} from 'react-toastify';
 
 const UserSignUp = () => {
   const [username, setUsername] = useState('');
@@ -119,18 +118,6 @@ const UserSignUp = () => {
 
   return (
     <>
-    <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl bg-white shadow-lg rounded-lg p-8 gap-8">
         

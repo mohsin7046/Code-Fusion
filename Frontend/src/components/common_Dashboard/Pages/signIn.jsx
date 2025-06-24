@@ -3,42 +3,28 @@ import LoginAnimationHelper from "../../../Utilities/signInAnimation";
 import useSignInHooks from "../../../hooks/useSignInHooks";
 import { Link } from "react-router-dom";
 import { LoaderCircle } from 'lucide-react';
-import { toast,ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading , setLoading] = useState(false);
-  const {signIn} = useSignInHooks();
+  const {loading,signIn,error} = useSignInHooks();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     const res = await signIn({email, password});
-
-    if(!res.ok){
-      setLoading(false);
+    console.log("Login response:", res);
+    
+    if(!res.success) {
+      console.log(error);
       toast.error(res.message || "Login failed");
-      return;
+    }else{
+      toast.success("Login successfully");
     }
-    toast.success("Login successfully");
-    setLoading(false);
   };
 
   return (
     <>
-     <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-5xl bg-white shadow-lg rounded-lg p-8 gap-8">

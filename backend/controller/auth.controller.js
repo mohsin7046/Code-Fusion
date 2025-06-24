@@ -185,11 +185,11 @@ export const login = async (req, res) => {
         }
         const isPasswordValid = await comparePassword(password, user.password);
         if (!isPasswordValid) {
-            res.status(400).json({ message: "Invalid credentials" });
+            res.status(400).json({ success :false, message: "Invalid credentials" });
             return;
         }
         if (!user.isVerified) {
-            return res.status(400).json({ message: "Please verify your email" });
+            return res.status(400).json({ success :false, message: "Please verify your email" });
         }
 
         user.password = undefined;
@@ -207,9 +207,9 @@ export const login = async (req, res) => {
             sameSite: 'strict',
             secure:false,
         });
-        return res.status(200).json({ message: "Login successful", user });
+        return res.status(200).json({ success :true, message: "Login successful", user });
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ success :false, message: "Internal server error" });
     }
 };
 

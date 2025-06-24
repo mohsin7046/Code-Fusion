@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast ,ToastContainer} from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -25,18 +25,6 @@ export default function ForgotPassword() {
 
   return (
     <>
-    <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         {sent ? (

@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import  { useState, useEffect } from "react";
+import { useNavigate,useLocation } from "react-router-dom";
 import Proctoring from "./Detecting";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const JobId = "cmc67rdko0001v9vszi97iyp5";
 const email = "datardimohsinali7046@gmail.com";
@@ -28,6 +29,7 @@ const TakeTest = () => {
       });
 
       if (res.data.success && res.data.data?.questions) {
+        toast.success("Questions fetched successfully!");
         setQuestions(res.data.data.questions);
         setOnlineTestId(res.data.data.id);
 
@@ -36,9 +38,11 @@ const TakeTest = () => {
         setTimer(seconds);
         setDurationInSec(seconds);
       } else {
+        toast.error("No questions found for this Job ID.");
         setError("No questions found for this Job ID.");
       }
     } catch (err) {
+      toast.error("Error fetching questions. Please try again later.");
       console.error("Error fetching questions:", err);
       setError("Failed to fetch questions.");
     } finally {

@@ -11,8 +11,10 @@ import {
   CheckCircle,
   AlertCircle,
   Star,
+  LoaderCircle,
 } from "lucide-react";
 import { getRecruiterToken } from "../../../hooks/role.js";
+import { toast } from "react-toastify";
 
 
 function InterviewSummary() {
@@ -40,19 +42,23 @@ function InterviewSummary() {
             jobId: tokenData.jobId,
           }),
         });
-
+        
+        const data = await response.json();
         if (!response.ok) {
+          toast.error(data.message || "Failed to fetch summary");
           throw new Error("Failed to fetch summary");
         }
 
-        const data = await response.json();
         if (!data || data.length === 0) {
+          toast.error("No summary data found");
           throw new Error("No summary data returned");
         }
-        
+        toast.success("Summary fetched successfully");
         setSummaryData(data[0]);
 
       } catch (err) {
+        setLoading(false);
+        toast.error("An error occurred while fetching summary");
         setError(err.message);
         console.error("Error fetching summary:", err);
       } finally {
@@ -161,6 +167,7 @@ function InterviewSummary() {
     console.log("Starting interview process with emails:", emailsArray);
 
     try {
+      setLoading(true);
       const emailsResponse = await fetch("/api/recruiter/add-emails", {
         method: "POST",
         headers: {
@@ -175,17 +182,19 @@ function InterviewSummary() {
         }),
       });
 
+      const data = await emailsResponse.json();
+      setLoading(false);
       if (emailsResponse.ok) {
-        const data = await emailsResponse.json();
+        toast.success(data.message || "Interview invitations sent successfully!");
         console.log("Emails sent successfully:", data);
-        alert("Interview invitations sent successfully!");
       } else {
+        toast.error(data.message || "Failed to send interview invitations");
         console.error("Error sending emails");
-        alert("Failed to send interview invitations. Please try again.");
       }
     } catch (error) {
+      setLoading(false);
+      toast.error("An error occurred while starting the interview process");
       console.error("Error starting interview process:", error);
-      alert("An error occurred while sending invitations.");
     }
 
     try {
@@ -199,17 +208,16 @@ function InterviewSummary() {
           emails: emailsArray,
         }),
       });
+      const data = await response.json();
 
       if (!response.ok) {
-        alert("Failed to create job applications. Please try again.");
+        toast.error(data.message || "Failed to create job applications");
         throw new Error("Failed to create job applications");
       }
-
-      alert("Job applications created successfully!");
-      
+      toast.success(data.message || "Job applications created successfully!");
     } catch (error) {
+      toast.error("An error occurred while creating job applications");
       console.error("Error creating Job applications", error);
-      alert("An error occurred while creating job applications.");
     }
   };
 
@@ -500,7 +508,7 @@ function InterviewSummary() {
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
               >
-                Start Interview Process
+              {loading ?  <LoaderCircle className="animate-spin mx-auto" />  :"Start Interview Process"}
               </button>
             </div>
           </div>

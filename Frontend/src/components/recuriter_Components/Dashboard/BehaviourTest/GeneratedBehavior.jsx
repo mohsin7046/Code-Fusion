@@ -2,11 +2,13 @@
 import  { useEffect, useState } from "react";
 import { getRecruiterToken } from "../../../../hooks/role.js";
 import useCreateSummary from "../../../../hooks/useCreateSummary.jsx";
+import { toast } from "react-toastify";
+import { LoaderCircle } from "lucide-react";
 
 
 function GeneratedBehavior(props) {
   const [behavioralTest, setBehavioralTest] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const tokenData = getRecruiterToken();
@@ -18,6 +20,7 @@ function GeneratedBehavior(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const behavioralRes = await fetch('/api/recruiter/get-behaviour-test', {
           method: 'POST',
           headers: {
@@ -30,11 +33,17 @@ function GeneratedBehavior(props) {
         });
 
         const data = await behavioralRes.json();
+        setLoading(false);
+        if (!behavioralRes.ok) {
+          toast.error(data.message || "Failed to load behavioral test");
+          throw new Error(data.message || "Failed to load behavioral test");
+        }
         console.log("Behavioral GET Test Data:", data);
-        
+        toast.success(data.message || "Behavioral test loaded successfully");
         setBehavioralTest(data.getquestions[0]);
       } catch (err) {
         console.error(err);
+        toast.error("Failed to load behavioral test");
         setError("Failed to load behavioral test.");
       } finally {
         setLoading(false);
@@ -173,7 +182,9 @@ const handleCheck = async () => {
       )}
 
       <div className="mt-8 flex justify-end w-full">
-      <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={handleCheck}>Confirm</button>
+      <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" onClick={handleCheck}>
+        {loading ? <LoaderCircle className="animate-spin mx-auto" /> :"Confirm"}
+        </button>
       </div>
     </div>
   );

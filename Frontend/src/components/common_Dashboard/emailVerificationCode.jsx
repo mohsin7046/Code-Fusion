@@ -2,7 +2,7 @@
 import { useLocation } from 'react-router-dom';
 import Email from '../../assets/Email.png'
 import { useState } from 'react';
-import { toast ,ToastContainer} from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 function EmailVerificationCode() {
@@ -45,18 +45,6 @@ const [otp, setOtp] = useState('');
     }
     return (
         <>
-        <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        />
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
                 <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                     <img src={Email} alt="Email Verification" className="w-40 h-auto mx-auto" />

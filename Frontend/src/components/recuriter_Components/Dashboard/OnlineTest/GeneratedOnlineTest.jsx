@@ -2,9 +2,12 @@
 import { useState,useEffect } from "react";
 import {getRecruiterToken} from "../../../../hooks/role.js";
 import useCreateSummary from "../../../../hooks/useCreateSummary.jsx";
+import { toast } from "react-toastify";
+import { LoaderCircle } from "lucide-react";
 
 function GeneratedOnlineTest(props) {
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const tokenData = getRecruiterToken();
 
   const { createSummary } = useCreateSummary();
@@ -19,6 +22,7 @@ function GeneratedOnlineTest(props) {
   useEffect(() => {
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const response  = await fetch('/api/recruiter/get-online-test',{
         method : 'POST',
         headers :{
@@ -27,13 +31,17 @@ function GeneratedOnlineTest(props) {
         body : JSON.stringify(data)
       })
       const result = await response.json();
+      setLoading(false);
       if(!response.ok) {
+        toast.error(result.message || "Failed to fetch online test");
         throw new Error(result.message || "Failed to fetch online test");
       }
+      toast.success(result.message || "Online test fetched successfully");
       setGeneratedQuestions(result.test[0].questions);
     } catch (error) {
+      setLoading(false);
       console.error("Error submitting online test:", error);
-      alert("Failed to submit online test. Please try again later.");
+      toast.error("An error occurred while fetching online test");
     }
   }
     handleSubmit();
@@ -108,7 +116,7 @@ function GeneratedOnlineTest(props) {
         handleCheck
       }
     >
-      Confirm
+      {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Confirm" }
     </button>
   </div>
 </div>

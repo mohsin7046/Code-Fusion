@@ -2,12 +2,14 @@ import  { useState } from "react";
 import { Link } from "react-router-dom";
 import  {UseOnLogout}  from "../../hooks/useOnLogout";
 import getToken from "../../hooks/role";
+import { toast } from "react-toastify";
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
    const { logout } = UseOnLogout();
    
     const onLogout = () =>{
+        toast.success("Logout successfully");
         logout();
     }
      

@@ -3,6 +3,8 @@ import { useState,useEffect } from "react";
 import { generateResponse } from "../../../../hooks/GeminiApi/gemini.js";
 import { systemPrompt } from "../../../../hooks/GeminiApi/geminiPrompt.js";
 import {getRecruiterToken} from "../../../../hooks/role.js";
+import { toast } from "react-toastify";
+import { LoaderCircle } from "lucide-react";
 
 function BehaviorSubject(props) {
   const [selected, setSelected] = useState([]);
@@ -12,6 +14,7 @@ function BehaviorSubject(props) {
   const [selectedKeyword,setSelectedKeyword] = useState([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const tokenData = getRecruiterToken();
   
@@ -161,6 +164,7 @@ USER : ${prompt}
 
 const handleSubmit = async() => {
   try {
+    setLoading(true);
     const response = await generateResponse(fullPrompt);
     const questions = JSON.parse(response);
     const generatedQuestions = questions.questions || [];
@@ -197,15 +201,19 @@ const handleSubmit = async() => {
     })
 
     const data = await res.json();
+    setLoading(false);
     if (res.ok) {
+      toast.success(data.message || "Behavioral test created successfully!");
       console.log("Behavioral Test Created Successfully:", data);
       props.Next();
     } else {
       console.error("Error creating behavioral test:", data.message);
-      alert(data.message || "Failed to create behavioral test");
+      toast.error(data.message || "Failed to create behavioral test");
     }
 
   } catch (error) {
+    setLoading(false);
+    toast.error("Error generating questions: ");
     console.error("Error generating questions:", error);
   }
 }
@@ -315,7 +323,7 @@ const handleSubmit = async() => {
     handleSubmit
 
   } >
-          Next ▶️
+          {loading ? <LoaderCircle className="animate-spin mx-auto" /> :"Next ▶️"}
         </button>
       </div>
     </div>

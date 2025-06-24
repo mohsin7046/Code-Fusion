@@ -1,4 +1,5 @@
 import LandingPage from "./components/common_Page/landingPage.jsx";
+import { ToastContainer } from "react-toastify";
 import "./index.css";
 import Navbar from "./components/common_Page/navbar.jsx";
 import Footer from "./components/common_Page/footer.jsx";
@@ -54,6 +55,18 @@ function App() {
         <Route path='/feed' element={<BehaviourFeedback />} />
 
       </Routes>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 }

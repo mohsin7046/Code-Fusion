@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { toast ,ToastContainer} from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -59,18 +59,6 @@ const ResetPassword = () => {
 
   return (
     <>
-    <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     <div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-center">Reset Your Password</h2>
 

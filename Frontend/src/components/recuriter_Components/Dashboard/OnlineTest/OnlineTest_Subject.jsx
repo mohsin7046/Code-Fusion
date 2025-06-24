@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { systemPrompt } from '../../../../hooks/GeminiApi/geminiPrompt.js';
 import { generateResponse } from '../../../../hooks/GeminiApi/gemini.js';
 import {getRecruiterToken} from '../../../../hooks/role.js';
-
+import { toast } from 'react-toastify';
+import { LoaderCircle } from 'lucide-react';
 
 const predefinedSubjects = [
   'Data Structures', 'Algorithms', 'Computer Networks', 'Operating Systems', 'Database Management Systems', 'Software Engineering', 'Compiler Design', 'Web Development', 'Mobile App Development', 'Machine Learning', 'Artificial Intelligence', 'Cloud Computing', 'Cyber Security', 'Information Security', 'Data Science', 'Big Data', 'Internet of Things (IoT)', 'Blockchain', 'DevOps', 'System Design', 'Digital Electronics', 'Computer Architecture', 'Embedded Systems', 'Math', 'Aptitute', 'DBMS',
@@ -30,6 +31,7 @@ function OnlineTest_Subject(props) {
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState(60); 
   const [passingScore, setPassingScore] = useState(40); 
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e, index) => {
     const value = e.target.value;
@@ -121,18 +123,12 @@ Constraints:
     e.preventDefault();
     console.log(prompt);
     try {
+      setLoading(true);
       const response = await generateResponse(fullPrompt);
       generateRes = JSON.parse(response);
 
       const generatedQuestions = generateRes.questions;
       console.log(generatedQuestions);
-      
-   
-
-      
-      // if (!Array.isArray(questions) || questions.length === 0) {
-      //   throw new Error('Invalid or empty questions array');
-      // }
 
     const payload = {
       jobId: tokenData.jobId,
@@ -173,11 +169,16 @@ Constraints:
     });
     console.log("Response from server:", res);
     const data = await res.json();
+    setLoading(false);
     if (!res.ok) { 
+      toast.error(data.message || 'Failed to create online test');
       throw new Error(data.message || 'Failed to create online test');
     }
-      props.Next(); 
+    toast.success(data.message || 'Online test created successfully');
+    props.Next(); 
     } catch (error) {
+      setLoading(false);
+      toast.error('Error generating questions');
       console.error("Error generating questions:", error);
     }
   };
@@ -303,7 +304,7 @@ Constraints:
         type="submit"
         className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
       >
-        Generate Test
+       {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Generate Test"}
       </button>
     </form>
   );

@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { LoaderCircle } from 'lucide-react';
 import UseRecuriterSignupHooks from "../../hooks/useRecuriterSignupHooks";
 import { validateRecuriterEmail, checkPasswordCriteria, validateUrl } from "../../hooks/validations.js";
-import { toast ,ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast} from 'react-toastify';
 
 const RecuriterSignUp = () => {
   const [username, setUsername] = useState('');
@@ -128,18 +127,6 @@ const RecuriterSignUp = () => {
 
   return (
     <>
-    <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
         <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl bg-white shadow-lg rounded-lg p-8 gap-8">
           <div className="w-full md:w-1/2 flex justify-center">

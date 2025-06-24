@@ -2,8 +2,12 @@
 import { icons } from "lucide-react"
 import { useState } from "react";
 import getToken from "../../../hooks/role.js";
+import { LoaderCircle } from 'lucide-react';
+import { toast } from "react-toastify";
+
 
 function PhaseSelection(props) {
+  const [loading,setLoading] = useState(false);
     const phases = [
         { title : "Online Test", desc : "Automated assessment to evaluate candidates' skills and knowledge.",icon : icons.FileCheck },
         { title : "AI Behavioral Interview", desc : "Ai driven Interview test the communication skills and cultural fit",icon : icons.Brain },
@@ -28,40 +32,52 @@ function PhaseSelection(props) {
     e.preventDefault(); 
     console.log("Selected Phases:", selectedPhases);
 
-    const formData = localStorage.getItem("jobData");
-    const jobData = JSON.parse(formData);
+   try {
+     const formData = localStorage.getItem("jobData");
+     const jobData = JSON.parse(formData);
+ 
+     const payload = {
+       companyName: jobData.company,
+       interviewRole: jobData.role,
+         date: jobData.date,
+         time: jobData.time,
+         description: jobData.description,
+         recruiterId: tokenData.userId,
+       hasOnlineTest: selectedPhases.includes("Online Test"),
+       hasAIInterview: selectedPhases.includes("AI Behavioral Interview"),
+       hasCodingTest: selectedPhases.includes("Live Coding Interview"),
+     };
+ 
+     setLoading(true);
+     const response = await fetch("/api/recruiter/create-job", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify(payload),
+       });
+ 
+       const data = await response.json();
+ 
+       if (response.ok) {
+         setLoading(false);
+         toast.success("Job created successfully!");
+         console.log("Job created successfully:", data);
+         props.Next(); 
+       } else {
+         setLoading(false)
+         toast.error(data.message || "Failed to create job.");
+       }
+   } catch (error) {
+      console.error("Error creating job:", error);
+      setLoading(false);
+      toast.error("Failed to create job.");
+   }
 
-    const payload = {
-      companyName: jobData.company,
-      interviewRole: jobData.role,
-        date: jobData.date,
-        time: jobData.time,
-        description: jobData.description,
-        recruiterId: tokenData.userId,
-      hasOnlineTest: selectedPhases.includes("Online Test"),
-      hasAIInterview: selectedPhases.includes("AI Behavioral Interview"),
-      hasCodingTest: selectedPhases.includes("Live Coding Interview"),
-    };
-
-    const response = await fetch("/api/recruiter/create-job", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Job created successfully:", data);
-        props.Next(); 
-      } else {
-        alert(data.message || "Failed to create job");
-      }
   }
   
   return (
+  <>
     <form
       onSubmit={handleSubmit}
       className="flex flex-col h-auto w-full text-black bg-white border rounded-lg shadow-lg p-6"
@@ -99,10 +115,11 @@ function PhaseSelection(props) {
           type="submit"
           className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200"
         >
-          Next ▶️
+          {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Next ▶️"}
         </button>
       </div>
     </form>
+    </>
   );
 }
 
