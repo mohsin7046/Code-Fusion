@@ -2,8 +2,8 @@ import  { useState, useRef, useEffect } from 'react';
 import { Camera, User, Clock, Shield, CheckCircle, AlertCircle, Play } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const OnlineTestInterface = () => {
-  const [currentStep, setCurrentStep] = useState('initial'); // initial, permission, validation, ready
+const CommonTestAuthenticator = () => {
+  const [currentStep, setCurrentStep] = useState('initial');
   const [cameraPermission, setCameraPermission] = useState(false);
   const [videoStream, setVideoStream] = useState(null);
   const [isValidating, setIsValidating] = useState(false);
@@ -22,14 +22,30 @@ const OnlineTestInterface = () => {
 
   const navigate = useNavigate();
 
-  const { JobId } = useParams();
+  const { name,JobId } = useParams();
 
   console.log("JobId from params:", JobId);
 
   useEffect(()=>{
     const fetchDescription = async () => {
     try {
-      const res = await fetch('/api/user/onlinetest/getDescription', {
+      const OA = '/api/user/onlinetest/getDescription';
+      const BI = '/api/user/behaviouraltest/getBehaviourDescription';
+      
+      let endpoint="";
+      if(name === 'onlineTest') {
+        endpoint = OA;
+      }
+      if(name === 'behaviouralTest') {
+        endpoint = BI;
+      }
+
+      if(endpoint === "") {
+        alert('Endpoint not found');
+        return;
+      }
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -40,26 +56,58 @@ const OnlineTestInterface = () => {
         alert("Failed to fetch test description. Please try again later.");
         throw new Error("Failed to fetch test description");
       }
-      const data = await res.json();
+      const result = await res.json();
+
+      if(name === 'onlineTest' && result.data) {
       setData({
-        title : data.data?.title,
-        description : data.data?.description,
-        duration : data.data?.duration,
-        questions  : data.data?.totalQuestions
+        title : result.data?.title,
+        description : result.data?.description,
+        duration : result.data?.duration,
+        questions  : result.data?.totalQuestions
       })
+    }
+    
+    if(name === 'behaviouralTest' && result.data) {
+      setData({
+        title : result.data?.interviewRole,
+        description : result.data?.description,
+        duration : result.data?.duration,
+        questions  : result.data?.totalQuestions
+      })
+    }
+
+    console.log("Fetched test description:", data);
 
     } catch (error) {
       console.error("Error in OnlineTestInterface:", error);
       alert("An error occurred while initializing the test interface. Please try again later.");
     }
   }
+
     fetchDescription();
+    
   },[JobId])
 
 
 
   const handleEmailAndPassword = async(email, password) => {
    try {
+
+    const OA = '/api/user/onlinetest/validateUser';
+      const BI = '/api/user/behaviouraltest/Behavioral_validateUser';
+      let endpoint="";
+      if(name === 'onlineTest') {
+        endpoint = OA;
+      }
+      if(name === 'behaviouralTest') {
+        endpoint = BI;
+      }
+
+      if(endpoint === "") {
+        alert('Endpoint not found');
+        return;
+      }
+
      if (!email || !password) {
        alert('Please enter both email and password');
        return;
@@ -68,7 +116,7 @@ const OnlineTestInterface = () => {
      console.log(email, password, JobId);
      
  
-     const res = await fetch('/api/user/onlinetest/validateUser', {
+     const res = await fetch(endpoint, {
        method: 'POST',
        headers: {
          'Content-Type': 'application/json'
@@ -77,7 +125,7 @@ const OnlineTestInterface = () => {
      });
 
      console.log(res);
-     
+    
  
      if(!res.ok) {
        alert('Failed to validate user');
@@ -94,12 +142,28 @@ const OnlineTestInterface = () => {
 
   const updateisValidating = async() => {
     try {
+
+      const OA = '/api/user/onlinetest/isValidatedCheck';
+      const BI = '/api/user/behaviouraltest/isBehaviourValidatedCheck';
+      let endpoint="";
+      if(name === 'onlineTest') {
+        endpoint = OA;
+      }
+      if(name === 'behaviouralTest') {
+        endpoint = BI;
+      }
+
      if (!studentData.email || !JobId) {
        alert('Email not found');
        return;
      }
+
+     if(endpoint === "") {
+       alert('Endpoint not found');
+       return;
+     }
  
-     const res = await fetch('/api/user/onlinetest/isValidatedCheck', {
+     const res = await fetch(endpoint, {
        method: 'POST',
        headers: {
          'Content-Type': 'application/json'
@@ -119,7 +183,14 @@ const OnlineTestInterface = () => {
       email: studentData.email,
       name: studentData.name,
      }
+
+     if(name === 'onlineTest') {
      navigate('/test' , { state: formData  });
+    }
+
+    if(name === 'behaviouralTest') {
+      navigate('/AItest' , { state: formData  });
+    }
 
    } catch (error) {
     alert('An error occurred while validating user: ' + error.message);
@@ -373,10 +444,7 @@ const OnlineTestInterface = () => {
                       <User className="w-5 h-5 text-blue-600" />
                       <span className="text-gray-700">Student: {studentData.name}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-blue-600" />
-                      <span className="text-gray-700">Roll: {studentData.rollNumber}</span>
-                    </div>
+  
                   </div>
                 </div>
 
@@ -433,10 +501,6 @@ const OnlineTestInterface = () => {
                   <div className="font-semibold text-gray-800">{studentData.name}</div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Roll Number:</span>
-                  <div className="font-semibold text-gray-800">{studentData.rollNumber}</div>
-                </div>
-                <div>
                   <span className="text-gray-600">Test:</span>
                   <div className="font-semibold text-gray-800">{testData.title}</div>
                 </div>
@@ -461,4 +525,4 @@ const OnlineTestInterface = () => {
   );
 };
 
-export default OnlineTestInterface;
+export default CommonTestAuthenticator;

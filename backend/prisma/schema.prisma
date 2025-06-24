@@ -154,8 +154,11 @@ model OnlineTestQuestion {
   id  String @id @default(cuid()) @map("_id")
   jobId String
   recruiterId String
+  title String
+  description String
   totalQuestions Int
   questions  BehavioralInterviewQuestion[]
+  password String
   duration Int
   passingScore Int
   OverallFeedback String?
@@ -213,7 +216,8 @@ model StudentEmails {
   recruiterId String
   onlineTestId String?
   behavioralInterviewId String?
-  password String
+  onlinepassword String
+  behaviouralpassword String
   emails     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -270,7 +274,7 @@ model Room {
 }
 
 
-//Candidate Schemas
+
 
 model OnlineTestResponse{
   id         String   @id @default(cuid()) @map("_id")
@@ -293,9 +297,9 @@ model OnlineTestResponse{
 model StudentAnswers {
   id          String   @id @default(cuid()) @map("_id")
   onlineTestResponseId String
-  questionId String
-  selectedOption Int
-  isCorrect Boolean
+  questionId String?
+  selectedOption Int?
+  isCorrect Boolean  @default(false)
   points Int @default(0)
   onlineTestResponse OnlineTestResponse @relation(fields: [onlineTestResponseId], references: [id], onDelete: Cascade)
 }
@@ -305,33 +309,19 @@ model AIInterviewResponse {
   behavioralInterviewId String
   candidateId String
   jobApplicationId String
-  answers    AIInterviewAnswers[]
-  overallScore       Int
+  transcript Json?
+  overallScore       Int?
   subjectiveScore Json?
-  strengths String[]
-  weaknesses String[]
-  recommendations String[]
+  strengths String?
+  weaknesses String?
+  recommendations String?
   status AIInterviewStatus @default(PENDING)
-  passed Boolean @default(false)
+  passed Boolean? @default(false)
   feedback String?
   submittedAt DateTime @default(now())
   jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
 }
 
-model AIInterviewAnswers {
-  id          String   @id @default(cuid()) @map("_id")
-  aiInterviewResponseId String
-  questionId String
-  transcript String?
-  response String?
-  score Int @default(0)
-  keywords String[]
-  sentiment String?
-  confidenceScore Float @default(0.0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  aiInterviewResponse AIInterviewResponse @relation(fields: [aiInterviewResponseId], references: [id], onDelete: Cascade)
-}
 
 enum AIInterviewStatus {
   PENDING

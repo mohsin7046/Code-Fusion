@@ -178,6 +178,8 @@ const handleSubmit = async() => {
         jobId:tokenData.jobId,
         recruiterId:tokenData.recruiterId,
         totalQuestions: parseInt(totalQuestion),
+        title: title,
+        description: description,
         passingScore: parseInt(passingScore),
         duration : parseInt(duration),
         questions: generatedQuestions.map((question) => ({

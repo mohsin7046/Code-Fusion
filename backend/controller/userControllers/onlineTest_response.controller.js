@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { create } from "domain";
 
 const prisma = new PrismaClient();
 
@@ -13,15 +14,19 @@ export const getALLQuestions = async (req, res) => {
             select:{
                 questions:{
                     select:{
+                        id:true,
                         question:true,
                         options:true,
                         points:true,
                     }
                 },
-                duration:true
+                duration:true,
+                id:true
             },
 
         });
+
+    
 
         if (questions.length === 0 || !questions) {
             return res.status(404).json({
@@ -108,7 +113,7 @@ export const validateUser = async (req, res) => {
         const user = await prisma.studentEmails.findFirst({
             where: {
                 jobId: JobId,
-                password: password,
+                onlinepassword: password,
             },
         })
 
@@ -158,7 +163,7 @@ export const isValidatedCheck = async (req, res) => {
             });
         }
 
-        // Step 1: Find record matching jobId and email (inside JSON)
+        
         const user = await prisma.studentEmails.findFirst({
             where: {
                 jobId: JobId,
@@ -210,30 +215,32 @@ export const OnlineTest_Response = async (req, res) => {
       onlineTestId,
       email,
       jobId,
-      answers,
+      answers, 
       totalQuestions,
       cheatingDetected = false,
-      cheatingReason = "",
+      reason = "",
       timeTaken,
     } = req.body;
 
-    if (
-      !onlineTestId ||
-      !email ||
-      !jobId ||
-      !answers ||
-      answers.length === 0 ||
-      !totalQuestions ||
-      !timeTaken
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Missing required fields: onlineTestId, email, jobId, answers, totalQuestions, or timeTaken.",
-      });
-    }
+    // 1. Basic validation
+    if (!onlineTestId || !email || !jobId || !answers || !Array.isArray(answers)) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Missing required fields: onlineTestId, email, jobId, or answers array.",
+  });
+}
 
-    
+if (!cheatingDetected && (answers.length === 0)) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Missing required fields: totalQuestions, answers, or timeTaken.",
+  });
+}
+
+
+  
     const onlineTest = await prisma.onlineTest.findFirst({
       where: { jobId },
       select: {
@@ -249,42 +256,82 @@ export const OnlineTest_Response = async (req, res) => {
       },
     });
 
-    if (!onlineTest || !onlineTest.questions || onlineTest.questions.length === 0) {
-      return res.status(404).json({ success: false, message: "Online test not found or has no questions." });
+    const application = await prisma.jobApplication.findFirst({
+      where: { jobId },
+    });
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Job application not found.",
+      });
     }
 
+    const applicationId = application.id;
 
+    if (!onlineTest || !onlineTest.questions || onlineTest.questions.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Online test not found or has no questions.",
+      });
+    }
+
+    
     const totalMarks = onlineTest.questions.reduce((acc, q) => acc + q.points, 0);
-
     let score = 0;
     let totalCorrectAnswers = 0;
 
-    
-    answers.forEach((ans) => {
+    const processedAnswers = answers.map((ans) => {
       const question = onlineTest.questions.find((q) => q.id === ans.questionId);
-      if (question && question.correctAnswer === ans.selectedOption) {
-        score += question.points;
+      if (!question) {
+        return {
+          questionId: ans.questionId,
+          selectedOption: ans.selectedOption || null,
+          isCorrect: false,
+          points: 0,
+        };
+      }
+
+      const isCorrect = question.correctAnswer === ans.selectedOption;
+      const points = isCorrect ? question.points : 0;
+
+      if (isCorrect) {
+        score += points;
         totalCorrectAnswers += 1;
       }
+
+      return {
+        questionId: ans.questionId,
+        selectedOption: ans.selectedOption,
+        isCorrect,
+        points,
+      };
     });
 
-    const percentage = ((score / totalMarks) * 100).toFixed(2);
+    const percentage = parseFloat(((score / totalMarks) * 100).toFixed(2));
     const passed = score >= onlineTest.passingScore;
 
-    
+    // 4. Save response
     const response = await prisma.onlineTestResponse.create({
       data: {
         onlineTestId,
-        candidateId:email,
-        jobId,
-        answers: JSON.stringify(answers),
+        candidateId: email,
+        jobApplicationId: applicationId,
+        answers: {
+          create: processedAnswers.map((a) => ({
+            questionId: a.questionId,
+            selectedOption: a.selectedOption,
+            isCorrect: a.isCorrect,
+            points: a.points,
+          })),
+        },
         totalQuestions,
         cheatingDetected,
-        cheatingReason,
+        cheatingReason : reason,
         timeTaken,
         score,
         totalCorrectAnswers,
-        percentage: parseFloat(percentage),
+        percentage,
         passed,
       },
     });

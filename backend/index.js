@@ -13,6 +13,7 @@ import Summary from './routes/recruiterRoutes/summary.route.js'
 import BehaviourTest from './routes/recruiterRoutes/behaviouralTest.route.js';
 import JobApplication from './routes/jobApplication.route.js';
 import OnlineTestResponse from './routes/userRoutes/onlineTest_response.route.js';
+import BehaviourTestResponse from './routes/userRoutes/behaviourTest_response.route.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/recruiter', Summary);
 app.use('/api/recruiter', BehaviourTest);
 app.use('/api/user/onlinetest', OnlineTestResponse);
 app.use('/api', JobApplication);
+app.use('/api/user/behaviouraltest', BehaviourTestResponse);
 
 const prisma = new PrismaClient();
 

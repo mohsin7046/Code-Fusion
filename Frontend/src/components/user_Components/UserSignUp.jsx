@@ -35,7 +35,6 @@ const UserSignUp = () => {
     isMinLength: "• Must be at least 6 characters long"
   }
 
-  
   const debouncePasswordValidation = useCallback((password) => {
     const timeoutId = setTimeout(() => {
       if (password) {
@@ -57,7 +56,6 @@ const UserSignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const isValidEmail = validateUserEmail(email);
     if (!isValidEmail) {
       setEmailError('Not an Organization email');

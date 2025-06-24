@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 
 const createBehaviourTest = async(req,res) =>{
     try {
-        const {jobId,recruiterId,totalQuestions,questions,duration,passingScore,keyWords,evaluationCriteria,onlineTestId} = req.body;
-          
+        const {jobId,recruiterId,totalQuestions,questions,duration,passingScore,keyWords,evaluationCriteria,onlineTestId,title,description} = req.body;
+          const password = Math.random().toString(36).slice(-8);
         if (
           !jobId ||
           !recruiterId ||
@@ -16,7 +16,10 @@ const createBehaviourTest = async(req,res) =>{
           !Array.isArray(keyWords) || keyWords.length === 0  || 
           !passingScore ||
           !evaluationCriteria ||
-          !onlineTestId
+          !onlineTestId||
+          !password ||
+          !title ||
+          !description
         ) {
           return res.status(400).json({ message: "All fields are required!" });
         }
@@ -36,6 +39,9 @@ const createBehaviourTest = async(req,res) =>{
            data: {
             jobId,
             recruiterId,
+            title,
+            description,
+            password,
             totalQuestions,
             questions: {
               create: questions.map((q) => ({
