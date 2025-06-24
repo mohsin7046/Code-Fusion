@@ -306,6 +306,7 @@ html
           email:"datardimohsinali@gmail.com",
           behavioralInterviewId: "cmc67u492000dv9vsxwj38kcp",
           jobId: "cmc67rdko0001v9vszi97iyp5",
+          name: navigateData?.name
         })
       })
       

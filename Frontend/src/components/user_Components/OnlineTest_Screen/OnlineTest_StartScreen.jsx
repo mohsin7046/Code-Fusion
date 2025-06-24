@@ -4,8 +4,7 @@ import Proctoring from "./Detecting";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const JobId = "cmc67rdko0001v9vszi97iyp5";
-const email = "datardimohsinali7046@gmail.com";
+
 
 const TakeTest = () => {
   const navigate = useNavigate();
@@ -21,11 +20,15 @@ const TakeTest = () => {
   const [durationInSec, setDurationInSec] = useState(0);
   const [onlineTestId, setOnlineTestId] = useState("");
 
+  const location = useLocation();
+
+  const navigationData = location.state;
+
   const fetchQuestions = async () => {
     try {
       setLoading(true);
       const res = await axios.post("/api/user/onlinetest/getAllQuestions", {
-        jobId: JobId,
+        jobId: navigationData?.JobId,
       });
 
       if (res.data.success && res.data.data?.questions) {
@@ -127,8 +130,9 @@ const TakeTest = () => {
 
       const payload = {
         onlineTestId,
-        email,
-        jobId: JobId,
+        email: navigationData?.email,
+        jobId:  navigationData?.JobId,
+        name: navigationData?.name,
         answers: finalAnswers,
         totalQuestions: totalAttemptedAnswer.length,
         cheatingDetected : forceCheating || cheatingDetected,

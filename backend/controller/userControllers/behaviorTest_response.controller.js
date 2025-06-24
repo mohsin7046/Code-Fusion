@@ -66,9 +66,9 @@ export const getbehaviorTestQuestions = async (req, res) => {
 
 export const getBehaviorTestResponse = async (req, res) => {
     try{
-         const {jobId,behavioralInterviewId,email,transcript}  = req.body;
+         const {jobId,behavioralInterviewId,name,email,transcript}  = req.body;
         
-            if (!jobId || !behavioralInterviewId || !email || !transcript) {
+            if (!jobId || !behavioralInterviewId || !email || !transcript || !name) {
                 return res.status(400).json({
                     success: false,
                     message: "Job ID, Behavioral Interview ID, email, and answers are required"
@@ -92,6 +92,7 @@ export const getBehaviorTestResponse = async (req, res) => {
             data:{
                 behavioralInterviewId: behavioralInterviewId,
                 candidateId: email,
+                name: name,
                 jobApplicationId: applicationId,
                 transcript: transcript,
                 status: "COMPLETED",
@@ -291,7 +292,6 @@ export const isBehaviourValidatedCheck = async (req, res) => {
             });
         }
 
-        
         const user = await prisma.studentEmails.findFirst({
             where: {
                 jobId: JobId,

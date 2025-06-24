@@ -220,10 +220,11 @@ export const OnlineTest_Response = async (req, res) => {
       cheatingDetected = false,
       reason = "",
       timeTaken,
+      name
     } = req.body;
 
     // 1. Basic validation
-    if (!onlineTestId || !email || !jobId || !answers || !Array.isArray(answers)) {
+    if (!onlineTestId || !email || !jobId || !answers || !Array.isArray(answers) || !name) {
   return res.status(400).json({
     success: false,
     message:
@@ -317,6 +318,7 @@ if (!cheatingDetected && (answers.length === 0)) {
         onlineTestId,
         candidateId: email,
         jobApplicationId: applicationId,
+        name:name,
         answers: {
           create: processedAnswers.map((a) => ({
             questionId: a.questionId,

@@ -299,6 +299,7 @@ model OnlineTestResponse{
   onlineTestId String
   candidateId String
   jobApplicationId String
+  name  String?
   answers    StudentAnswers[]
   score       Int
   percentage  Float
@@ -327,6 +328,7 @@ model AIInterviewResponse {
   id          String   @id @default(cuid()) @map("_id")
   behavioralInterviewId String
   candidateId String
+  name  String?
   jobApplicationId String
   transcript Json?
   overallScore       Int?
