@@ -7,6 +7,7 @@ const createBehaviourTest = async(req,res) =>{
     try {
         const {jobId,recruiterId,totalQuestions,questions,duration,passingScore,keyWords,evaluationCriteria,onlineTestId,title,description} = req.body;
           const password = Math.random().toString(36).slice(-8);
+        
         if (
           !jobId ||
           !recruiterId ||

@@ -51,7 +51,7 @@ export const getbehaviorTestQuestions = async (req, res) => {
             success: true,
             message: "Behavioral test questions retrieved successfully",
             data: question
-        } )
+        })
         
     } catch (error) {
         console.error("Error in getbehaviorTestQuestions:", error);
