@@ -105,6 +105,8 @@ export const getBehaviorTestResponse = async (req, res) => {
             });
         }
 
+
+
         return res.status(200).json({
             success: true,
             message: "Behavioral test response submitted successfully",
@@ -160,6 +162,9 @@ export const updateBehaviorTestResponse = async (req, res) => {
                 message: "Failed to update the behavioral test response"
             });
         }
+
+        
+
         return res.status(200).json({
             success: true,
             message: "Behavioral test response updated successfully",

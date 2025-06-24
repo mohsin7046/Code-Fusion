@@ -15,12 +15,15 @@ const createJob = async(req,res) =>{
             return res.status(404).json({ message: "Recruiter not found" });
         }
 
+
+        const dateTimeString = `${date}T${time}:00`; // e.g., '2025-06-25T14:30:00'
+        
         const job = await prisma.job.create({
             data:{
                 recruiterId: recruiterId,
                 companyName: companyName,
                 interviewRole: interviewRole,
-                date: new Date(date),
+                date: new Date(dateTimeString),
                 time: time,
                 description: description,
                 hasOnlineTest: hasOnlineTest || false,
@@ -104,6 +107,20 @@ const createOnlineTest = async(req,res) =>{
         if(!onlineTest){
             return res.status(500).json({ message: "Failed to create Online Test" });
         }
+
+        const job = await prisma.jobApplication.updateMany({
+             where: {
+              jobId: jobId,
+               },
+             data: {
+               status: 'ONLINE_TEST_PENDING',
+               },
+           });
+
+           if (!job) {
+            return res.status(500).json({ message: "Failed to update job applications" });
+           }
+
         const data = {
             jobId: onlineTest.jobId,
             recruiterId: onlineTest.recruiterId,

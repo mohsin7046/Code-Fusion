@@ -72,6 +72,7 @@ model Job{
   hasOnlineTest Boolean?
   hasAIInterview Boolean?
   hasCodingTest Boolean?
+  //TODO:testLinkSend Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user User @relation(fields : [recruiterId], references: [id], onDelete: Cascade)
@@ -80,27 +81,26 @@ model Job{
   behavioralInterviews BehavioralInterview[]
   summary Summary[]
   studentEmails StudentEmails[]
+  CandidateJobApplication CandidateJobApplication[]
  }
 
  model  JobApplication {
   id          String   @id @default(cuid()) @map("_id")
   jobId       String
-  candidateId String
   status      JobApplicationStatus @default(APPLIED) 
-currentPhase TestPhase? @default(YET_TO_START)
+  currentPhase TestPhase? @default(YET_TO_START)
 
-  onlineTestResponse OnlineTestResponse[]
-  aiInterviewResponse AIInterviewResponse[]
+  CandidateJobApplication CandidateJobApplication[]
 
   onlineTestCompleted Boolean @default(false)
   aiInterviewCompleted Boolean @default(false)
   codingTestCompleted Boolean @default(false)
-  finalFeedback String?
-  hired Boolean @default(false)
+
   appliedAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
  }
+
 
  model OnlineTest{
   id          String   @id @default(cuid()) @map("_id")
@@ -114,6 +114,7 @@ currentPhase TestPhase? @default(YET_TO_START)
   passingScore Int
   subjects Subject[]
   questions   OnlineTestQuestion[]
+  //TODO:onlineTestCompletionRemainder Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   expiresAt   DateTime
@@ -162,6 +163,7 @@ model OnlineTestQuestion {
   duration Int
   passingScore Int
   OverallFeedback String?
+ behaviourTestCompletionRemainder Boolean @default(false)
   keyWords    Keyword[]
   evaluationCriteria String
   createdAt DateTime @default(now())
@@ -275,6 +277,28 @@ model Room {
 
 
 
+ model  CandidateJobApplication {
+  id          String   @id @default(cuid()) @map("_id")
+  jobId       String
+  candidateId String
+  jobApplicationId String
+  status      JobApplicationStatus @default(APPLIED) 
+  currentPhase TestPhase? @default(YET_TO_START)
+
+  onlineTestResponse OnlineTestResponse[]
+  aiInterviewResponse AIInterviewResponse[]
+
+  onlineTestCompleted Boolean @default(false)
+  aiInterviewCompleted Boolean @default(false)
+  codingTestCompleted Boolean @default(false)
+
+  finalFeedback String?
+  hired Boolean @default(false)
+  appliedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+ }
 
 model OnlineTestResponse{
   id         String   @id @default(cuid()) @map("_id")
@@ -291,8 +315,9 @@ model OnlineTestResponse{
   passed Boolean @default(false)
   timeTaken Int
   submittedAt DateTime @default(now())
-  jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+  jobApplication CandidateJobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
 }
+
 
 model StudentAnswers {
   id          String   @id @default(cuid()) @map("_id")
@@ -319,7 +344,7 @@ model AIInterviewResponse {
   passed Boolean? @default(false)
   feedback String?
   submittedAt DateTime @default(now())
-  jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+  jobApplication CandidateJobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
 }
 
 
