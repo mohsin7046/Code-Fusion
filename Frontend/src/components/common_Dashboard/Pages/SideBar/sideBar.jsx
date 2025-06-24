@@ -5,7 +5,6 @@ import UserProfile from './UserProfile/userProfile';
 import { Link } from 'react-router-dom';
 import getToken from '../../../../hooks/role.js';
 
-
 const navigation = [
     { name: 'Dashboard', icon: Home, href: '/dashboard' },
     { name: 'Current Interview', icon: BarChart2, href: '/dashboard/current_interview' },
@@ -13,8 +12,6 @@ const navigation = [
     { name: 'All Meetings', icon: Settings, href: '/dashboard/meetings' },
     { name: 'Billing', icon: HelpCircle, href: '/dashboard/billings' },
 ];
-
-const tokenData = getToken();
 
 const usernavigation = [
     { name: 'Dashboard', icon: Home, href: '/user/dashboard' },
@@ -28,6 +25,7 @@ function Sidebar() {
 
     const toggleMobileSidebar = () => setIsMobileOpen(!isMobileOpen);
     const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+    const tokenData = getToken();
     
     return (
         <>

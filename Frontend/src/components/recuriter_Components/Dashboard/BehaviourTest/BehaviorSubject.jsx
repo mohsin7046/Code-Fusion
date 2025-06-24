@@ -152,6 +152,18 @@ Not generate the keywords and sub-keywords in the questions, just use them to ge
 Do not provide questions that exceed or fall short of the given total number.
 
 Output must be a valid raw JSON array of question strings with no markdown, code fences, or extra formatting.
+
+Strictly follow the Response format given below:
+{
+  "evaluationCriteria": "string",
+  "questions": [
+    {
+    difficulty: "MEDIUM"
+    question: "Describe a situation where you had to explain a complex technical concept to a non-technical audience. How did you ensure clarity and understanding?"
+    subject: "Communication"
+  }
+  ]
+}
 `
 
 

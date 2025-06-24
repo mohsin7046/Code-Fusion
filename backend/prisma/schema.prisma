@@ -90,8 +90,6 @@ model Job{
   status      JobApplicationStatus @default(APPLIED) 
   currentPhase TestPhase? @default(YET_TO_START)
 
-  CandidateJobApplication CandidateJobApplication[]
-
   onlineTestCompleted Boolean @default(false)
   aiInterviewCompleted Boolean @default(false)
   codingTestCompleted Boolean @default(false)
@@ -275,13 +273,10 @@ model Room {
   createdAt DateTime @default(now())
 }
 
-
-
  model  CandidateJobApplication {
   id          String   @id @default(cuid()) @map("_id")
   jobId       String
   candidateId String
-  jobApplicationId String
   status      JobApplicationStatus @default(APPLIED) 
   currentPhase TestPhase? @default(YET_TO_START)
 
@@ -297,7 +292,6 @@ model Room {
   appliedAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobApplication JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
  }
 
 model OnlineTestResponse{
