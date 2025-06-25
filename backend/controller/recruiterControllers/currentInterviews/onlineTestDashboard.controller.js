@@ -68,8 +68,7 @@ export const currentInterviewData = async(req,res)=>{
 
 export const getOnlineTestDashboard = async (req, res) => {
     try {
-        const {recruiterId
-            ,jobId} = req.body;
+        const {recruiterId,jobId} = req.body;
 
         if(!recruiterId || !jobId) {
             return res.status(400).json({message: "Recruiter not found"});
@@ -116,6 +115,7 @@ export const getOnlineTestDashboard = async (req, res) => {
                 }
             }
         })
+        
         if(!onlineTestData ) {
             return res.status(404).json({message: "Online test not found"});
         }

@@ -60,7 +60,6 @@ export const getbehavioralInterviewDashboard = async (req, res) => {
         return res.status(200).json({
             message: "Behavioral interview dashboard data retrieved successfully",
             data: dashboardData
-            
         });
         
     } catch (error) {

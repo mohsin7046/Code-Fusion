@@ -1,6 +1,8 @@
-/* eslint-disable react/prop-types */
-import  { useState } from 'react';
+import  { useEffect, useState } from 'react';
+// import { useLocation } from 'react-router-dom';
 import { ChevronDown, Eye, User, Mail,  Award,  XCircle } from 'lucide-react';
+import getToken from '../../../hooks/role.js';
+
 
 const CommonDetailsOverview= () => {
   const [selectedTest, setSelectedTest] = useState('online');
@@ -8,6 +10,76 @@ const CommonDetailsOverview= () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showDetailedOverview, setShowDetailedOverview] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const [onlinedata,setonlinedata] = useState(null);
+  const [behaviouraldata,setbehaviouraldata] = useState(null);
+
+  // const location = useLocation();
+  // const {jobId } = location.state;
+  const recruiterToken = getToken();
+  const recruiterId = recruiterToken?.userId;
+
+
+  useEffect(()=>{
+    const handlegetbehaviouralCurrentData = async() => {
+      try {
+        const res = await fetch('/api/recruiter/get-dashboard-behaviour-test',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({recruiterId:recruiterId || "cmbupfbj50003v92ghblpjwz4",jobId: "cmcakij040003v998d6mi7b4h"}),
+        })
+  
+        const data = await res.json();
+        if (!res.ok) {
+          console.error('Error fetching data:', data.message);
+        }
+        setbehaviouraldata(data);
+        console.log('Fetched data from behaviour :', data);
+        console.log('Fetched behaviour data:', behaviouraldata);
+      } catch (error) {
+        console.error('Error fetching behavioural test data:', error);
+        
+      }
+    }
+
+
+    const handlegetOnlineTestCurrentData = async() => {
+      try {
+        const res = await fetch('/api/recruiter/getOnlineTestData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({recruiterId:recruiterId || "cmbupfbj50003v92ghblpjwz4",jobId: "cmcakij040003v998d6mi7b4h"}),
+        });
+  
+        const data = await res.json();
+  
+        if (!res.ok) {
+          console.error('Error fetching data from online:', data.message);
+        }
+        setonlinedata(data);
+        
+        console.log('Fetched data from online:', data);
+        console.log('Fetched online data:', onlinedata);
+      } catch (error) {
+        console.error('Error fetching online test data:', error);
+      }
+    }
+
+    const fetchData = async () => {
+      try {
+        await handlegetbehaviouralCurrentData();
+        await handlegetOnlineTestCurrentData();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+      fetchData();
+
+  },[])
 
   const testData = {
     online: {
