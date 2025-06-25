@@ -1,21 +1,42 @@
 import { ArrowLeft } from "lucide-react"
-import { Link } from "react-router-dom" 
+import { useEffect,useState } from "react"
+import getToken from "../../../hooks/role.js"
+import {useNavigate} from "react-router-dom"
+
 function currentInterview() {
-    const interviews = [
-    {
-      name: "Full stack role",
-      description: "This is for frontend, backend, database expert",
-      date : "2023-10-15",
-      time: "10:00 AM",
-      status: "Ongoing",
-    },{
-      name: "Mern stack role",
-      description: "This is for frontend, backend, database expert using MERN stack",
-      date : "2023-10-16",
-      time: "12:00 AM",
-      status: "Ongoing",
+  const formData = getToken();
+  const navigate = useNavigate();
+  
+  const [interviews, setInterviews] = useState([]);
+
+    useEffect(()=>{
+      const fetchCurrentInterviews = async () => {
+        try {
+          const res = await fetch('/api/recruiter/current-interview-data', {
+            method : 'POST',
+            headers : {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({id: formData.userId})
+          });
+          const data = await res.json();
+          if(!res.ok){
+            console.log("Error fetching current interviews:", data.message);
+            throw new Error(data.message || "Failed to fetch current interviews");
+          }
+          setInterviews(data.data);
+
+        } catch (error) {
+          console.error("Error fetching current interviews:", error);
+        }
+      }
+      fetchCurrentInterviews();
+    },[])
+    
+    const handleNavigate = (index) => {
+      const jobId = interviews[index].id;
+      navigate(`/dashboard/current_interview`,{state : {jobId: jobId}});
     }
-    ]
     
   return (
     <>
@@ -40,19 +61,18 @@ function currentInterview() {
           </thead>
           <tbody className="bg-white">
             {interviews.map((item,index) => (
+
               <tr key={item.id} className="transition">
                 <td className="px-4 py-2 border">{index+1}</td>
-                <td className="px-4 py-2 border">{item.name}</td>
+                <td className="px-4 py-2 border">{item.interviewRole}</td>
                 <td className="px-4 py-2 border">{item.description}</td>
                 <td className="px-4 py-2 border">{item.date}</td>
                 <td className="px-4 py-2 border">{item.time}</td>
-                <td className="px-4 py-2 border">{item.status}</td>
+                <td className="px-4 py-2 border">{item.applications[0].status}</td>
                 <td className="px-4 py-2 border">
-                  <Link to={`/dashboard/current_interview/${index+1}`}>
-                  <button  className="bg-gray-700 text-white px-3 py-1 rounded">
+                  <button  onClick={(index) => handleNavigate(index)} className="bg-gray-700 text-white px-3 py-1 rounded" >
                     Detailed Overview
                   </button>
-                  </Link>
                 </td>
               </tr>
             ))}

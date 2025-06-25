@@ -32,24 +32,26 @@ export const currentInterviewData = async(req,res)=>{
     date: true,
     time: true,
     applications: {
-      where: {
-        status: {
-          in: [
-            'APPLIED',
-            'ONLINE_TEST_PENDING',
-            'ONLINE_TEST_COMPLETED',
-            'AI_INTERVIEW_PENDING',
-            'AI_INTERVIEW_COMPLETED',
-            'CODING_TEST_PENDING',
-            'CODING_TEST_COMPLETED',
-            'UNDER_REVIEW'
-          ]
-        }
-      },
-      select: {
-        status: true
+      // where: {
+      select:{
+        status: true,
+          // in: [
+          //   'APPLIED',
+          //   'ONLINE_TEST_PENDING',
+          //   'ONLINE_TEST_COMPLETED',
+          //   'AI_INTERVIEW_PENDING',
+          //   'AI_INTERVIEW_COMPLETED',
+          //   'CODING_TEST_PENDING',
+          //   'CODING_TEST_COMPLETED',
+          //   'UNDER_REVIEW'
+          // ]
       }
-    }
+        }
+      // },
+      // select: {
+      //   status: true
+      // }
+    
   }
 });
 
