@@ -17,7 +17,7 @@ const CommonDetailsOverview= () => {
   // const location = useLocation();
   // const {jobId } = location.state;
   const recruiterToken = getToken();
-  const recruiterId = recruiterToken?.userId;
+  
 
 
   useEffect(()=>{
@@ -28,7 +28,7 @@ const CommonDetailsOverview= () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({recruiterId:recruiterId || "cmbupfbj50003v92ghblpjwz4",jobId: "cmcakij040003v998d6mi7b4h"}),
+          body: JSON.stringify({recruiterId: "cmbupfbj50003v92ghblpjwz4",jobId: "cmcakij040003v998d6mi7b4h"}),
         })
   
         const data = await res.json();
@@ -52,7 +52,7 @@ const CommonDetailsOverview= () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({recruiterId:recruiterId || "cmbupfbj50003v92ghblpjwz4",jobId: "cmcakij040003v998d6mi7b4h"}),
+          body: JSON.stringify({recruiterId: "cmc02y7090000718crzme9zen" ,jobId: "cmcdbpdbq00037138yu12ghqy"}),
         });
   
         const data = await res.json();

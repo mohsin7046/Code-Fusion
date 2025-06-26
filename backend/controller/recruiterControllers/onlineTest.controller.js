@@ -108,13 +108,11 @@ const createOnlineTest = async(req,res) =>{
             return res.status(500).json({ message: "Failed to create Online Test" });
         }
 
-        const job = await prisma.jobApplication.updateMany({
-             where: {
-              jobId: jobId,
-               },
+        const job = await prisma.jobApplication.create({
              data: {
+                jobId: onlineTest.jobId,
                status: 'ONLINE_TEST_PENDING',
-               },
+            },
            });
 
            if (!job) {
