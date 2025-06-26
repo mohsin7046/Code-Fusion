@@ -21,12 +21,14 @@ const QuesAnsPrepApp = () => {
   const [storeQuestions, setStoreQuestions] = useState([]);
 
 const location = useLocation();
-
 const navigateData = location.state;
+
+console.log(navigateData);
 
 
   const [formData,setFormData] = useState({
     aiInterviewResponseId: "",
+    behavioralInterviewId:"",
     questions:"",
     keywords: null,
     evaluationCriteria: "",
@@ -57,9 +59,13 @@ const navigateData = location.state;
       })
 
       const data = await res.json();
+
+      console.log(data);
+      
       setFormData(prev =>({
         ...prev,
         questions: data.data.questions.map(q => q.question).join(', '),
+        behavioralInterviewId:data.data.id,
         keywords: data.data.keyWords,
         evaluationCriteria: data.data.evaluationCriteria,
         passingScore : data.data.passingScore
@@ -67,10 +73,8 @@ const navigateData = location.state;
 
       if (data.success) {
         const temp = data.data.questions.map(q => q.question).join(', ');
-
         setInterviewQuestions(temp);
         setStoreQuestions(data.data.questions);
-
       } else {
         console.error('Failed to fetch questions:', data.message);
       }
@@ -295,7 +299,7 @@ html
         addMessage('system', 'No conversation data to submit', 'error');
         return;
       }
-  
+      
       const res = await fetch('/api/user/behaviouraltest/getBehaviorTestResponse', {
         method: 'POST',
         headers: {
@@ -303,23 +307,35 @@ html
         },
         body: JSON.stringify({
           transcript: formattedConversation,
-          email:"datardimohsinali@gmail.com",
-          behavioralInterviewId: "cmc67u492000dv9vsxwj38kcp",
-          jobId: "cmc67rdko0001v9vszi97iyp5",
+          email:navigateData?.email,
+          behavioralInterviewId: formData.behavioralInterviewId,
+          jobId: navigateData?.JobId,
           name: navigateData?.name
         })
       })
       
       const data = await res.json();
+
+      if(!res.ok){
+        console.log("Error taking data");
+        return;
+      }
+           
+      console.log(data);
+      
       
        const updatedFormData = {
-      aiInterviewResponseId: data.data.id,
+      aiInterviewResponseId: data.id,
+      behavioralInterviewId:formData.behavioralInterviewId,
       transcript: formattedConversation, 
       questions: formData.questions,
       keywords: formData.keywords, 
       evaluationCriteria: formData.evaluationCriteria,
       passingScore: formData.passingScore,
     };
+
+    console.log("Update ",updatedFormData);
+    
 
       setFormData(updatedFormData);
     

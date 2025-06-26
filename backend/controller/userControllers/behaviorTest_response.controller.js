@@ -20,6 +20,7 @@ export const getbehaviorTestQuestions = async (req, res) => {
             },
             
             select: {
+                id:true,
                 questions: {
                     select: {
                         id: true,
@@ -67,6 +68,9 @@ export const getbehaviorTestQuestions = async (req, res) => {
 export const getBehaviorTestResponse = async (req, res) => {
     try{
          const {jobId,behavioralInterviewId,name,email,transcript}  = req.body;
+
+         console.log(behavioralInterviewId);
+         
         
             if (!jobId || !behavioralInterviewId || !email || !transcript || !name) {
                 return res.status(400).json({
@@ -75,9 +79,10 @@ export const getBehaviorTestResponse = async (req, res) => {
                 });
             }
 
-            const application = await prisma.jobApplication.findFirst({
+            const application = await prisma.candidateJobApplication.findFirst({
              where: { jobId },
            });
+           
 
            if (!application) {
           return res.status(404).json({
@@ -88,17 +93,32 @@ export const getBehaviorTestResponse = async (req, res) => {
 
         const applicationId = application.id;
 
-        const testsubmittedResponse = await prisma.aIInterviewResponse.create({
-            data:{
+        const testsubmittedResponse  = await prisma.candidateJobApplication.update({
+            where: { id: applicationId },
+            data: {
+                status: "AI_INTERVIEW_COMPLETED",
+                currentPhase:'AI_INTERVIEW',
+                aiInterviewCompleted:true,
+                aiInterviewResponse:{
+                    create:{
                 behavioralInterviewId: behavioralInterviewId,
                 candidateId: email,
                 name: name,
-                jobApplicationId: applicationId,
                 transcript: transcript,
                 status: "COMPLETED",
+                    }
+                }
+            },
+        })
+
+        const behavioralInterviewResponseId = await prisma.aIInterviewResponse.findFirst({
+            where:{
+                behavioralInterviewId:behavioralInterviewId
             }
         })
 
+        console.log(behavioralInterviewResponseId);
+        
         if (!testsubmittedResponse) {
             return res.status(500).json({
                 success: false,
@@ -106,12 +126,12 @@ export const getBehaviorTestResponse = async (req, res) => {
             });
         }
 
-
-
+       
         return res.status(200).json({
             success: true,
             message: "Behavioral test response submitted successfully",
-            data: testsubmittedResponse
+            data: testsubmittedResponse,
+            id:behavioralInterviewResponseId.id
         });
     
 
@@ -138,6 +158,7 @@ export const updateBehaviorTestResponse = async (req, res) => {
         const aiBehaviourExists = await prisma.aIInterviewResponse.findUnique({
             where:{id: aiInterviewResponseId}
         })
+
         if(!aiBehaviourExists) {
             return res.status(404).json({
                 success: false,

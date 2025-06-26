@@ -23,11 +23,9 @@ export const getALLQuestions = async (req, res) => {
                 duration:true,
                 id:true
             },
-
         });
 
     
-
         if (questions.length === 0 || !questions) {
             return res.status(404).json({
                 success: false,
@@ -170,7 +168,6 @@ export const isValidatedCheck = async (req, res) => {
             },
         });
 
-        // Step 2: Filter to find that email in JSON
         const matchedEmail = user?.emails?.find(
             (e) => e.email === email && e.isValidated === false
         );
@@ -208,7 +205,6 @@ export const isValidatedCheck = async (req, res) => {
 };
 
 
-
 export const OnlineTest_Response = async (req, res) => {
   try {
     const {
@@ -241,7 +237,6 @@ if (!cheatingDetected && (answers.length === 0)) {
 }
 
 
-  
     const onlineTest = await prisma.onlineTest.findFirst({
       where: { jobId },
       select: {
@@ -257,7 +252,7 @@ if (!cheatingDetected && (answers.length === 0)) {
       },
     });
 
-    const application = await prisma.jobApplication.findFirst({
+    const application = await prisma.candidateJobApplication.findFirst({
       where: { jobId },
     });
 
@@ -313,11 +308,19 @@ if (!cheatingDetected && (answers.length === 0)) {
     const passed = score >= onlineTest.passingScore;
 
     // 4. Save response
-    const response = await prisma.onlineTestResponse.create({
-      data: {
+
+    const response = await prisma.candidateJobApplication.update({
+      where:{
+        id: applicationId,
+      },
+      data:{
+        status:'ONLINE_TEST_COMPLETED',
+        currentPhase:'ONLINE_TEST',
+        onlineTestCompleted:true,
+        onlineTestResponse:{
+        create:{
         onlineTestId,
         candidateId: email,
-        jobApplicationId: applicationId,
         name:name,
         answers: {
           create: processedAnswers.map((a) => ({
@@ -335,9 +338,12 @@ if (!cheatingDetected && (answers.length === 0)) {
         totalCorrectAnswers,
         percentage,
         passed,
-      },
-    });
+      }
+        }
+      }
+    })
 
+    
     return res.status(201).json({
       success: true,
       message: "Test response submitted successfully.",

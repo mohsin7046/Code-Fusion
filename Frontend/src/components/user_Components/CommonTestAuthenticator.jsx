@@ -60,10 +60,10 @@ const CommonTestAuthenticator = () => {
         throw new Error("Failed to fetch test description");
       }
       setData({
-        title : result.data?.title,
-        description : result.data?.description,
-        duration : result.data?.duration,
-        questions  : result.data?.totalQuestions
+        title : data.data?.title,
+        description : data.data?.description,
+        duration : data.data?.duration,
+        questions  : data.data?.totalQuestions
       })
       toast.success(data.message || "Test description fetched successfully");
     } catch (error) {
