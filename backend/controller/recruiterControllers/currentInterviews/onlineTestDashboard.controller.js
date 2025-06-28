@@ -74,7 +74,7 @@ export const getOnlineTestDashboard = async (req, res) => {
             return res.status(400).json({message: "Recruiter not found"});
         }
 
-        const onlineTestData = await prisma.job.findUnique({
+        const onlineTestData = await prisma.job.findFirst({
             where: {
                 id: jobId,
                 recruiterId: recruiterId,
@@ -97,10 +97,13 @@ export const getOnlineTestDashboard = async (req, res) => {
                     select: {
                         id: true,
                         status: true,
+                        candidateId:true,
+                        name:true,
                       onlineTestResponse :{
                             select:{
                                 id:true,
                                 score: true,
+                                name:true,
                                 percentage : true,
                                 candidateId : true,
                                 totalCorrectAnswers : true,
@@ -109,6 +112,7 @@ export const getOnlineTestDashboard = async (req, res) => {
                                 cheatingReason : true,
                                 passed : true,
                                 timeTaken : true,  
+                                submittedAt:true
                             }
                         }
                     }

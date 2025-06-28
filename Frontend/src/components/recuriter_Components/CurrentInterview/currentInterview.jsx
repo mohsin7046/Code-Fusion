@@ -17,7 +17,7 @@ function currentInterview() {
             headers : {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: "cmc02y7090000718crzme9zen"})
+            body: JSON.stringify({id: formData.userId})
           });
           const data = await res.json();
           if(!res.ok){
@@ -32,10 +32,12 @@ function currentInterview() {
       }
       fetchCurrentInterviews();
     },[])
-    
+
+
+      
     const handleNavigate = (index) => {
-      const jobId = interviews[index].id;
-      navigate(`/dashboard/current_interview`,{state : {jobId: jobId}});
+      const jobId = interviews[index]?.id;
+      navigate(`/dashboard/current_interview/${index+1}`,{state : {jobId: jobId}});
     }
     
   return (
@@ -70,7 +72,7 @@ function currentInterview() {
                 <td className="px-4 py-2 border">{item.time}</td>
                 <td className="px-4 py-2 border">{item.applications[0].status}</td>
                 <td className="px-4 py-2 border">
-                  <button  onClick={(index) => handleNavigate(index)} className="bg-gray-700 text-white px-3 py-1 rounded" >
+                  <button  onClick={() => handleNavigate(index)} className="bg-gray-700 text-white px-3 py-1 rounded" >
                     Detailed Overview
                   </button>
                 </td>

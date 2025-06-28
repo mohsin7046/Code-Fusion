@@ -252,9 +252,11 @@ if (!cheatingDetected && (answers.length === 0)) {
       },
     });
 
+
     const application = await prisma.candidateJobApplication.findFirst({
       where: { jobId },
     });
+
 
     if (!application) {
       return res.status(404).json({
@@ -263,7 +265,22 @@ if (!cheatingDetected && (answers.length === 0)) {
       });
     }
 
+    
+
     const applicationId = application.id;
+
+    const updateCandidateJob = await prisma.candidateJobApplication.update({
+      where:{
+        id:applicationId
+      },
+      data:{
+        name:name
+      }
+    })
+
+    if(!updateCandidateJob){
+      return res.status(400).json({message:"Not have CandidateJob"})
+    }
 
     if (!onlineTest || !onlineTest.questions || onlineTest.questions.length === 0) {
       return res.status(404).json({
@@ -305,7 +322,7 @@ if (!cheatingDetected && (answers.length === 0)) {
     });
 
     const percentage = parseFloat(((score / totalMarks) * 100).toFixed(2));
-    const passed = score >= onlineTest.passingScore;
+    const passed = percentage >= onlineTest.passingScore;
 
     // 4. Save response
 

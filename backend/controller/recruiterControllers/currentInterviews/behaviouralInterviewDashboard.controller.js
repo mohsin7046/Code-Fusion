@@ -10,7 +10,7 @@ export const getbehavioralInterviewDashboard = async (req, res) => {
             return res.status(400).json({message: "Recruiter not found"});
         }
 
-        const dashboardData = await prisma.job.findUnique({
+        const dashboardData = await prisma.job.findFirst({
             where: {
                 id: jobId,
                 recruiterId: recruiterId,
@@ -31,7 +31,9 @@ export const getbehavioralInterviewDashboard = async (req, res) => {
                 },
                 CandidateJobApplication:{
                     select: {
-                        id: true,
+                        candidateId:true,
+                        name:true,
+                        status:true,
                         aiInterviewResponse:{
                             select:{
                                 id:true,
@@ -46,6 +48,7 @@ export const getbehavioralInterviewDashboard = async (req, res) => {
                                 status:true,
                                 passed:true,
                                 feedback:true,
+                                submittedAt:true
                             }
                         }
                     }
