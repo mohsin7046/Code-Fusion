@@ -5,21 +5,21 @@ export const currentInterviewData = async(req,res)=>{
     const {id} = req.body;
 
     try {
-      const applications = await prisma.job.findMany({
+    const applications = await prisma.job.findMany({
   where: {
     recruiterId: id,
     applications: {
       some: {
         status: {
           in: [
-            'APPLIED',
-            'ONLINE_TEST_PENDING',
-            'ONLINE_TEST_COMPLETED',
-            'AI_INTERVIEW_PENDING',
-            'AI_INTERVIEW_COMPLETED',
-            'CODING_TEST_PENDING',
-            'CODING_TEST_COMPLETED',
-            'UNDER_REVIEW'
+                'ONLINE_TEST_PENDING',
+                'ONLINE_TEST_COMPLETED',
+                'APPLIED',
+                'AI_INTERVIEW_COMPLETED',
+                'AI_INTERVIEW_PENDING',
+                'CODING_TEST_COMPLETED',
+                'CODING_TEST_PENDING',
+                'UNDER_REVIEW'
           ]
         }
       }
@@ -32,26 +32,10 @@ export const currentInterviewData = async(req,res)=>{
     date: true,
     time: true,
     applications: {
-      // where: {
       select:{
         status: true,
-          // in: [
-          //   'APPLIED',
-          //   'ONLINE_TEST_PENDING',
-          //   'ONLINE_TEST_COMPLETED',
-          //   'AI_INTERVIEW_PENDING',
-          //   'AI_INTERVIEW_COMPLETED',
-          //   'CODING_TEST_PENDING',
-          //   'CODING_TEST_COMPLETED',
-          //   'UNDER_REVIEW'
-          // ]
       }
-        }
-      // },
-      // select: {
-      //   status: true
-      // }
-    
+    } 
   }
 });
 

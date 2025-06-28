@@ -67,15 +67,15 @@ export const getbehaviorTestQuestions = async (req, res) => {
 
 export const getBehaviorTestResponse = async (req, res) => {
     try{
-         const {jobId,behavioralInterviewId,name,email,transcript}  = req.body;
+         const {jobId,behavioralInterviewId,name,email,transcript,timeTaken}  = req.body;
 
          console.log(behavioralInterviewId);
          
         
-            if (!jobId || !behavioralInterviewId || !email || !transcript || !name) {
+            if (!jobId || !behavioralInterviewId || !email || !transcript || !name || !timeTaken) {
                 return res.status(400).json({
                     success: false,
-                    message: "Job ID, Behavioral Interview ID, email, and answers are required"
+                    message: "Job ID, Behavioral Interview ID, email, timeTaken and answers are required"
                 });
             }
 
@@ -105,6 +105,7 @@ export const getBehaviorTestResponse = async (req, res) => {
                 candidateId: email,
                 name: name,
                 transcript: transcript,
+                timeTaken: parseInt(timeTaken),
                 status: "COMPLETED",
                     }
                 }

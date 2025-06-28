@@ -18,6 +18,8 @@ const QuesAnsPrepApp = () => {
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [callObject, setCallObject] = useState(null);
   const [interviewQuestions, setInterviewQuestions] = useState("");
+  const [timer, setTimer] = useState(null);
+  const [durationInSec, setDurationInSec] = useState(0);
   const [storeQuestions, setStoreQuestions] = useState([]);
 
 const location = useLocation();
@@ -61,6 +63,11 @@ console.log(navigateData);
       const data = await res.json();
 
       console.log(data);
+
+      const minutes = data.data.duration;
+      const seconds = minutes * 60;
+      setTimer(seconds);
+      setDurationInSec(seconds);
       
       setFormData(prev =>({
         ...prev,
@@ -222,6 +229,8 @@ html
   }, [apiKey]);
 
 
+
+
   // Session timer
   useEffect(() => {
     if (isConnected) {
@@ -234,6 +243,22 @@ html
     }
     return () => clearInterval(timerRef.current);
   }, [isConnected]);
+
+  // timer change 
+
+   useEffect(() => {
+    if (timer === null ) return;
+    if (timer === 0) {
+      handleSubmit();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timer]);
 
 
   // Auto-scroll conversation
@@ -310,7 +335,8 @@ html
           email:navigateData?.email,
           behavioralInterviewId: formData.behavioralInterviewId,
           jobId: navigateData?.JobId,
-          name: navigateData?.name
+          name: navigateData?.name,
+          timeTaken  : durationInSec - timer
         })
       })
       
@@ -428,7 +454,7 @@ html
           <h1 className="text-xl md:text-2xl font-bold text-gray-900">Ques Ans Prep</h1>
         </div>
         <div className="text-red-600 font-bold text-xl">
-                  ⏳ {formatTime()}
+                  ⏳ {formatTime(timer)}
                 </div>
       </div>
       <div className="flex flex-1 flex-col lg:flex-row">

@@ -68,7 +68,7 @@ function currentInterview() {
                 <td className="px-4 py-2 border">{index+1}</td>
                 <td className="px-4 py-2 border">{item.interviewRole}</td>
                 <td className="px-4 py-2 border">{item.description}</td>
-                <td className="px-4 py-2 border">{item.date}</td>
+                <td className="px-4 py-2 border">{item.date.split('T')[0]}</td>
                 <td className="px-4 py-2 border">{item.time}</td>
                 <td className="px-4 py-2 border">{item.applications[0].status}</td>
                 <td className="px-4 py-2 border">

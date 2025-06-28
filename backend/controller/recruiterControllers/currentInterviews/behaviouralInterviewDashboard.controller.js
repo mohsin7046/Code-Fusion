@@ -47,6 +47,7 @@ export const getbehavioralInterviewDashboard = async (req, res) => {
                                 recommendations:true,
                                 status:true,
                                 passed:true,
+                                timeTaken : true,
                                 feedback:true,
                                 submittedAt:true
                             }

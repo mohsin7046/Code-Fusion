@@ -342,6 +342,7 @@ model AIInterviewResponse {
   status AIInterviewStatus @default(PENDING)
   passed Boolean? @default(false)
   feedback String?
+  timeTaken Int
   submittedAt DateTime @default(now())
   jobApplication CandidateJobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
 }
