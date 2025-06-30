@@ -7,10 +7,12 @@ import {
   Mail,
   Award,
   XCircle,
-  Toilet,
-   AlertTriangle
+  AlertTriangle
 } from "lucide-react";
 import getToken from "../../../hooks/role.js";
+import { UseCandidateShortlist } from "../../../hooks/useCandidateShortlistOnline.jsx";
+import {UseCandidateBehavioural} from '../../../hooks/useCandidateBehavioural.jsx'
+
 
 const CommonDetailsOverview = () => {
   const [selectedTest, setSelectedTest] = useState("online");
@@ -25,6 +27,8 @@ const CommonDetailsOverview = () => {
   const location = useLocation();
   const {jobId} = location.state;
   const recruiterToken = getToken();
+  const {onlineTestShortList} = UseCandidateShortlist();
+  const {behaviouralTestShortList} = UseCandidateBehavioural();
 
 
   useEffect(() => {
@@ -212,9 +216,13 @@ const CommonDetailsOverview = () => {
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Applied Date
             </th>
+             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
+                Add to Shortlist
+            </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Action
             </th>
+           
           </tr>
         );
       } else if (selectedTest === "behavioral") {
@@ -237,6 +245,9 @@ const CommonDetailsOverview = () => {
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Duration
+            </th>
+            <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
+                Add to Shortlist
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Action
@@ -292,6 +303,9 @@ const CommonDetailsOverview = () => {
             Additional Info
           </th>
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
+              Reject
+          </th>
+          <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
             Action
           </th>
         </tr>
@@ -316,6 +330,9 @@ const CommonDetailsOverview = () => {
           </th>
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
             Recommendations
+          </th>
+          <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
+              Reject
           </th>
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
             Action
@@ -363,6 +380,8 @@ const CommonDetailsOverview = () => {
     feedback:
       response?.recommendations || item.feedback || item.systemDesign || "N/A",
   };
+
+  
 };
 
 
@@ -488,10 +507,6 @@ console.log(data);
   );
 };
 
-
-
-
-
   const renderTableRows = () => {
     const totaldata = getCurrentData();
 
@@ -527,6 +542,19 @@ console.log(data);
             </td>
             <td className="px-4 py-3 text-gray-600">
               {item.onlineTestResponse[0]?.submittedAt.split("T")[0]}
+            </td>
+            <td className="px-4 py-3">
+              <button
+                className={
+                  getShortlistCondition(item)
+                  ? "bg-gray-400 cursor-not-allowed px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                  : "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                }
+                onClick={() => handleOnlineShortlist(index)}
+                disabled={getShortlistCondition(item)}
+              >
+                ShortList
+              </button>
             </td>
             <td className="px-4 py-3">
               <button
@@ -575,6 +603,19 @@ console.log(data);
               {item?.aiInterviewResponse[0]?.submittedAt.split("T")[0]}
             </td>
             <td className="px-4 py-3 text-gray-600">{item.duration}</td>
+            <td className="px-4 py-3">
+              <button
+                className={
+                  getShortlistCondition(item)
+                  ?"bg-gray-400 cursor-not-allowed px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                  :"bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                }
+                onClick={() => handleBehaviouralShortlist(index)}
+                disabled={getShortlistCondition(item)}
+              >
+                ShortList
+                </button>
+            </td>
             <td className="px-4 py-3">
               <button
                 onClick={() => {
@@ -674,6 +715,11 @@ console.log(data);
               {selectedTest === "coding" && `Problems: ${item.problemsSolved}`}
             </td>
             <td className="px-4 py-3">
+              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1" onClick={()=>handleDecline(index,selectedTest)}> 
+                Decline
+              </button>
+            </td>
+            <td className="px-4 py-3">
               <button
                 onClick={() => {
                   const candidateData = {
@@ -746,190 +792,135 @@ console.log(data);
     ));
   };
 
-  // const DetailedOverview = ({ candidate }) => {
-  //   return (
-  //     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-  //       <div className="bg-white rounded-xl border border-gray-300 shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-  //         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-  //           <div>
-  //             <h2 className="text-xl font-bold text-gray-900">
-  //               {candidate.name}
-  //             </h2>
-  //             <p className="text-gray-600">
-  //               Detailed Overview - {testData[selectedTest].name}
-  //             </p>
-  //           </div>
-  //           <button
-  //             onClick={() => setShowDetailedOverview(false)}
-  //             className="text-gray-500 hover:text-gray-700 transition-colors"
-  //           >
-  //             <XCircle className="w-6 h-6" />
-  //           </button>
-  //         </div>
+  const handleOnlineShortlist = async (index) =>{
+    const totalData = getCurrentData();
+   const onlineResponseId =  totalData?.CandidateJobApplication[index]?.onlineTestResponse[index].id;
+    try {
+      const res = await onlineTestShortList(onlineResponseId);
+      if(!res.success){
+        console.error("Error updating online test response:", res.message);
+        alert("Failed to update online test response. Please try again.");
+        return;
+      }
+      console.log("Updated online test response:", res.message);
+      alert("Online test response updated successfully.");
+    } catch (error) {
+      console.error("Error updating online test response:", error.message);
+      alert("Failed to update online test response. Please try again.");
+    }
+  }
 
-  //         <div className="p-6 space-y-6">
-  //           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  //             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-  //               <h3 className="text-gray-900 font-medium mb-3">
-  //                 Candidate Information
-  //               </h3>
-  //               <div className="space-y-2 text-sm">
-  //                 <div className="flex items-center gap-2 text-gray-700">
-  //                   <User className="w-4 h-4" />
-  //                   <span>{candidate.name}</span>
-  //                 </div>
-  //                 <div className="flex items-center gap-2 text-gray-700">
-  //                   <Mail className="w-4 h-4" />
-  //                   <span>{candidate.email}</span>
-  //                 </div>
-  //                 {candidate.score && (
-  //                   <div className="flex items-center gap-2 text-green-600">
-  //                     <Award className="w-4 h-4" />
-  //                     <span>Score: {candidate.score}/100</span>
-  //                   </div>
-  //                 )}
-  //               </div>
-  //             </div>
+  const handleBehaviouralShortlist = async (index) =>{
+    const totalData = getCurrentData();
+    const behaviouralTestId = totalData?.CandidateJobApplication[index]?.aiInterviewResponse[index]?.id;
+     try {
+      const res = await behaviouralTestShortList(behaviouralTestId);
+      if(!res.success){
+        console.error("Error updating behaviour test response:", res.message);
+        alert("Failed to update behaviour test response. Please try again.");
+        return;
+      }
+      console.log("Updated behaviour test response:", res.message);
+      alert("Behaviour test response updated successfully.");
+    } catch (error) {
+      console.error("Error updating behaviour test response:", error.message);
+      alert("Failed to update behaviour test response. Please try again.");
+    }
+  }
 
-  //             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-  //               <h3 className="text-gray-900 font-medium mb-3">Test Details</h3>
-  //               <div className="space-y-2 text-sm text-gray-700">
-  //                 <div>Test Type: {testData[selectedTest].name}</div>
-  //                 <div>
-  //                   Status:{" "}
-  //                   <span
-  //                     className={`px-2 py-1 rounded text-xs ${getStatusColor(
-  //                       candidate.status
-  //                     )}`}
-  //                   >
-  //                     {candidate.status}
-  //                   </span>
-  //                 </div>
-  //                 {candidate.date && <div>Date: {candidate.date}</div>}
-  //                 {candidate.interviewer && (
-  //                   <div>Interviewer: {candidate.interviewer}</div>
-  //                 )}
-  //               </div>
-  //             </div>
-  //           </div>
+  const handleAcceptAll = async (selectedTest) => {
+    let emails;
+    let totalData;
+    if(selectedTest === 'online'){
+      totalData = getCurrentData();
+      emails = totalData?.CandidateJobApplication.map(item => item.onlineTestResponse[0].passed ? item.candidateId : null).filter(email => email !== null);
+      try {
+        const res = await fetch('/api/recruiter/updateOnlineShortListedEmails',{
+          method : 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobId : jobId,
+            emails: emails
+          })
+        })
+        const data = await res.json();
+        if(!res.ok){
+          console.error("Error accepting all online test responses:", data.message);
+          alert("Failed to accept all online test responses. Please try again.");
+          return;
+        }
+        console.log("Accepted all online test responses:", data.message);
+        alert("All online test responses accepted successfully.");
+      } catch (error) {
+        console.error("Error accepting all online test responses:", error.message);
+        alert("Failed to accept all online test responses. Please try again.");
+      }
+    }else if(selectedTest === 'behavioral'){
+      totalData = getCurrentData();
+      emails = totalData?.CandidateJobApplication.map(item => item.aiInterviewResponse[0].passed ? item.candidateId : null).filter(email => email !== null);
+      try {
+        const res = await fetch('/api/recruiter/updateBehaviouralShortlistedEmails',{
+          method : 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobId : jobId,
+            emails: emails
+          })
+        })
+        const data = await res.json();
+        if(!res.ok){
+          console.error("Error accepting all behavioral test responses:", data.message);
+          alert("Failed to accept all behavioral test responses. Please try again.");
+          return;
+        }
+        console.log("Accepted all behavioral test responses:", data.message);
+        alert("All behavioral test responses accepted successfully.");
+      } catch (error) {
+        console.error("Error accepting all behavioral test responses:", error.message);
+        alert("Failed to accept all behavioral test responses. Please try again.");
+      }
+    }
+  }
 
-  //           {selectedView === "feedback" && (
-  //             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-  //               <h3 className="text-gray-900 font-medium mb-3">
-  //                 Detailed Feedback
-  //               </h3>
-  //               <div className="space-y-4">
-  //                 {selectedTest === "online" && (
-  //                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-  //                     <div>
-  //                       <span className="text-green-600 font-medium">
-  //                         Strengths:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.strengths}
-  //                       </p>
-  //                     </div>
-  //                     <div>
-  //                       <span className="text-yellow-600 font-medium">
-  //                         Areas for Improvement:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.weaknesses}
-  //                       </p>
-  //                     </div>
-  //                     <div className="md:col-span-2">
-  //                       <span className="text-blue-600 font-medium">
-  //                         Recommendations:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.recommendations}
-  //                       </p>
-  //                     </div>
-  //                   </div>
-  //                 )}
-
-  //                 {selectedTest === "behavioral" && (
-  //                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-  //                     <div>
-  //                       <span className="text-purple-600 font-medium">
-  //                         Leadership:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.leadership}
-  //                       </p>
-  //                     </div>
-  //                     <div>
-  //                       <span className="text-green-600 font-medium">
-  //                         Teamwork:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.teamwork}
-  //                       </p>
-  //                     </div>
-  //                     <div>
-  //                       <span className="text-blue-600 font-medium">
-  //                         Communication:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.communication}
-  //                       </p>
-  //                     </div>
-  //                     <div className="md:col-span-3">
-  //                       <span className="text-cyan-600 font-medium">
-  //                         Overall Feedback:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.feedback}
-  //                       </p>
-  //                     </div>
-  //                   </div>
-  //                 )}
-
-  //                 {selectedTest === "coding" && (
-  //                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-  //                     <div>
-  //                       <span className="text-green-600 font-medium">
-  //                         Problem Solving:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.problemSolving}
-  //                       </p>
-  //                     </div>
-  //                     <div>
-  //                       <span className="text-blue-600 font-medium">
-  //                         Code Quality:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.codeQuality}
-  //                       </p>
-  //                     </div>
-  //                     <div>
-  //                       <span className="text-purple-600 font-medium">
-  //                         System Design:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.systemDesign}
-  //                       </p>
-  //                     </div>
-  //                     <div className="md:col-span-3">
-  //                       <span className="text-cyan-600 font-medium">
-  //                         Technical Feedback:
-  //                       </span>
-  //                       <p className="text-gray-700 mt-1">
-  //                         {candidate.feedback}
-  //                       </p>
-  //                     </div>
-  //                   </div>
-  //                 )}
-  //               </div>
-  //             </div>
-  //           )}
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
+  const handleDecline = async (index,selectedTest) =>{
+    if(selectedTest === "online"){
+      const totalData = getCurrentData();
+      const onlineResponseId =  totalData?.CandidateJobApplication[index]?.onlineTestResponse[index].id;
+    try {
+      const res = await onlineTestShortList(onlineResponseId);
+      if(!res.success){
+        console.error("Error updating online test response:", res.message);
+        alert("Failed to update online test response. Please try again.");
+        return;
+      }
+      console.log("Updated online test response:", res.message);
+      alert("Online test response updated successfully.");
+    } catch (error) {
+      console.error("Error updating online test response:", error.message);
+      alert("Failed to update online test response. Please try again.");
+    }
+    }else if(selectedTest === "behavioral"){
+      const totalData = getCurrentData();
+      const behaviouralTestId = totalData?.CandidateJobApplication[index]?.aiInterviewResponse[index]?.id;
+     try {
+       const res = await behaviouralTestShortList(behaviouralTestId);
+      if(!res.success){
+        console.error("Error updating behaviour test response:", res.message);
+        alert("Failed to update behaviour test response. Please try again.");
+        return;
+      }
+      console.log("Updated behaviour test response:", res.message);
+      alert("Behaviour test response updated successfully.");
+    } catch (error) {
+      console.error("Error updating behaviour test response:", error.message);
+      alert("Failed to update behaviour test response. Please try again.");
+    }
+    }
+  }
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -1017,6 +1008,11 @@ console.log(data);
                 <tbody>{renderTableRows()}</tbody>
               </table>
             </div>
+            {selectedView === "shortlisted" && (<div className="mt-4 flex justify-end gap-2">
+              <button className="bg-black hover:bg-black text-white px-3 py-2 rounded-lg transition-colors shadow-xl" onClick={()=>handleAcceptAll(selectedTest)}>
+                Accept All
+              </button>
+            </div>)}
           </div>
         </div>
       </div>
@@ -1029,7 +1025,6 @@ console.log(data);
     setShowDetailedOverview={setShowDetailedOverview}
   />
 )}
-
     </div>
   );
 };

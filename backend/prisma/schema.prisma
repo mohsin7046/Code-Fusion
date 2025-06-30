@@ -175,7 +175,7 @@ model OnlineTestQuestion {
   summary Summary[]
   studentEmails StudentEmails[]
  }
- 
+
 model Keyword{
   id         String   @id @default(cuid()) @map("_id")
   behavioralInterviewId String
@@ -254,7 +254,7 @@ model StudentEmails {
   codingTestId String?
   onlinepassword String
   behaviouralpassword String
-  codingpassword String
+  codingpassword String?
   onlineTestShortlistedEmails Json?
   behavioralInterviewShortlistedEmails Json?
   codingTestShortlistedEmails Json?

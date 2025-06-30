@@ -123,4 +123,71 @@ export const getBehaviourTest = async(req,res) =>{
   }
 }
 
-export { createBehaviourTest };
+const updateBehaviouralTestResponse = async(req,res)=>{
+    const {id} = req.body;
+   try {
+     const existingResponse = await prisma.aIInterviewResponse.findUnique({
+            where: { id },
+        });
+
+        if (!existingResponse) {
+            return res.status(404).json({ success: false, message: "Response not found" });
+        }
+
+        const updatedResponse = await prisma.aIInterviewResponse.update({
+            where: { id },
+            data: {
+                passed: !existingResponse.passed,
+            },
+        });
+        if (!updatedResponse) {
+            return res.status(500).json({ success: false, message: "Failed to update Behaviour Test Response" });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Behaviour Test Response updated successfully"
+        });
+   } catch (error) {
+         console.error("Error updating Behaviour Test Response:", error);
+         return res.status(500).json({ success: false, message: "Internal server error" });
+   }
+}
+
+
+const updatedBehaviourShortlistedEmails = async(req,res)=>{
+  const {jobId,emails} = req.body;
+   try {
+        if(!jobId || !emails || !Array.isArray(emails) || emails.length === 0) {
+            return res.status(400).json({ success: false, message: "Job ID and emails are required" });
+        }
+        const existJobId = await prisma.studentEmails.findFirst({
+            where: { jobId: jobId }
+        })
+        if (!existJobId) {
+            return res.status(404).json({ success: false, message: "Job not found" });
+        }
+        let arrayEmails = [];
+        for(let email of emails) {
+            arrayEmails.push({
+                email: email,
+                isValidated: false,
+            });
+        }
+        const updatedEmails = await prisma.studentEmails.update({
+            where : { id: existJobId.id },
+            data : {
+               behavioralInterviewShortlistedEmails : arrayEmails,
+            }
+        })
+        if (!updatedEmails) {
+            return res.status(500).json({ success: false, message: "Failed to update Behaviour Shortlisted Emails" });
+        }
+        return res.status(200).json({ success: true, message: "Behaviour Shortlisted Emails updated successfully", emails: updatedEmails.onlineTestShortlistedEmails });
+    } catch (error) {
+        console.error("Error updating Behaviour Shortlisted Emails:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" }); 
+    }
+}
+
+
+export { createBehaviourTest,updateBehaviouralTestResponse,updatedBehaviourShortlistedEmails };
