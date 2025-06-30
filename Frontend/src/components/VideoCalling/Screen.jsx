@@ -4,6 +4,10 @@ import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaPhone, FaPape
 import { io } from 'socket.io-client';
 import MonacoEditor from './MonacoEditor';
 import Split from 'react-split';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { systemPrompt } from "../../hooks/GeminiApi/geminiPrompt.js";
+import { generateResponse } from "../../hooks/GeminiApi/gemini.js";
 
 const socket = io(import.meta.env.VITE_PORT);
 
@@ -29,7 +33,103 @@ const Room = () => {
   const localStreamRef = useRef(null);
   const [userId, setUserId] = useState("");
 
+  const [currentCode, setCurrentCode] = useState("");
+  const [currentOutput, setCurrentOutput] = useState("");
+  const [executionStatus, setExecutionStatus] = useState("");
 
+    const location = useLocation();
+  const formData = location.state;
+  console.log("FormData",formData);
+
+  const handleCodeChange = (code) => {
+    setCurrentCode(code);
+  };
+
+  const handleOutputChange = (output, status) => {
+    setCurrentOutput(output);
+    setExecutionStatus(status);
+  };
+
+  const generateFeedback = async() => {
+    try {
+      if(!currentCode || !currentOutput || !executionStatus){
+        toast.error("Code or output is missing")
+      }
+
+      const prompt = `
+You are an AI code review assistant for an online technical interview platform. Your job is to analyze the candidate's submitted code and its output, then generate structured, constructive feedback.
+
+Given the following information:
+- Submitted Code:
+\`\`\`
+${currentCode}
+\`\`\`
+
+- Execution Output:
+\`\`\`
+${currentOutput}
+\`\`\`
+
+Please analyze the candidate’s performance and generate feedback with the following structured fields in JSON format:
+
+{
+  "correctness": "Evaluate if the code produces the correct output based on the provided input and problem. Mention any incorrect logic or mistakes.",
+  "codeQuality": "Assess the code style, readability, naming conventions, and maintainability.",
+  "efficiency": "Comment on the algorithmic efficiency. Is it optimized? Can time/space complexity be improved?",
+  "strengths": "What did the candidate do well? Any notable positives?",
+  "weaknesses": "Point out areas where the candidate can improve.",
+  "recommendations": "Suggest actionable improvements to enhance the code.",
+  "overallScore": "Give an overall rating between 1 to 10."
+}
+
+Rules:
+- The feedback must match the level of the code (beginner/intermediate/advanced).
+- Do not hallucinate information; base your response strictly on the provided code and output.
+- Output must be valid JSON only. No markdown, comments, or additional text.
+`;
+
+      
+        const fullPrompt =`
+        ${systemPrompt}
+      
+        USER: ${prompt}
+        `
+
+        const response = await generateResponse(fullPrompt);
+        const getResponse = JSON.parse(response);
+
+        console.log("Generate Response",getResponse);
+        
+
+        if(!getResponse){
+          toast.error("Error in generating the Feedback")
+        }
+
+        const createFeedback = await fetch('/api/user/codingtest',{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jobId: formData.jobId,
+            feedback:getResponse,
+            timeTaken:45
+          }),
+        })
+
+        if(!createFeedback){
+          toast.error("Error in creating the Feedback")
+        }
+
+        toast.success("Feedback creating successfully");
+
+    } catch (error) {
+      toast.error("Failed to Generate Feedback");
+      console.log("Error",error);
+    }
+  }
+
+  
   const chat = useRef('');
   const name  = useRef('');
 
@@ -101,6 +201,7 @@ const Room = () => {
           socket.emit('answer', { answer, to: from, from: socket.id });
         });
 
+
         socket.on('answer', async ({ answer, from }) => {
           const peerConnection = peerConnections.current.get(from);
           if (peerConnection) {
@@ -108,12 +209,14 @@ const Room = () => {
           }
         });
 
+
         socket.on('ice-candidate', async ({ candidate, from }) => {
           const peerConnection = peerConnections.current.get(from);
           if (peerConnection) {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
           }
         });
+
 
         socket.on('user-left', ({ userId }) => {
           const peerConnection = peerConnections.current.get(userId);
@@ -140,6 +243,7 @@ const Room = () => {
       peerConnections.current.forEach(connection => connection.close());
     };
   }, [roomId]);
+
 
   const toggleAudio = () => {
     if (localStreamRef.current) {
@@ -168,10 +272,11 @@ const Room = () => {
     }
   };
 
-  const endCall = () => {
+  const endCall = async() => {
     socket.emit('leave-room', { roomId, userId: socket.id });
     localStreamRef.current?.getTracks().forEach(track => track.stop());
     peerConnections.current.forEach(connection => connection.close());
+    await generateFeedback();
     navigate('/');
   };
 
@@ -246,7 +351,7 @@ const Room = () => {
                   </div>
                 </div>
 
-                {/* Remote videos */}
+                
                 {Array.from(remoteStreams).map(([userId, stream], index) => (
                   <div key={userId} className={getVideoContainerClasses()}>
                     <video
@@ -267,7 +372,7 @@ const Room = () => {
           </div>
         </div>
       ): (
-        // Split view when editor is open
+        
         <Split 
           className="flex flex-1"
           sizes={[60, 40]}
@@ -280,11 +385,11 @@ const Room = () => {
           direction="horizontal"
           cursor="col-resize"
         >
-          {/* Meeting area */}
+          
           <div className="h-full overflow-hidden">
              <div className="w-full h-full overflow-y-auto">
               <div className={getLayoutClasses()}>
-                {/* Local video */}
+                
                 <div className={getVideoContainerClasses()}>
                   <video
                     ref={localVideoRef}
@@ -298,7 +403,7 @@ const Room = () => {
                   </div>
                 </div>
 
-                {/* Remote videos */}
+                
                 {Array.from(remoteStreams).map(([userId, stream], index) => (
                   <div key={userId} className={getVideoContainerClasses()}>
                     <video
@@ -318,9 +423,15 @@ const Room = () => {
             </div>
           </div>
 
-          {/* Code editor */}
+          
           <div className="h-full overflow-hidden border-l border-gray-700">
-            <MonacoEditor roomId={roomId} userId={userId} />
+           <MonacoEditor 
+                roomId={roomId} 
+                userId={userId} 
+                jobId={formData?.jobId}
+                onCodeChange={handleCodeChange}
+                onOutputChange={handleOutputChange}
+              />
           </div>
         </Split>
       )}

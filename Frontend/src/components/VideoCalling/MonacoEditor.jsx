@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import  { useState, useRef, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { languageOptions, codeSnippets, langFiles } from "./constants.js";
@@ -5,6 +6,7 @@ import axios from "axios";
 import Split from "react-split";
 import { Sun, Moon } from "lucide-react";
 import { io } from 'socket.io-client';
+
 
 const socket = io(import.meta.env.VITE_PORT);
 
@@ -52,6 +54,18 @@ function MonacoEditor(props){
   const [theme, setTheme] = useState("vs-dark");
 
 
+useEffect(() => {
+    if (props.onCodeChange) {
+      props.onCodeChange(value);
+    }
+  }, [value, props]);
+
+  useEffect(() => {
+    if (props.onOutputChange) {
+      props.onOutputChange(output, status);
+    }
+  }, [output, status, props]);
+
 
   useEffect(() => {
     socket.connect();
@@ -73,21 +87,10 @@ function MonacoEditor(props){
   },[])
 
 
-  // useEffect(() => {
-   
-  //   socket.emit("load-code", {roomId:props.roomId});
-  //   socket.on("initial-load-code", (code)=>(setValue(code)));
-  //   return () => {
-  //     socket.off("initial-load-code", (code)=>(setValue(code)));
-  //   };
-  // }, []);
 
 
   useEffect(() => {
-    // const savedCode = localStorage.getItem(`code-${language}`);
-    
-    // setValue(savedCode || codeSnippets[language]);
-
+  
     const savedLanguage = localStorage.getItem("selectedLanguage") || "java";
     setLanguage(savedLanguage);
 
@@ -96,9 +99,6 @@ function MonacoEditor(props){
     
   }, [language]);
 
-//   useEffect(() => {
-  
-// }, []);
 
 
   const onMount = (editor) => {
@@ -114,8 +114,7 @@ function MonacoEditor(props){
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
     localStorage.setItem("selectedLanguage", newLanguage);
-    // const savedCode = localStorage.getItem(`code-${newLanguage}`);
-    // setValue(savedCode || codeSnippets[newLanguage]);
+
   };
 
   const handleOutputChange = (e) => setOnCase(e.target.value);
@@ -124,7 +123,7 @@ function MonacoEditor(props){
     // setValue(newValue);
     console.log(props.roomId);
     socket.emit('code-changed', { roomId: props.roomId, code: newValue });
-    // socket.on("realtime-load-code", (code)=>setValue(code));
+    
   };
 
   const handleAddCase = () => {

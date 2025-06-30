@@ -141,6 +141,7 @@ model OnlineTestQuestion {
   onlineTest  OnlineTest @relation(fields: [onlineTestId], references: [id], onDelete: Cascade)
  }
 
+
  model Subject{
   id          String   @id @default(cuid()) @map("_id")
   testId      String
@@ -152,6 +153,7 @@ model OnlineTestQuestion {
   onlineTest OnlineTest @relation(fields: [testId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
  }
+
 
  model BehavioralInterview {
   id  String @id @default(cuid()) @map("_id")
@@ -219,8 +221,9 @@ model BehavioralInterviewQuestion {
   codingTestId String
   candidateId String
   candidateJobApplicationId String
+  code String?
   feedback Json?
-  timeTaken Int
+  timeTaken Int?
   submittedAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   candidateJobApplication CandidateJobApplication @relation(fields: [candidateJobApplicationId], references: [id], onDelete: Cascade)

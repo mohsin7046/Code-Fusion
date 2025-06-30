@@ -178,6 +178,7 @@ function InterviewSummary() {
           recruiterId: summaryData?.recruiterId,
           onlineTestId: summaryData?.onlineTestId,
           behavioralInterviewId: summaryData?.behavioralInterviewId,
+          codingTestId: summaryData?.codingTestId,
           emails: emailsArray,
         }),
       });

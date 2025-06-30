@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 
 export const Addallemails = async (req, res) => {
     try {
-        const { jobId, recruiterId, onlineTestId,behavioralInterviewId, emails } = req.body;
+        const { jobId, recruiterId, onlineTestId,behavioralInterviewId, emails,codingTestId} = req.body;
         
-        if (!jobId || !recruiterId || !emails || !Array.isArray(emails)) {
+        if (!jobId || !recruiterId || !emails || !Array.isArray(emails) || !codingTestId) {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
         }
 
@@ -30,6 +30,15 @@ export const Addallemails = async (req, res) => {
             },
         })
 
+        const CTpassword = await prisma.codingTest.findUnique({
+            where:{
+               id:codingTestId 
+            },
+            select:{
+               password:true 
+            }
+        })
+
         let arrayEmails = [];
 
         for (let email of emails) {
@@ -37,6 +46,7 @@ export const Addallemails = async (req, res) => {
               email: email,
               isValidated: false,
               isBehvaioralValidated: false,
+              isCodingValidate:false
      });
     }
 
@@ -45,8 +55,10 @@ export const Addallemails = async (req, res) => {
                 jobId: jobId,
                 recruiterId: recruiterId,
                 onlineTestId: onlineTestId || null,
+                codingTestId:codingTestId || null,
                 onlinepassword: OApassword.password,
                 behaviouralpassword: BIpassword.password,
+                codingpassword : CTpassword.password,
                 behavioralInterviewId: behavioralInterviewId || null,
                 emails: arrayEmails
             },
@@ -140,5 +152,130 @@ export const Addallemails = async (req, res) => {
     } catch (error) {
         console.error("Error adding emails:", error);
         return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
+export const UpdateOnlineTestShortlist = async (req, res) => {
+    try {
+        const {emails,jobId}  = req.body;
+
+        if(!emails || emails.length === 0 || !jobId){
+            return res.status(400).json({message:"All feilds are required"})
+        }
+
+        const existed = await prisma.studentEmails.findFirst({
+            where:{
+                jobId:jobId
+            }
+        });
+
+        if(!existed){
+            return res.status(400).json({message:"Student Emails not Found"})
+        }
+
+        const createdShortlistEmails = await prisma.studentEmails.update({
+            where:{
+                id:existed.id
+            },
+
+            data:{
+                onlineTestShortlistedEmails:emails
+            }
+        })
+
+        if(!createdShortlistEmails){
+            return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
+        }
+
+        return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
+
+    } catch (error) {
+        console.log("Error",error);
+        
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+
+export const UpdateBehaviourTestShortlist = async (req, res) => {
+    try {
+        const {emails,jobId}  = req.body;
+
+        if(!emails || emails.length === 0 || !jobId){
+            return res.status(400).json({message:"All feilds are required"})
+        }
+
+        const existed = await prisma.studentEmails.findFirst({
+            where:{
+                jobId:jobId
+            }
+        });
+
+        if(!existed){
+            return res.status(400).json({message:"Student Emails not Found"})
+        }
+
+        const createdShortlistEmails = await prisma.studentEmails.update({
+            where:{
+                id:existed.id
+            },
+
+            data:{
+                behavioralInterviewShortlistedEmails:emails
+            }
+        })
+
+        if(!createdShortlistEmails){
+            return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
+        }
+
+        return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
+
+    } catch (error) {
+        console.log("Error",error);
+        
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+
+export const UpdateCodingTestShortlist = async (req, res) => {
+    try {
+        const {emails,jobId}  = req.body;
+
+        if(!emails || emails.length === 0 || !jobId){
+            return res.status(400).json({message:"All feilds are required"})
+        }
+
+        const existed = await prisma.studentEmails.findFirst({
+            where:{
+                jobId:jobId
+            }
+        });
+
+        if(!existed){
+            return res.status(400).json({message:"Student Emails not Found"})
+        }
+
+        const createdShortlistEmails = await prisma.studentEmails.update({
+            where:{
+                id:existed.id
+            },
+
+            data:{
+                codingTestShortlistedEmails:emails
+            }
+        })
+
+        if(!createdShortlistEmails){
+            return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
+        }
+
+        return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
+
+    } catch (error) {
+        console.log("Error",error);
+        return res.status(500).json({message:"Internal Server Error"})
     }
 }

@@ -1,30 +1,64 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Home = () => {
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [email,setEmail] = useState('');
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+
+  const { jobId } = useParams();
 
   const navigate = useNavigate();
 
-  const handleJoin = () => {
-    const VALID_PASSWORD = 'codemeet123';
+  const handleJoin = async () => {
     if (!name.trim()) {
-      setError('Name is required.');
+      setError("Name is required.");
       return;
     }
 
-    if (password !== VALID_PASSWORD) {
-      setError('Invalid password.');
-      return;
+    const res = await fetch("/api/user/codingtest/CodingTestvalidateUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        jobId: jobId || "",
+        password: password,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      toast.error(data.message || "Failed to Validate User");
+      throw new Error("Failed to Validate User");
     }
 
-    alert(`Welcome ${name}! Joining room...`);
+    toast.success(`Welcome ${name}! Joining room...`);
+
+    const createResponse = await fetch('/api/user/codingtest/CodingTestResponse',{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        codingTestId:data?.data?.codingTests?.id,
+        candidateId:email,
+        candidateJobApplicationId:data?.data?.CandidateJobApplication?.id
+      }),
+    })
+
+    if(!createResponse){
+      toast.error("Error creating your Response!!")
+    }
+
+    toast.success("Your Response has stored!!")
 
     const roomId = Math.random().toString(36).substr(2, 9);
-    navigate(`/room/${roomId}`, { state: { name } });
+    navigate(`/room/${roomId}`, { state: { name, jobId, userId: data && data.data ? data.data.id : undefined } });
   };
 
   return (
@@ -34,7 +68,8 @@ const Home = () => {
           CodeMeet
         </h1>
         <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-          Real-time video conferencing and collaborative coding platform connecting students and recruiters
+          Real-time video conferencing and collaborative coding platform
+          connecting students and recruiters
         </p>
       </div>
 
@@ -59,7 +94,7 @@ const Home = () => {
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50"
             />
           </div>
-          
+
           <div>
             <input
               type="password"
@@ -86,9 +121,7 @@ const Home = () => {
       </div>
 
       <div className="mt-8 text-center">
-        <p className="text-sm text-gray-500">
-          Secure • Fast • Collaborative
-        </p>
+        <p className="text-sm text-gray-500">Secure • Fast • Collaborative</p>
       </div>
     </div>
   );

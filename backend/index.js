@@ -15,6 +15,7 @@ import JobApplication from './routes/jobApplication.route.js';
 import OnlineTestResponse from './routes/userRoutes/onlineTest_response.route.js';
 import BehaviourTestResponse from './routes/userRoutes/behaviourTest_response.route.js';
 import CodingTest from './routes/recruiterRoutes/codingTest.route.js'
+import CodingResponse from './routes/userRoutes/codingTest_response.route.js'
 import Redis from 'ioredis'
 import { publicMessage } from './rabbitQueue/rabbit.js';
 
@@ -47,6 +48,7 @@ app.use('/api/recruiter', BehaviourTest);
 app.use('/api/user/onlinetest', OnlineTestResponse);
 app.use('/api', JobApplication);
 app.use('/api/user/behaviouraltest', BehaviourTestResponse);
+app.use('/api/user/codingtest', CodingResponse);
 app.use('/api/recruiter',CodingTest);
 
 const prisma = new PrismaClient();
@@ -58,19 +60,15 @@ io.on('connection', (socket) => {
     console.log(`User ${userId} joining room ${roomId}`);
     socket.join(roomId);
 
-    if (!rooms.has(roomId)) {
-      rooms.set(roomId, new Set());
-    }
+    await redis.sadd(`room:${roomId}`, userId);
 
-    rooms.get(roomId).add(userId);
 
     const cached = await redis.get(roomId);
     socket.to(roomId).emit('user-joined', { userId, socketId: socket.id });
     socket.emit('load-code', cached || '');
 
-    const existingUsers = Array.from(rooms.get(roomId)).filter(
-      (id) => id !== userId
-    );
+    const allUsers = await redis.smembers(`room:${roomId}`);
+    const existingUsers = allUsers.filter(id => id !== userId);
 
     socket.emit('existing-users', existingUsers);
   });
@@ -103,24 +101,32 @@ io.on('connection', (socket) => {
     handleUserLeaving(socket, roomId, userId);
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async() => {
     console.log('User disconnected:', socket.id);
-    rooms.forEach((users, roomId) => {
-      if (users.has(socket.id)) {
-        handleUserLeaving(socket, roomId, socket.id);
+
+    const roomKeys = await redis.keys('room:*');
+
+    for (const key of roomKeys) {
+      const roomId = key.split(':')[1];
+      const removed = await redis.srem(key, socket.id);
+      if (removed > 0) {
+        await handleUserLeaving(socket, roomId, socket.id);
       }
-    });
+    }
   });
 });
 
-function handleUserLeaving(socket, roomId, userId) {
+
+async function handleUserLeaving(socket, roomId, userId) {
   console.log(`User ${userId} leaving room ${roomId}`);
-  if (rooms.has(roomId)) {
-    rooms.get(roomId).delete(userId);
-    if (rooms.get(roomId).size === 0) {
-      rooms.delete(roomId);
-    }
+
+  await redis.srem(`room:${roomId}`, userId);
+  const remaining = await redis.scard(`room:${roomId}`);
+
+  if (remaining === 0) {
+    await redis.del(`room:${roomId}`);
   }
+
   socket.to(roomId).emit('user-left', { userId });
   socket.leave(roomId);
 }

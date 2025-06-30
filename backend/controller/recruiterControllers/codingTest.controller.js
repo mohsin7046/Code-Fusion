@@ -40,6 +40,7 @@ export const createCodingTest = async (req,res)=>{
             hasAIInterview: jobExists.hasAIInterview,
             hasOnlineTest: jobExists.hasOnlineTest,
             hasCodingTest : jobExists.hasCodingTest,
+            password : Math.random().toString(36).slice(-8),
             onlineTestId: onlineTestId,
             behaviourTestId: behaviourTestId,
             codingTestId : codingTest.id
