@@ -201,7 +201,6 @@ model BehavioralInterviewQuestion {
   id  String @id @default(cuid()) @map("_id")
   jobId String
   recruiterId String
-  candidateJobApplicationId String
   title String
   description String
   duration Int
@@ -210,9 +209,22 @@ model BehavioralInterviewQuestion {
   updatedAt   DateTime @updatedAt
   jobs Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
-  candidateJobApplication CandidateJobApplication @relation(fields: [candidateJobApplicationId], references: [id], onDelete: Cascade)
   summary Summary[]
   rooms Room[]
+  codingTestResponses CodingTestResponse[]
+ }
+
+ model CodingTestResponse {
+  id         String   @id @default(cuid()) @map("_id")
+  codingTestId String
+  candidateId String
+  candidateJobApplicationId String
+  feedback Json?
+  timeTaken Int
+  submittedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  candidateJobApplication CandidateJobApplication @relation(fields: [candidateJobApplicationId], references: [id], onDelete: Cascade)
+  codingTest CodingTest @relation(fields: [codingTestId], references: [id], onDelete: Cascade)
  }
 
 
@@ -293,7 +305,7 @@ model StudentEmails {
 
   onlineTestResponse OnlineTestResponse[]
   aiInterviewResponse AIInterviewResponse[]
-  codingTest  CodingTest[]
+  codingTestResponse CodingTestResponse[]
 
   onlineTestCompleted Boolean @default(false)
   aiInterviewCompleted Boolean @default(false)
