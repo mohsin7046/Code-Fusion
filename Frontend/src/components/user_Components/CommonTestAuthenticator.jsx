@@ -59,7 +59,6 @@ const CommonTestAuthenticator = () => {
        toast.error(data.message || "Failed to fetch test description");
         throw new Error("Failed to fetch test description");
       }
-      const data = await res.json();
       setData({
         title : data.data?.title,
         description : data.data?.description,
