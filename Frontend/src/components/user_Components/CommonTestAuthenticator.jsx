@@ -59,6 +59,7 @@ const CommonTestAuthenticator = () => {
        toast.error(data.message || "Failed to fetch test description");
         throw new Error("Failed to fetch test description");
       }
+      const data = await res.json();
       setData({
         title : data.data?.title,
         description : data.data?.description,
@@ -143,12 +144,7 @@ const CommonTestAuthenticator = () => {
       }
 
      if (!studentData.email || !JobId) {
-       toast.error('Email Not Found');
-       return;
-     }
-
-     if(endpoint === "") {
-       alert('Endpoint not found');
+       alert('Email not found');
        return;
      }
  
