@@ -27,9 +27,12 @@ const Room = () => {
   const peerConnections = useRef(new Map());
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const localStreamRef = useRef(null);
+  const [userId, setUserId] = useState("");
+
 
   const chat = useRef('');
   const name  = useRef('');
+
   const createPeerConnection = (userId, stream) => {
     const peerConnection = new RTCPeerConnection(configuration);
     peerConnections.current.set(userId, peerConnection);
@@ -55,6 +58,7 @@ const Room = () => {
     return peerConnection;
   };
 
+
   useEffect(() => {
     const startCall = async () => {
       try {
@@ -64,6 +68,10 @@ const Room = () => {
           localVideoRef.current.srcObject = stream;
         }
         toggleLocalStreamTracks();
+
+        socket.on("connect", () => {
+         setUserId(socket.id);
+         });
 
         socket.emit('join-room', { roomId, userId: socket.id });
 
@@ -166,6 +174,7 @@ const Room = () => {
     peerConnections.current.forEach(connection => connection.close());
     navigate('/');
   };
+
   const handleSendMessage = () => {
     name.current = document.getElementById('chatname').textContent;
     chat.current = document.getElementById('chats').value;
@@ -183,6 +192,7 @@ const Room = () => {
     });
   }, []);
 
+
   const getLayoutClasses = () => {
     const totalParticipants = 1 + remoteStreams.size;
     
@@ -193,6 +203,7 @@ const Room = () => {
     }
   };
 
+  
   const getVideoContainerClasses = () => {
     const totalParticipants = 1 + remoteStreams.size;
     const baseClasses = "relative bg-black rounded-lg overflow-hidden";
@@ -309,7 +320,7 @@ const Room = () => {
 
           {/* Code editor */}
           <div className="h-full overflow-hidden border-l border-gray-700">
-            <MonacoEditor />
+            <MonacoEditor roomId={roomId} userId={userId} />
           </div>
         </Split>
       )}

@@ -445,7 +445,7 @@ function InterviewSummary() {
           )}
         </div>
 
-        {data?.job?.hasCodingTest && (
+        {data?.codingTest && (
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-orange-500 to-red-600 p-6">
               <div className="flex items-center">
@@ -454,30 +454,17 @@ function InterviewSummary() {
                   <h2 className="text-2xl font-bold text-white">
                     Live Coding Interview
                   </h2>
-                  <p className="text-orange-100">Real-time Problem Solving</p>
+                  <p className="text-orange-100">{data?.codingTest?.title}</p>
                 </div>
               </div>
             </div>
             <div className="p-6">
               <p className="text-gray-600 mb-4">
-                Interactive coding session to evaluate your problem-solving
-                approach and technical implementation skills
+                {data?.codingTest?.description}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Algorithms",
-                  "Data Structures",
-                  "System Design",
-                  "Code Quality",
-                ].map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
+              <p className="font-semibold text-lg">
+                      {formatTime(data?.codingTest?.duration)}
+              </p>
             </div>
           </div>
         )}

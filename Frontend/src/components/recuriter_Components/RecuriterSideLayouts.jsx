@@ -14,6 +14,8 @@ import BasicInfo from './Dashboard/BasicInfo';
 import AllInterviews from './AllInterviews/AllInterviews';
 import CommonDetailsOverview from './Common_Components/CommonDetailsOverview';
 import GeneratedBehavior from './Dashboard/BehaviourTest/GeneratedBehavior';
+import CodingTest from './Dashboard/CodingTest/codingTest';
+
 
 function RecuriterSideLayouts() {
     return (
@@ -36,6 +38,7 @@ function RecuriterSideLayouts() {
                             <Route path='generate-test' element={<GeneratedQuestion />} />
                             <Route path='behavior-test' element={<BehaviourSubject />} />
                             <Route path='generate-behavior-test' element={<GeneratedBehavior />} />
+                            <Route path='coding-test' element={<CodingTest />} />
                         
                             <Route path='interviews-summary' element = { <InterviewSummary />} />
                             <Route path='info' element = { <BasicInfo />} />

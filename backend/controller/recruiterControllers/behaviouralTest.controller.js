@@ -72,6 +72,7 @@ const createBehaviourTest = async(req,res) =>{
         recruiterId: behaviourTest.recruiterId,
         hasAIInterview: JobCreated.hasAIInterview,
         hasOnlineTest: JobCreated.hasOnlineTest,
+        hasCodingTest : JobCreated.hasCodingTest,
         onlineTestId: onlineTestId,
         behaviourTestId: behaviourTest.id,
        }

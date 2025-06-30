@@ -54,6 +54,9 @@ function GeneratedBehavior(props) {
   }, []);
 
 const handleCheck = async () => {
+  if(tokenData.hasCodingTest){
+    props.Next();
+  }else{
   const response = await createSummary(
         tokenData.jobId,
         tokenData.recruiterId,
@@ -61,11 +64,12 @@ const handleCheck = async () => {
         tokenData.behaviourTestId
   )
   if(response.success){
-    alert(response.message);
+    toast.success(response.message)
     props.Next();
   }else{
-    alert(response.message);
+    toast.error(response.message)
   }
+}
 }
 
   if (loading) return (

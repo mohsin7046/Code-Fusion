@@ -1,5 +1,5 @@
 function useCreateSummary() {
-    const createSummary = async (jobId,recruiterId,onlineTestId,behavioralInterviewId)=>{
+    const createSummary = async (jobId,recruiterId,onlineTestId,behavioralInterviewId,codingTestId)=>{
 
         try {
             const response = await fetch('/api/recruiter/create-summary', {
@@ -12,6 +12,7 @@ function useCreateSummary() {
                     recruiterId : recruiterId,
                     onlineTestId : onlineTestId || null,
                     behavioralInterviewId : behavioralInterviewId || null,
+                    codingTestId : codingTestId || null
                 }),
             });
             if(!response.ok) {

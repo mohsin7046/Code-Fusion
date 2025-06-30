@@ -80,9 +80,10 @@ export const getuserDashboardOnlineTest = async (req, res) => {
                         currentPhase: true,
                         onlineTestCompleted: true,
                         hired: true,
+                        name:true,
+                        candidateId:true,
                         onlineTestResponse: {
                             select: {
-                                name: true,
                                 score: true,
                                 percentage: true,
                                 totalQuestions: true,
@@ -90,9 +91,19 @@ export const getuserDashboardOnlineTest = async (req, res) => {
                                 cheatingDetected: true,
                                 cheatingReason: true,
                                 passed: true,
-                                timeTaken: true
+                                timeTaken: true,
                             }
                         }
+                    }
+                },
+                onlineTests:{
+                    select:{
+                        title:true,
+                        description:true,
+                        duration:true,
+                        totalQuestions:true,
+                        passingScore:true,
+                        subjects:true,
                     }
                 }
             }

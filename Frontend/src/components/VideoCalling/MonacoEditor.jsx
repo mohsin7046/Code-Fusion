@@ -4,6 +4,10 @@ import { languageOptions, codeSnippets, langFiles } from "./constants.js";
 import axios from "axios";
 import Split from "react-split";
 import { Sun, Moon } from "lucide-react";
+import { io } from 'socket.io-client';
+
+const socket = io(import.meta.env.VITE_PORT);
+
 
 const executeCode = async (language, sourceCode, onCase) => {
     try {
@@ -35,7 +39,8 @@ const executeCode = async (language, sourceCode, onCase) => {
     }
 };
 
-function MonacoEditor(){
+
+function MonacoEditor(props){
     const editorRef = useRef();
   const [language, setLanguage] = useState("java");
   const [value, setValue] = useState("");
@@ -46,16 +51,55 @@ function MonacoEditor(){
   const [status, setStatus] = useState("");
   const [theme, setTheme] = useState("vs-dark");
 
+
+
   useEffect(() => {
-    const savedCode = localStorage.getItem(`code-${language}`);
-    setValue(savedCode || codeSnippets[language]);
+    socket.connect();
+      socket.emit("join-room", {roomId:props.roomId, userId:props.userId });
+      console.log("User joined room"); 
+      socket.on('realtime-load-code',(code)=>{
+        setValue(code);
+      })
+      return () => {
+      socket.disconnect(); 
+    };
+  }, [props.roomId, props.userId]);
+
+  
+  useEffect(()=>{
+    socket.on('load-code',(code) => {
+      setValue(code);
+    })
+  },[])
+
+
+  // useEffect(() => {
+   
+  //   socket.emit("load-code", {roomId:props.roomId});
+  //   socket.on("initial-load-code", (code)=>(setValue(code)));
+  //   return () => {
+  //     socket.off("initial-load-code", (code)=>(setValue(code)));
+  //   };
+  // }, []);
+
+
+  useEffect(() => {
+    // const savedCode = localStorage.getItem(`code-${language}`);
+    
+    // setValue(savedCode || codeSnippets[language]);
 
     const savedLanguage = localStorage.getItem("selectedLanguage") || "java";
     setLanguage(savedLanguage);
 
     const savedTestCases = JSON.parse(localStorage.getItem(`testcase-${language}`)) || [];
     setCase(savedTestCases);
+    
   }, [language]);
+
+//   useEffect(() => {
+  
+// }, []);
+
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -70,15 +114,17 @@ function MonacoEditor(){
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
     localStorage.setItem("selectedLanguage", newLanguage);
-    const savedCode = localStorage.getItem(`code-${newLanguage}`);
-    setValue(savedCode || codeSnippets[newLanguage]);
+    // const savedCode = localStorage.getItem(`code-${newLanguage}`);
+    // setValue(savedCode || codeSnippets[newLanguage]);
   };
 
   const handleOutputChange = (e) => setOnCase(e.target.value);
 
   const handleCodeChange = (newValue) => {
-    setValue(newValue);
-    localStorage.setItem(`code-${language}`, newValue);
+    // setValue(newValue);
+    console.log(props.roomId);
+    socket.emit('code-changed', { roomId: props.roomId, code: newValue });
+    // socket.on("realtime-load-code", (code)=>setValue(code));
   };
 
   const handleAddCase = () => {
@@ -152,7 +198,6 @@ function MonacoEditor(){
             language={language}
             value={value}
             onChange={handleCodeChange}
-            
           />
         </div>
 

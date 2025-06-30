@@ -34,7 +34,7 @@ export const getRecruiterToken = () => {
             console.error("Decoded job token is invalid");
             return null;
         }
-        return { recruiterId: decodedToken.recruiterId, jobId: decodedToken.jobId ,hasAiInterview: decodedToken.hasAIInterview, hasOnlineTest: decodedToken.hasOnlineTest, onlineTestId: decodedToken.onlineTestId, behaviourTestId : decodedToken.behaviourTestId };
+        return { recruiterId: decodedToken.recruiterId, jobId: decodedToken.jobId ,hasAiInterview: decodedToken.hasAIInterview, hasOnlineTest: decodedToken.hasOnlineTest, onlineTestId: decodedToken.onlineTestId, behaviourTestId : decodedToken.behaviourTestId, codingTestId : decodedToken.codingTestId, hasCodingTest : decodedToken.hasCodingTest };
         
     } catch (error) {
         console.error("Error decoding job token:", error);

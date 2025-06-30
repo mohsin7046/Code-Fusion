@@ -100,6 +100,13 @@ const createSummary = async (req, res) => {
                         evaluationCriteria: true,
                         keyWords: true
                     }
+                },
+                codingTest:{
+                    select:{
+                        title:true,
+                        description:true,
+                        duration:true
+                    }
                 }
         }
         });

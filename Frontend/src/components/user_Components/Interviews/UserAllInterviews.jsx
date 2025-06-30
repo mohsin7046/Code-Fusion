@@ -1,28 +1,59 @@
 import { ArrowLeft } from "lucide-react"
-import {Link} from 'react-router-dom'
-function UserAllInterviews() {
-     const interviews = [
-    {
-      name: "AI role",
-      description: "This is for frontend, backend, database expert",
-      date : "2023-10-15",
-      time: "10:00 AM",
-      status: "completed",
-    },{
-      name: "PERN stack role",
-      description: "This is for frontend, backend, database expert using PERN stack",
-      date : "2023-10-16",
-      time: "12:00 AM",
-      status: "completed",
-    }
-    ]
+import { useEffect,useState } from "react"
 
+import {useNavigate} from "react-router-dom"
+import getToken from "../../../hooks/role";
+function UserAllInterviews() {
+
+  const formData = getToken();
+  const navigate = useNavigate();
+  
+  const [interviews, setInterviews] = useState([]);
+  const [jobId,setjobId] = useState("");
+
+    useEffect(()=>{
+      const fetchCurrentInterviews = async () => {
+        try {
+          const res = await fetch('/api/user/onlinetest/getUserDashboardData', {
+            method : 'POST',
+            headers : {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email: formData.email})
+          });
+
+          const data = await res.json();
+
+          if(!res.ok){
+            console.log("Error fetching current interviews:", data.message);
+            throw new Error(data.message || "Failed to fetch current interviews");
+          }
+
+          setjobId(data?.data[0]?.id)
+
+          setInterviews(data?.data);
+
+        } catch (error) {
+          console.error("Error fetching current interviews:", error);
+        }
+      }
+      fetchCurrentInterviews();
+    },[])
+
+
+      
+    const handleNavigate = (index) => {
+      console.log(jobId);
+      
+      navigate(`/user/dashboard/all-interview/${index+1}`,{state : {jobId: jobId}});
+    }
+    
   return (
-        <>
+    <>
     <div className="p-6 text-black">
         <div className="flex flex-row items-center  font-semibold text-3xl self-start "> 
             <ArrowLeft onClick={()=> window.location.href='/dashboard'} className="w-8 h-5 mb-4"  />
-            <h2 className="text-2xl font-semibold mb-4">All Interview</h2>
+            <h2 className="text-2xl font-semibold mb-4">Current Interview</h2>
         </div>
       
       <div className="overflow-x-auto">
@@ -40,19 +71,18 @@ function UserAllInterviews() {
           </thead>
           <tbody className="bg-white">
             {interviews.map((item,index) => (
+
               <tr key={item.id} className="transition">
                 <td className="px-4 py-2 border">{index+1}</td>
-                <td className="px-4 py-2 border">{item.name}</td>
+                <td className="px-4 py-2 border">{item.interviewRole}</td>
                 <td className="px-4 py-2 border">{item.description}</td>
                 <td className="px-4 py-2 border">{item.date}</td>
                 <td className="px-4 py-2 border">{item.time}</td>
-                <td className="px-4 py-2 border">{item.status}</td>
+                <td className="px-4 py-2 border">{item.applications[0].status}</td>
                 <td className="px-4 py-2 border">
-                  <Link to={`/user/dashboard/all-interview/${index+1}`}>
-                  <button className="bg-gray-700 text-white px-3 py-1 rounded">
+                  <button  onClick={() => handleNavigate(index)} className="bg-gray-700 text-white px-3 py-1 rounded" >
                     Detailed Overview
                   </button>
-                  </Link>
                 </td>
               </tr>
             ))}

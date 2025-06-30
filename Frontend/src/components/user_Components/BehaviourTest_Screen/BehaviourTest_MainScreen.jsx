@@ -211,11 +211,20 @@ html
   }
 });
 
-        vapiInstance.on('error', (error) => {
-          console.error('Vapi error:', error);
-          addMessage('system', `Error: ${error.message}`, 'error');
-          setIsLoading(false);
-        });
+ vapiInstance.on('error', (error) => {
+  console.error('Vapi error:', error);
+  if (error?.error?.type === 'ejected') {
+    addMessage('system', 'Call ended: ' + error.error.msg, 'error');
+    setIsConnected(false);
+    setCurrentSpeaker(null);
+    setIsLoading(false);
+    endCall(); 
+  } else {
+    addMessage('system', `Error: ${error.message}`, 'error');
+    setIsLoading(false);
+  }
+});
+
 
       } catch (error) {
         console.error('Failed to initialize Vapi:', error);
@@ -227,8 +236,6 @@ html
       initVapi();
     }
   }, [apiKey]);
-
-
 
 
   // Session timer
@@ -398,7 +405,6 @@ html
     if (updatedData) {
       navigate('/feed', { state: updatedData });
     }
-  
   }
     setCallObject(null);
   };
@@ -453,9 +459,10 @@ html
         <div className="flex justify-between items-center">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900">Ques Ans Prep</h1>
         </div>
-        <div className="text-red-600 font-bold text-xl">
-                  ⏳ {formatTime(timer)}
+        {isConnected && <div className="text-red-600 font-bold text-xl">
+                ⏳ {formatTime(timer)}
                 </div>
+        }
       </div>
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Main Video Area */}

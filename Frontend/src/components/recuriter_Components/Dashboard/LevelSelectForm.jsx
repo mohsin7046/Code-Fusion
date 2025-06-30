@@ -9,6 +9,7 @@ import BasicInfo from './BasicInfo';
 import { ArrowLeft } from "lucide-react";
 import GeneratedBehavior from "./BehaviourTest/GeneratedBehavior";
 import { getRecruiterToken } from "../../../hooks/role";
+import CodingTest from "./CodingTest/codingTest";
 
 function LevelSelectForm() {
   const [step, setStep] = useState(1);
@@ -17,7 +18,7 @@ function LevelSelectForm() {
 
     const hasAIInterview = tokenData?.hasAiInterview;
   const hasOnlineTest = tokenData?.hasOnlineTest;
-
+  const hasCodingTest = tokenData?.hasCodingTest;
   useEffect(() => {
     const token = getRecruiterToken();
     setTokenData(token);
@@ -41,6 +42,12 @@ function LevelSelectForm() {
       );
     }
 
+    if(hasCodingTest){
+      dynamicSteps.push(
+        <CodingTest Next={()=> GoToNext() } />
+      )
+    }
+
     dynamicSteps.push(<InterviewSummary />);
   }
 
@@ -48,6 +55,7 @@ function LevelSelectForm() {
   }, [tokenData]);
 
   const totalSteps = steps.length;
+  console.log(totalSteps)
 
   const GoToNext = () => {
     setStep((prev) => Math.min(prev + 1, totalSteps));

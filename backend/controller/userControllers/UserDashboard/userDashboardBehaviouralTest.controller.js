@@ -1,23 +1,31 @@
+import {PrismaClient} from '@prisma/client'
+
+const prisma = new PrismaClient();
+
 export const getuserDashboardBehaviourTest = async (req,res) => {
     try {
         const {jobId} = req.body;
+
+        console.log(jobId);
+        
     
         if(!jobId){
             return res.status(400).json({message:"JobId not found"});
         }
     
-        const BehaviourjobData = await prisma.job.findUnique({
-            where:{id:jobId,hasOnlineTest:true},
+        const BehaviourjobData = await prisma.job.findFirst({
+            where:{id:jobId,hasAIInterview:true},
             select:{
-                candidateJobApplication:{
+                CandidateJobApplication:{
+                    select:{
                     id:true,
                     status:true,
                     currentPhase:true,
                     aiInterviewCompleted:true,
                     hired:true,
                     aiInterviewResponse:{
+                        select:{
                             name:true,
-                            transcript:true,
                             overallScore:true,
                             subjectiveScore:true,
                             strengths:true,
@@ -26,8 +34,20 @@ export const getuserDashboardBehaviourTest = async (req,res) => {
                             status:true,
                             passed:true,
                             feedback:true,
+                        }
                     }
                 }
+            },
+            behavioralInterviews:{
+                select:{
+                    title:true,
+                    description:true,
+                    totalQuestions:true,
+                    duration:true,
+                    passingScore:true,
+                    evaluationCriteria:true,
+                }
+            }
             }
         })
     
@@ -37,6 +57,8 @@ export const getuserDashboardBehaviourTest = async (req,res) => {
     
         return res.status(200).json({message:"Behaviour Test found successfully",data:BehaviourjobData})
     } catch (error) {
-        return res.status(500).json({message:"Internal Server Error!!!"})
+        console.error("Error in getuserDashboardBehaviourTest:", error);
+        return res.status(500).json({message: "Internal Server Error"});
+
     }
 }
