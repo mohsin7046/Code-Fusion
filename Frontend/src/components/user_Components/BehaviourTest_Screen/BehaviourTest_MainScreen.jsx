@@ -371,6 +371,8 @@ html
     
 
       setFormData(updatedFormData);
+
+
     
       if (data.success) {
         alert('Interview responses submitted successfully');

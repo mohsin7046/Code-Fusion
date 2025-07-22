@@ -18,6 +18,7 @@ export const signup = async (req, res) => {
             if (password !== confirmpassword) {
                 return res.status(400).json({ message: "Passwords do not match!!!" });
             }
+            
             user = await prisma.user.findUnique({ where: { email } });
         } else if (role === "RECRUITER") {
             if (!email || !password || !username || !confirmpassword || !company_name || !company_description || !company_role || !company_website || !company_location) {

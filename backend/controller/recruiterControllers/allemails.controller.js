@@ -6,6 +6,9 @@ const prisma = new PrismaClient();
 export const Addallemails = async (req, res) => {
     try {
         const { jobId, recruiterId, onlineTestId,behavioralInterviewId, emails,codingTestId} = req.body;
+
+        console.log(req.body);
+        
         
         if (!jobId || !recruiterId || !emails || !Array.isArray(emails) || !codingTestId) {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
