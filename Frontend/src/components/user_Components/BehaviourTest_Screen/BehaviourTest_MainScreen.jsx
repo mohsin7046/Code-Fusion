@@ -1,7 +1,7 @@
 import  { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Video, VideoOff, MessageCircle, User, Bot} from 'lucide-react';
 import Vapi from '@vapi-ai/web'
-import Detecting from '../OnlineTest_Screen/Detecting'
+// import Detecting from '../OnlineTest_Screen/Detecting'
 import { useLocation, useNavigate } from 'react-router-dom';
 
 
@@ -112,7 +112,7 @@ console.log(navigateData);
 
 🧠 Your responsibility is to ask a predefined list of interview questions related to React and Full Stack development. Assess the candidate’s responses in a professional and engaging manner.
 
-🎙️ Conversation Flow:
+🎙 Conversation Flow:
 - Start with a friendly intro. Example: 
   "Hey there! Welcome to your FullStack interview. Let’s get started with a few questions!"
 - Ask each question from the list below — one at a time.
@@ -124,7 +124,7 @@ console.log(navigateData);
 ❗ Rules:
 1. ❌ If the candidate asks unrelated/off-topic questions (e.g., about other tech, life, random chat), respond:  
    “Let’s stay focused on the interview for now. Please answer the current question.”
-2. ⚠️ If the candidate tries to skip a question, politely warn:  
+2. ⚠ If the candidate tries to skip a question, politely warn:  
    “Skipping questions is discouraged. Please give your best attempt.”
 3. 🎯 Never answer questions yourself, even if asked.
 4. Keep the interview concise and professional.
@@ -138,7 +138,7 @@ ${interviewQuestions}
 📤 End with a polite goodbye:
 "Thanks for chatting! Hope to see you crushing projects soon!"
 
-🔈 **Speaking Style (important):**
+🔈 *Speaking Style (important):*
 Use a slower speaking pace for better clarity. Wrap your spoken responses using SSML:
 html
 <speak><prosody rate="slow">Your response text here...</prosody></speak>
