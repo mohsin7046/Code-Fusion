@@ -349,9 +349,9 @@ const CommonDetailsOverview = () => {
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
             Recommendations
           </th>
-          <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
+          {/* <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Reject
-          </th>
+          </th> */}
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
             Action
           </th>
