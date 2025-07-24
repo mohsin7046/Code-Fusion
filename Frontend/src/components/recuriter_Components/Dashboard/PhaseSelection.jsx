@@ -5,7 +5,6 @@ import getToken from "../../../hooks/role.js";
 import { LoaderCircle } from 'lucide-react';
 import { toast } from "react-toastify";
 
-
 function PhaseSelection(props) {
   const [loading,setLoading] = useState(false);
     const phases = [
@@ -63,7 +62,8 @@ function PhaseSelection(props) {
          setLoading(false);
          toast.success("Job created successfully!");
          console.log("Job created successfully:", data);
-         props.Next(); 
+         props.refreshToken();
+        setTimeout(() => props.Next(), 100);
        } else {
          setLoading(false)
          toast.error(data.message || "Failed to create job.");
