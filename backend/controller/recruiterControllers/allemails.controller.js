@@ -90,7 +90,7 @@ export const Addallemails = async (req, res) => {
 
                     <div style="background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; color: #333; margin: 20px 0;">
                         <h2 style="color: #4a5568; text-align: center; margin-bottom: 20px;">
-                            🚀 You're Invited to Take Your Assessment!
+                            🚀 You're Invited to Take Your OnlineTest Assessment!
                         </h2>
                         
                         <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
@@ -159,126 +159,128 @@ export const Addallemails = async (req, res) => {
 }
 
 
-export const UpdateOnlineTestShortlist = async (req, res) => {
-    try {
-        const {emails,jobId}  = req.body;
-
-        if(!emails || emails.length === 0 || !jobId){
-            return res.status(400).json({message:"All feilds are required"})
-        }
-
-        const existed = await prisma.studentEmails.findFirst({
-            where:{
-                jobId:jobId
-            }
-        });
-
-        if(!existed){
-            return res.status(400).json({message:"Student Emails not Found"})
-        }
-
-        const createdShortlistEmails = await prisma.studentEmails.update({
-            where:{
-                id:existed.id
-            },
-
-            data:{
-                onlineTestShortlistedEmails:emails
-            }
-        })
-
-        if(!createdShortlistEmails){
-            return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
-        }
-
-        return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
-
-    } catch (error) {
-        console.log("Error",error);
+// export const UpdateOnlineTestShortlist = async (req, res) => {
+//     try {
+//         const {emails,jobId}  = req.body;
+//         console.log("BODY: ",req.body);
         
-        return res.status(500).json({message:"Internal Server Error"})
-    }
-}
 
+//         if(!emails || emails.length === 0 || !jobId){
+//             return res.status(400).json({message:"All feilds are required"})
+//         }
 
-export const UpdateBehaviourTestShortlist = async (req, res) => {
-    try {
-        const {emails,jobId}  = req.body;
+//         const existed = await prisma.studentEmails.findMany({
+//             where:{
+//                 jobId:jobId
+//             }
+//         });
 
-        if(!emails || emails.length === 0 || !jobId){
-            return res.status(400).json({message:"All feilds are required"})
-        }
+//         if(!existed){
+//             return res.status(400).json({message:"Student Emails not Found"})
+//         }
 
-        const existed = await prisma.studentEmails.findFirst({
-            where:{
-                jobId:jobId
-            }
-        });
+//         const createdShortlistEmails = await prisma.studentEmails.update({
+//             where:{
+//                 id:existed.id
+//             },
 
-        if(!existed){
-            return res.status(400).json({message:"Student Emails not Found"})
-        }
+//             data:{
+//                 onlineTestShortlistedEmails:emails
+//             }
+//         })
 
-        const createdShortlistEmails = await prisma.studentEmails.update({
-            where:{
-                id:existed.id
-            },
+//         if(!createdShortlistEmails){
+//             return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
+//         }
 
-            data:{
-                behavioralInterviewShortlistedEmails:emails
-            }
-        })
+//         return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
 
-        if(!createdShortlistEmails){
-            return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
-        }
-
-        return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
-
-    } catch (error) {
-        console.log("Error",error);
+//     } catch (error) {
+//         console.log("Error",error);
         
-        return res.status(500).json({message:"Internal Server Error"})
-    }
-}
+//         return res.status(500).json({message:"Internal Server Error"})
+//     }
+// }
 
 
-export const UpdateCodingTestShortlist = async (req, res) => {
-    try {
-        const {emails,jobId}  = req.body;
+// export const UpdateBehaviourTestShortlist = async (req, res) => {
+//     try {
+//         const {emails,jobId}  = req.body;
 
-        if(!emails || emails.length === 0 || !jobId){
-            return res.status(400).json({message:"All feilds are required"})
-        }
+//         if(!emails || emails.length === 0 || !jobId){
+//             return res.status(400).json({message:"All feilds are required"})
+//         }
 
-        const existed = await prisma.studentEmails.findFirst({
-            where:{
-                jobId:jobId
-            }
-        });
+//         const existed = await prisma.studentEmails.findMany({
+//             where:{
+//                 jobId:jobId
+//             }
+//         });
 
-        if(!existed){
-            return res.status(400).json({message:"Student Emails not Found"})
-        }
+//         if(!existed){
+//             return res.status(400).json({message:"Student Emails not Found"})
+//         }
 
-        const createdShortlistEmails = await prisma.studentEmails.update({
-            where:{
-                id:existed.id
-            },
+//         const createdShortlistEmails = await prisma.studentEmails.update({
+//             where:{
+//                 id:existed.id
+//             },
 
-            data:{
-                codingTestShortlistedEmails:emails
-            }
-        })
+//             data:{
+//                 behavioralInterviewShortlistedEmails:emails
+//             }
+//         })
 
-        if(!createdShortlistEmails){
-            return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
-        }
+//         if(!createdShortlistEmails){
+//             return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
+//         }
 
-        return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
+//         return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
 
-    } catch (error) {
-        console.log("Error",error);
-        return res.status(500).json({message:"Internal Server Error"})
-    }
-}
+//     } catch (error) {
+//         console.log("Error",error);
+        
+//         return res.status(500).json({message:"Internal Server Error"})
+//     }
+// }
+
+
+// export const UpdateCodingTestShortlist = async (req, res) => {
+//     try {
+//         const {emails,jobId}  = req.body;
+
+//         if(!emails || emails.length === 0 || !jobId){
+//             return res.status(400).json({message:"All feilds are required"})
+//         }
+
+//         const existed = await prisma.studentEmails.findMany({
+//             where:{
+//                 jobId:jobId
+//             }
+//         });
+
+//         if(!existed){
+//             return res.status(400).json({message:"Student Emails not Found"})
+//         }
+
+//         const createdShortlistEmails = await prisma.studentEmails.update({
+//             where:{
+//                 id:existed.id
+//             },
+
+//             data:{
+//                 codingTestShortlistedEmails:emails
+//             }
+//         })
+
+//         if(!createdShortlistEmails){
+//             return res.status(400).json({message:"Errro updating shortlist emails for onlineTest"})
+//         }
+
+//         return res.status(200).status({message:"Successfully updated shortlisted",data:createdShortlistEmails});
+
+//     } catch (error) {
+//         console.log("Error",error);
+//         return res.status(500).json({message:"Internal Server Error"})
+//     }
+// }

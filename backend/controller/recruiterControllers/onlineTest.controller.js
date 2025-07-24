@@ -202,7 +202,7 @@ const updateOnlineShortListedEmails = async(req,res)=>{
         if(!jobId || !emails || !Array.isArray(emails) || emails.length === 0) {
             return res.status(400).json({ success: false, message: "Job ID and emails are required" });
         }
-        const existJobId = await prisma.studentEmails.findFirst({
+        const existJobId = await prisma.studentEmails.findMany({
             where: { jobId: jobId }
         })
         if (!existJobId) {
@@ -216,7 +216,7 @@ const updateOnlineShortListedEmails = async(req,res)=>{
             });
         }
         const updatedEmails = await prisma.studentEmails.update({
-            where : { id: existJobId.id },
+            where : { id: existJobId[0].id },
             data : {
                onlineTestShortlistedEmails : arrayEmails,
             }

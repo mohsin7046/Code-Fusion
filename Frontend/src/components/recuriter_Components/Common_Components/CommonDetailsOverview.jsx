@@ -23,6 +23,7 @@ const CommonDetailsOverview = () => {
 
   const [onlinedata, setonlinedata] = useState(null);
   const [behaviouraldata, setbehaviouraldata] = useState(null);
+  const [codingdata, setCodingdata] = useState(null);
 
   const location = useLocation();
   const {jobId} = location.state;
@@ -83,10 +84,37 @@ const CommonDetailsOverview = () => {
       }
     };
 
+    const handlegetCodingTestCurrentData = async () => {
+      try {
+        const res = await fetch("/api/recruiter/getCodingTestDashboard", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            recruiterId: recruiterToken.userId,
+            jobId: jobId,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          console.error("Error fetching data from coding:", data.message);
+        }
+        setCodingdata(data.data);
+        console.log("Fetched data from coding:", data);
+        console.log("Fetched coding data:", codingdata);
+      } catch (error) {
+        console.error("Error fetching coding test data:", error);
+      }
+    };
+
     const fetchData = async () => {
       try {
         await handlegetbehaviouralCurrentData();
         await handlegetOnlineTestCurrentData();
+        await handlegetCodingTestCurrentData();
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -101,18 +129,7 @@ const CommonDetailsOverview = () => {
     online: {
       name: "Online Test",
       total: onlinedata,
-      // total: [
-      //   { id: 1, name: 'John Doe', email: 'john@example.com', score: 85, status: 'Completed', appliedDate: '2024-06-01' },
-      //   { id: 2, name: 'Jane Smith', email: 'jane@example.com', score: 92, status: 'Completed', appliedDate: '2024-06-02' },
-      //   { id: 3, name: 'Mike Johnson', email: 'mike@example.com', score: 78, status: 'Completed', appliedDate: '2024-06-03' },
-      //   { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', score: 67, status: 'Completed', appliedDate: '2024-06-04' },
-      //   { id: 5, name: 'Tom Brown', email: 'tom@example.com', score: 45, status: 'Completed', appliedDate: '2024-06-05' },
-      // ],
-      // shortlisted: [
-      //   { id: 1, name: 'John Doe', email: 'john@example.com', score: 85, status: 'Qualified', threshold: 70 },
-      //   { id: 2, name: 'Jane Smith', email: 'jane@example.com', score: 92, status: 'Qualified', threshold: 70 },
-      //   { id: 3, name: 'Mike Johnson', email: 'mike@example.com', score: 78, status: 'Qualified', threshold: 70 },
-      // ],
+      
       shortlisted: onlinedata,
       feedback: onlinedata
     },
@@ -124,48 +141,49 @@ const CommonDetailsOverview = () => {
     },
     coding: {
       name: "Coding Test",
-      total: [
-        {
-          id: 1,
-          name: "John Doe",
-          email: "john@example.com",
-          status: "Scheduled",
-          interviewer: "Tech Lead",
-          date: "2024-06-20",
-          platform: "CodeMeet Pro",
-        },
-        {
-          id: 2,
-          name: "Jane Smith",
-          email: "jane@example.com",
-          status: "Completed",
-          interviewer: "Senior Dev",
-          date: "2024-06-18",
-          platform: "CodeMeet Pro",
-        },
-      ],
-      shortlisted: [
-        {
-          id: 2,
-          name: "Jane Smith",
-          email: "jane@example.com",
-          score: 90,
-          status: "Qualified",
-          problemsSolved: "3/3",
-          codeQuality: "Excellent",
-        },
-      ],
-      feedback: [
-        {
-          id: 2,
-          name: "Jane Smith",
-          score: 90,
-          problemSolving: "Excellent",
-          codeQuality: "Outstanding",
-          systemDesign: "Very Good",
-          feedback: "Impressive technical skills with clean, efficient code",
-        },
-      ],
+      total: codingdata?.data
+      // total: [
+      //   {
+      //     id: 1,
+      //     name: "John Doe",
+      //     email: "john@example.com",
+      //     status: "Scheduled",
+      //     interviewer: "Tech Lead",
+      //     date: "2024-06-20",
+      //     platform: "CodeMeet Pro",
+      //   },
+      //   {
+      //     id: 2,
+      //     name: "Jane Smith",
+      //     email: "jane@example.com",
+      //     status: "Completed",
+      //     interviewer: "Senior Dev",
+      //     date: "2024-06-18",
+      //     platform: "CodeMeet Pro",
+      //   },
+      // ],
+      // shortlisted: [
+      //   {
+      //     id: 2,
+      //     name: "Jane Smith",
+      //     email: "jane@example.com",
+      //     score: 90,
+      //     status: "Qualified",
+      //     problemsSolved: "3/3",
+      //     codeQuality: "Excellent",
+      //   },
+      // ],
+      // feedback: [
+      //   {
+      //     id: 2,
+      //     name: "Jane Smith",
+      //     score: 90,
+      //     problemSolving: "Excellent",
+      //     codeQuality: "Outstanding",
+      //     systemDesign: "Very Good",
+      //     feedback: "Impressive technical skills with clean, efficient code",
+      //   },
+      // ],
     },
   };
 
@@ -834,6 +852,8 @@ console.log(data);
     if(selectedTest === 'online'){
       totalData = getCurrentData();
       emails = totalData?.CandidateJobApplication.map(item => item.onlineTestResponse[0].passed ? item.candidateId : null).filter(email => email !== null);
+      console.log(emails);
+      
       try {
         const res = await fetch('/api/recruiter/updateOnlineShortListedEmails',{
           method : 'PATCH',
