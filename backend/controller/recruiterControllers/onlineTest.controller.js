@@ -198,6 +198,8 @@ const updateOnlineTestResponse = async(req,res)=>{
 
 const updateOnlineShortListedEmails = async(req,res)=>{
     const {jobId,emails} = req.body;
+    console.log(req.body);
+    
     try {
         if(!jobId || !emails || !Array.isArray(emails) || emails.length === 0) {
             return res.status(400).json({ success: false, message: "Job ID and emails are required" });

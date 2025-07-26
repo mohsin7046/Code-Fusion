@@ -27,7 +27,7 @@ export default function CodingTest(props) {
         body : JSON.stringify({
           jobId :  tokenData.jobId,
           recruiterId : tokenData.recruiterId,
-          title : title ,
+          title : title,
           description :  description,
           duration :  parseInt(duration),
           onlineTestId :  tokenData.onlineTestId,
@@ -43,8 +43,10 @@ export default function CodingTest(props) {
         throw new Error("Error creating Coding Test");
       }
       console.log("Coding Test Created Successfully",data);
-      toast.success(data.message || "Coding Test Created Successfully")
+      toast.success(data.message || "Coding Test Created Successfully");
       setLoading(true);
+
+      
      const resp = await createSummary(
         tokenData.jobId,
         tokenData.recruiterId,
@@ -52,12 +54,12 @@ export default function CodingTest(props) {
         tokenData.behaviourTestId,
         tokenData.codingTestId
       )
+
   if(resp.success){
     setLoading(false);
     toast.success(resp.message)
     props.Next();
   }else{
-
    setLoading(false);
    toast.success(resp.message);
   }

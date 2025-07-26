@@ -188,6 +188,7 @@ function InterviewSummary() {
       if (emailsResponse.ok) {
         toast.success(data.message || "Interview invitations sent successfully!");
         console.log("Emails sent successfully:", data);
+        
       } else {
         toast.error(data.message || "Failed to send interview invitations");
         console.error("Error sending emails");
@@ -240,6 +241,8 @@ function InterviewSummary() {
   }
 
   const data = summaryData;
+  console.log(data);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">

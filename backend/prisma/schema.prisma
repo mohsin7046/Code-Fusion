@@ -47,7 +47,6 @@ model EmailVerification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model PasswordReset {
   id       String   @id @default(cuid()) @map("_id")
   userId    String   @unique
@@ -339,7 +338,7 @@ model OnlineTestResponse{
   timeTaken Int
   submittedAt DateTime @default(now())
   jobApplication CandidateJobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
-}
+} 
 
 
 model StudentAnswers {

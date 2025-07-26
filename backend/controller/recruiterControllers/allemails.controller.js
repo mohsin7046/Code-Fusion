@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { sendMail } from '../../utilities/emailService.js';
 
+
 const prisma = new PrismaClient();
 
 export const Addallemails = async (req, res) => {
@@ -10,10 +11,11 @@ export const Addallemails = async (req, res) => {
         console.log(req.body);
         
         
-        if (!jobId || !recruiterId || !emails || !Array.isArray(emails) || !codingTestId) {
+        if (!jobId || !recruiterId || !emails) {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
         }
 
+        if(onlineTestId !== null || onlineTestId || onlineTestId !== undefined){
         const OApassword = await prisma.onlineTest.findUnique({
             where: {
                 id: onlineTestId,
@@ -22,8 +24,10 @@ export const Addallemails = async (req, res) => {
                 password: true,
             },
         });
+    }
 
     
+        if(behavioralInterviewId !== null || behavioralInterviewId || behavioralInterviewId !== undefined){
         const BIpassword = await prisma.behavioralInterview.findUnique({
             where: {
                 id: behavioralInterviewId,
@@ -32,7 +36,9 @@ export const Addallemails = async (req, res) => {
                 password: true,
             },
         })
+    }
 
+    if(codingTestId || codingTestId !== null || codingTestId !== undefined){
         const CTpassword = await prisma.codingTest.findUnique({
             where:{
                id:codingTestId 
@@ -41,6 +47,7 @@ export const Addallemails = async (req, res) => {
                password:true 
             }
         })
+    }
 
         let arrayEmails = [];
 
@@ -58,11 +65,11 @@ export const Addallemails = async (req, res) => {
                 jobId: jobId,
                 recruiterId: recruiterId,
                 onlineTestId: onlineTestId || null,
-                codingTestId:codingTestId || null,
-                onlinepassword: OApassword.password,
-                behaviouralpassword: BIpassword.password,
-                codingpassword : CTpassword.password,
                 behavioralInterviewId: behavioralInterviewId || null,
+                codingTestId:codingTestId || null,
+                onlinepassword: OApassword.password || null,
+                behaviouralpassword: BIpassword.password || null,
+                codingpassword : CTpassword.password || null,
                 emails: arrayEmails
             },
         });

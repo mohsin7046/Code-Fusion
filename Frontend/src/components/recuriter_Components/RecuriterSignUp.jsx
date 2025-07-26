@@ -91,7 +91,7 @@ const RecuriterSignUp = () => {
       company_location: companyLocation,
     });
 
-    if (res?.message) {
+    if (!res?.message) {
       setLoading(false);
       toast.error(res.message || "Signup failed. Please try again.");
       return;
