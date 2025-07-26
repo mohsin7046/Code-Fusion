@@ -13,7 +13,6 @@ const RecruiterDashboard = () => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* AI Interview Card */}
           <div className="bg-white p-8 shadow-2xl rounded-xl hover:scale-[1.02] transition-transform duration-300">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">
               Create New Interview
@@ -27,8 +26,6 @@ const RecruiterDashboard = () => {
               </button>
             </Link>
           </div>
-
-          {/* Phone Screening Card */}
           <div className="bg-white p-8 shadow-2xl rounded-xl hover:scale-[1.02] transition-transform duration-300">
             <h2 className="text-2xl font-bold text-green-600 mb-4">
               Create Phone Screening Call
