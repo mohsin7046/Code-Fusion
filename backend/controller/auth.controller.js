@@ -3,6 +3,7 @@ import { hashPassword, comparePassword } from '../utilities/bcrpyt.js';
 import { generateToken } from '../utilities/jwtUtility.js';
 import { sendMail } from '../utilities/emailService.js';
 import crypto from 'crypto';
+import { profile } from 'console';
 const prisma = new PrismaClient();
 
 export const signup = async (req, res) => {
@@ -200,6 +201,9 @@ export const login = async (req, res) => {
             role: user.role,
             isVerified: user.isVerified,
             email: user.email,
+            username: user.username,
+            profilePicture: user.profilePicture,
+            bio: user.bio,
         }
        const token =  generateToken(res, data);
         res.cookie('token', token, {
@@ -387,3 +391,29 @@ export const me = async (req, res) => {
 }
 
 
+
+export const updateProfile = async (req, res) => {
+    const {username,bio,userId} = req.body;
+ console.log("Update Profile Data:", req.body);
+ 
+    try{
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            return res.status(400).json({ message: "User does not exist" });
+        }
+
+        const updatedData = {};
+        if (username ) updatedData.username = username;
+        if (bio) updatedData.bio = bio;
+    
+
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: updatedData,
+        });
+
+        return res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+    }catch(error){
+        return res.status(500).json({ message: "Internal server error" });
+    }   
+}

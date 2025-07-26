@@ -14,7 +14,7 @@ const getToken = () => {
             console.error("Decoded token is invalid or does not contain a role");
             return null;
         }
-        return { role: decodedToken.role, userId: decodedToken.id ,email: decodedToken.email};
+        return { role: decodedToken.role, userId: decodedToken.id ,email: decodedToken.email,username: decodedToken.username ,bio: decodedToken.bio, profilePicture: decodedToken.profilePicture };
     } catch (error) {
         console.error("Error decoding token:", error);
         return null;

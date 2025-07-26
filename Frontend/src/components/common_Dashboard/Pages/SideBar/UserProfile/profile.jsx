@@ -1,14 +1,21 @@
 import  { useState } from 'react';
 import { LogOut, Save } from 'lucide-react';
+import getToken from '../../../../../hooks/role.js';
+import  {UseOnLogout}  from "../../../../../hooks/useOnLogout";
+import { useNavigate } from 'react-router-dom';
 
 function Profile() {
+
+  const data = getToken();
+  console.log(data.bio);
+  
+   const { logout } = UseOnLogout();
+   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    username: 'John Doe',
-    email: 'john@example.com',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-    bio: 'Software developer passionate about creating amazing user experiences.',
+    username: data.username || 'No name',
+    email: data.email || 'No email',
+    bio: data.bio || '',
     notifications: true,
   });
 
@@ -20,12 +27,34 @@ function Profile() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log('Saving profile...', formData);
+    const finaldata = {
+      username: formData.username,
+      bio: formData.bio,
+      userId: data.userId,
+      newPassword: formData.newPassword,
+    }
+    const res = await fetch('/api/auth/update-profile',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(finaldata),
+    })
+    if (res.ok) {
+      const data = await res.json();
+      console.log('Profile updated successfully:', data);
+    } else {
+      console.error('Failed to update profile');
+    }
   };
 
+
   const handleLogout = () => {
+    logout();
+    navigate('/login');
     console.log('Logging out...');
   };
 
@@ -49,7 +78,7 @@ function Profile() {
           
           <div className="flex items-center space-x-4">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+              src={data.profilePicture}
               alt="Profile"
               className="w-20 h-20 rounded-full"
             />
@@ -61,7 +90,7 @@ function Profile() {
             </button>
           </div>
 
-          {/* Basic Information */}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -86,12 +115,13 @@ function Profile() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                disabled
+                className="mt-1 block w-full rounded-md bg-gray-300 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
           </div>
 
-          {/* Bio */}
+          
           <div>
             <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
               Bio
@@ -106,55 +136,8 @@ function Profile() {
             />
           </div>
 
-          {/* Password Change */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">
-              Change Password
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  id="currentPassword"
-                  name="currentPassword"
-                  value={formData.currentPassword}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Notifications */}
+        
+          
           <div className="flex items-center space-x-3">
             <input
               type="checkbox"
@@ -169,7 +152,7 @@ function Profile() {
             </label>
           </div>
 
-          {/* Submit Button */}
+          
           <div className="flex justify-end">
             <button
               type="submit"
