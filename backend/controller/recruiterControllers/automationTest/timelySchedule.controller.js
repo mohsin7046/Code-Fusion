@@ -27,6 +27,7 @@ export const createSchedule = async (req, res) => {
         if (!schedule) {
             return res.status(500).json({ message: "Failed to create schedule" });
         }
+        
         return res.status(201).json({ message: "Schedule created successfully", schedule });
     
     } catch (error) {

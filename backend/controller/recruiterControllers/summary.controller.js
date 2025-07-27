@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import {schedule} from '../../utilities/schedule.js'
+
 
 
 const prisma = new PrismaClient();
@@ -52,29 +52,12 @@ const createSummary = async (req, res) => {
                 codingTestId: codingTestId || null,
             }
         });
+
         if (!summary) {
             return res.status(500).json({ message: "Failed to create summary" });
         }
 
-        const testDetails = {
-            "email": recruiterExists.email,
-            "jobId":jobId,
-        }
-
-        if(onlineTestId || onlineTestId !== null || onlineTestId !== undefined){
-           testDetails.testname = 'OnlineTest';
-        } else if(behavioralInterviewId !== null || behavioralInterviewId || behavioralInterviewId !== undefined){
-            testDetails.testname = 'BehavioralInterview';
-        }else if(codingTestId !== null || codingTestId || codingTestId !== undefined){
-            testDetails.testname = 'CodingTest';
-        }
-
-        const mailSchedule = schedule(testDetails, totalStudent);
-        
-        if(!mailSchedule) {
-            return res.status(500).json({ message: "Failed to send schedule email" });
-        }
-
+       
         return res.status(201).json({ message: "Summary created successfully", summary });
     } catch (error) {
         console.error("Error creating summary:", error);
