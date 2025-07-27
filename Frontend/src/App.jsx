@@ -21,7 +21,7 @@ import OnlineTest_StartScreen from "./components/user_Components/OnlineTest_Scre
 import AIInterviewSession from "./components/user_Components/BehaviourTest_Screen/BehaviourTest_MainScreen.jsx";
 import BehaviourFeedback from "./components/user_Components/BehaviourTest_Screen/BehaviourFeedback.jsx";
 import CommonTestAuthenticator from "./components/user_Components/CommonTestAuthenticator.jsx";
-
+import {TestAuto} from './components/recuriter_Components/Dashboard/TestAutomationTemplate/testAuto.jsx'
 
 function App() {
   return (
@@ -53,7 +53,7 @@ function App() {
         <Route path='/test' element={<OnlineTest_StartScreen />} />
         <Route path='/AItest' element={<AIInterviewSession />} />
         <Route path='/feed' element={<BehaviourFeedback />} />
-
+        <Route path="/recuriter/testAutomation" element={<TestAuto />} />
       </Routes>
       <ToastContainer
         position="bottom-right"

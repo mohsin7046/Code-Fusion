@@ -395,3 +395,17 @@ model Room {
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
 }
+
+model TestAutomation{
+  id        String   @id @default(cuid()) @map("_id")
+  jobId     String
+  recruiterId String
+  onlineTestId String?
+  onlineTestDate DateTime?
+  behavioralInterviewId String?
+  behavioralInterviewDate DateTime?
+  codingTestId String?
+  codingTestDate DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
