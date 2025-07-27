@@ -14,7 +14,7 @@ export const Addallemails = async (req, res) => {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
         }
 
-        if(onlineTestId !== null || onlineTestId || onlineTestId !== undefined){
+        if(onlineTestId){
         var OApassword = await prisma.onlineTest.findUnique({
             where: {
                 id: onlineTestId,
@@ -26,7 +26,7 @@ export const Addallemails = async (req, res) => {
     }
 
     
-        if(behavioralInterviewId !== null || behavioralInterviewId || behavioralInterviewId !== undefined){
+        if(behavioralInterviewId){
         var BIpassword = await prisma.behavioralInterview.findUnique({
             where: {
                 id: behavioralInterviewId,
@@ -37,7 +37,7 @@ export const Addallemails = async (req, res) => {
         })
     }
 
-    if(codingTestId || codingTestId !== null || codingTestId !== undefined){
+    if(codingTestId){
         var CTpassword = await prisma.codingTest.findUnique({
             where:{
                id:codingTestId 
@@ -60,7 +60,7 @@ export const Addallemails = async (req, res) => {
     }
 
     const recruiterExists = await prisma.user.findUnique({
-            where: { id: recruiterId, role: 'RECRUITER' }
+            where: { id: recruiterId }
         });
 
         if (!recruiterExists) {
@@ -74,9 +74,9 @@ export const Addallemails = async (req, res) => {
                 onlineTestId: onlineTestId || null,
                 behavioralInterviewId: behavioralInterviewId || null,
                 codingTestId:codingTestId || null,
-                onlinepassword: OApassword.password || null,
-                behaviouralpassword: BIpassword.password || null,
-                codingpassword : CTpassword.password || null,
+                onlinepassword: OApassword?.password || null,
+                behaviouralpassword: BIpassword?.password || null,
+                codingpassword : CTpassword?.password || null,
                 emails: arrayEmails
             },
         });
@@ -99,7 +99,7 @@ export const Addallemails = async (req, res) => {
             }
             
     
-            const mailSchedule = schedule(testDetails, emails.length);
+            const mailSchedule = await schedule(testDetails, emails.length);
             
             if(!mailSchedule) {
                 return res.status(500).json({ message: "Failed to send schedule email" });
