@@ -42,7 +42,7 @@ export const getSchedule = async (req, res) => {
     
     try {
         if (!jobId) {
-            return res.status(400).json({ message: "Job ID and Recruiter ID are required" });
+            return res.status(400).json({ message: "Job ID is required" });
         }
 
         const jobExists = await prisma.job.findUnique({
@@ -67,7 +67,7 @@ export const getSchedule = async (req, res) => {
             return res.status(404).json({ message: "No schedules found for this job" });
         }
 
-        return res.status(200).json({data:schedules});
+        return res.status(200).json({data:schedules,hasOnlineTest:jobExists.hasOnlineTest, hasAIInterview: jobExists.hasAIInterview, hasCodingTest: jobExists.hasCodingTest });
     } catch (error) {
         console.error("Error fetching schedules:", error);
         return res.status(500).json({ message: "Internal server error" });
@@ -76,7 +76,10 @@ export const getSchedule = async (req, res) => {
 
 
 export const createTestSchedule = async(req,res)=>{
-    const {jobId,Datetime,status} = req.body;
+    const {jobId,Datetime} = req.body;
+    console.log(Datetime);
+    
+    let {status} = req.body;
     status = status.toLowerCase();
 
     try {
@@ -84,7 +87,6 @@ export const createTestSchedule = async(req,res)=>{
             return res.status(400).json({ message: "Job ID and DateTime are required" });
         }
 
-        const currentIST = new Date(Datetime + 5.5 * 60 * 60 * 1000);
 
         const jobExists = await prisma.job.findUnique({
             where: { id: jobId }
@@ -98,7 +100,7 @@ export const createTestSchedule = async(req,res)=>{
             const schedule = await prisma.testAutomation.updateMany({
             where:{jobId:jobId},
             data: {
-                onlineTestDate:currentIST,
+                onlineTestDate:new Date(Datetime)
             }
           });
 
@@ -108,7 +110,7 @@ export const createTestSchedule = async(req,res)=>{
             const schedule = await prisma.testAutomation.updateMany({
                 where: { jobId:jobId },
                 data: {
-                    behavioralInterviewDate:currentIST,
+                    behavioralInterviewDate:new Date(Datetime)
                 }
             });
 
@@ -118,7 +120,7 @@ export const createTestSchedule = async(req,res)=>{
             const schedule = await prisma.testAutomation.updateMany({
                 where: { jobId:jobId },
                 data: {
-                    codingTestDate: currentIST,
+                    codingTestDate:new Date(Datetime)
                 }
             });
             return res.status(201).json({ message: "Coding test schedule created successfully", schedule });
