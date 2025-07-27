@@ -155,8 +155,7 @@ Constraints:
         subject: q.subject,
         difficulty: q.difficulty,
         points: parseInt(q.points)
-      })),
-      expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), 
+      })), 
     };
 
     console.log("Payload to be sent:", payload);

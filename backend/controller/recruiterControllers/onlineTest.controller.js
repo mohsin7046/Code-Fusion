@@ -57,7 +57,7 @@ const createJob = async(req,res) =>{
 }
 
 const createOnlineTest = async(req,res) =>{
-    const {jobId,recruiterId,title,description,password,duration,totalQuestions,passingScore,subjects,questions,expiresAt} = req.body;
+    const {jobId,recruiterId,title,description,password,duration,totalQuestions,passingScore,subjects,questions} = req.body;
     try {
         if(!jobId || !recruiterId || !title || !description || !password || !duration || !totalQuestions || !passingScore || !subjects || !questions || !questions.length === 0 || !expiresAt) {
             return res.status(400).json({ message: "All fields are required" });
@@ -71,6 +71,8 @@ const createOnlineTest = async(req,res) =>{
         if(!jobExists.hasOnlineTest){
             return res.status(400).json({ message: "This job does not have an online test" });
         }
+        // const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
+        const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
        const onlineTest =  await prisma.onlineTest.create({
             data :{
                 jobId,
