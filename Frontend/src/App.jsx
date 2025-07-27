@@ -53,7 +53,7 @@ function App() {
         <Route path='/test' element={<OnlineTest_StartScreen />} />
         <Route path='/AItest' element={<AIInterviewSession />} />
         <Route path='/feed' element={<BehaviourFeedback />} />
-        <Route path="/recuriter/testAutomation" element={<TestAuto />} />
+        <Route path="/recruiter/testautomation/:jodId" element={<TestAuto />} />
       </Routes>
       <ToastContainer
         position="bottom-right"

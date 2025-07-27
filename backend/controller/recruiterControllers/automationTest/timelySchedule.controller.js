@@ -27,7 +27,7 @@ export const createSchedule = async (req, res) => {
         if (!schedule) {
             return res.status(500).json({ message: "Failed to create schedule" });
         }
-        
+
         return res.status(201).json({ message: "Schedule created successfully", schedule });
     
     } catch (error) {
@@ -67,15 +67,17 @@ export const getSchedule = async (req, res) => {
             return res.status(404).json({ message: "No schedules found for this job" });
         }
 
-        return res.status(200).json(schedules);
+        return res.status(200).json({data:schedules});
     } catch (error) {
         console.error("Error fetching schedules:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
 
+
 export const createTestSchedule = async(req,res)=>{
     const {jobId,Datetime,status} = req.body;
+    status = status.toLowerCase();
 
     try {
         if (!jobId || !Datetime) {
@@ -92,7 +94,7 @@ export const createTestSchedule = async(req,res)=>{
             return res.status(404).json({ message: "Job not found" });
         }
 
-        if(status === 'OnlineTest'){
+        if(status === 'onlinetest'){
             const schedule = await prisma.testAutomation.updateMany({
             where:{jobId:jobId},
             data: {
@@ -102,7 +104,7 @@ export const createTestSchedule = async(req,res)=>{
 
           return res.status(201).json({ message: "Online schedule created successfully", schedule });
 
-        }else if(status === 'BehavioralInterview'){
+        }else if(status === 'behaviouraltest'){
             const schedule = await prisma.testAutomation.updateMany({
                 where: { jobId:jobId },
                 data: {
@@ -112,7 +114,7 @@ export const createTestSchedule = async(req,res)=>{
 
             return res.status(201).json({ message: "Behavioral interview schedule created successfully", schedule });
 
-        } else if(status === 'CodingTest'){
+        } else if(status === 'codingtest'){
             const schedule = await prisma.testAutomation.updateMany({
                 where: { jobId:jobId },
                 data: {

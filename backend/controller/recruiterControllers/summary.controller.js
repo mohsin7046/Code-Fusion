@@ -25,6 +25,24 @@ const createSummary = async (req, res) => {
             return res.status(404).json({ message: "Recruiter not found" });
         }
 
+        if(onlineTestId !== null || onlineTestId || onlineTestId !== undefined){
+        const onlineTestExists = await prisma.onlineTest.findUnique({
+            where: { id: onlineTestId }
+        });
+        if (!onlineTestExists) {
+            return res.status(404).json({ message: "Online test not found" });
+        }
+    }
+
+        if(behavioralInterviewId !== null || behavioralInterviewId || behavioralInterviewId !== undefined){
+        const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
+            where: { id: behavioralInterviewId }
+        });
+        if (!behavioralInterviewExists) {
+            return res.status(404).json({ message: "Behavioral interview not found" });
+        }
+    }
+
         const summary = await prisma.summary.create({
             data: {
                 jobId: jobId,
@@ -39,7 +57,6 @@ const createSummary = async (req, res) => {
             return res.status(500).json({ message: "Failed to create summary" });
         }
 
-       
         return res.status(201).json({ message: "Summary created successfully", summary });
     } catch (error) {
         console.error("Error creating summary:", error);
