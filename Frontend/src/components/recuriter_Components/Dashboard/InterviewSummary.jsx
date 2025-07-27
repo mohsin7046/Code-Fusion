@@ -178,13 +178,13 @@ function InterviewSummary() {
           recruiterId: summaryData?.recruiterId,
           onlineTestId: summaryData?.onlineTestId,
           behavioralInterviewId: summaryData?.behavioralInterviewId,
-          codingTestId: tokenData?.codingTestId,
+          codingTestId: summaryData?.codingTestId,
           emails: emailsArray,
         }),
       });
 
       const data = await emailsResponse.json();
-      setLoading(false);
+    
       if (emailsResponse.ok) {
         toast.success(data.message || "Interview invitations sent successfully!");
         console.log("Emails sent successfully:", data);
@@ -193,6 +193,26 @@ function InterviewSummary() {
         toast.error(data.message || "Failed to send interview invitations");
         console.error("Error sending emails");
       }
+      
+      const testAutomation = await fetch("/api/recruiter/schedule/createSchedule",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jobId: summaryData?.jobId,
+          recruiterId: summaryData?.recruiterId,
+        })
+      })
+        setLoading(false);
+      if(!testAutomation){
+        toast.error("Failed to schedule tests");
+        throw new Error("Failed to schedule tests");
+      }
+
+      const testData = await testAutomation.json();
+      toast.success("Tests scheduled successfully!");
+      console.log("Tests scheduled successfully:", testData);
     } catch (error) {
       setLoading(false);
       toast.error("An error occurred while starting the interview process");

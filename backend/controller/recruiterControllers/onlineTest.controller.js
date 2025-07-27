@@ -59,7 +59,7 @@ const createJob = async(req,res) =>{
 const createOnlineTest = async(req,res) =>{
     const {jobId,recruiterId,title,description,password,duration,totalQuestions,passingScore,subjects,questions} = req.body;
     try {
-        if(!jobId || !recruiterId || !title || !description || !password || !duration || !totalQuestions || !passingScore || !subjects || !questions || !questions.length === 0 || !expiresAt) {
+        if(!jobId || !recruiterId || !title || !description || !password || !duration || !totalQuestions || !passingScore || !subjects || !questions || !questions.length === 0 ) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const jobExists = await prisma.job.findUnique({

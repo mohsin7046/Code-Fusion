@@ -63,7 +63,11 @@ function PhaseSelection(props) {
          toast.success("Job created successfully!");
          console.log("Job created successfully:", data);
          props.refreshToken();
-        setTimeout(() => props.Next(), 100);
+        setTimeout(() => {
+           props.Next();
+        }, 2000);
+       
+
        } else {
          setLoading(false)
          toast.error(data.message || "Failed to create job.");

@@ -25,6 +25,8 @@ export const Addallemails = async (req, res) => {
         });
     }
 
+    console.log("OApassword",OApassword);
+
     
         if(behavioralInterviewId){
         var BIpassword = await prisma.behavioralInterview.findUnique({

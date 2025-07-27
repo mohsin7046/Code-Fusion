@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const createSummary = async (req, res) => {
-    const {jobId,recruiterId,onlineTestId,behavioralInterviewId,codingTestId,totalStudent} = req.body;
+    const {jobId,recruiterId,onlineTestId,behavioralInterviewId,codingTestId} = req.body;
     console.log(req.body);
     
     try {
@@ -24,24 +24,6 @@ const createSummary = async (req, res) => {
         if (!recruiterExists) {
             return res.status(404).json({ message: "Recruiter not found" });
         }
-
-        if(onlineTestId !== null || onlineTestId || onlineTestId !== undefined){
-        const onlineTestExists = await prisma.onlineTest.findUnique({
-            where: { id: onlineTestId }
-        });
-        if (!onlineTestExists) {
-            return res.status(404).json({ message: "Online test not found" });
-        }
-    }
-
-        if(behavioralInterviewId !== null || behavioralInterviewId || behavioralInterviewId !== undefined){
-        const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
-            where: { id: behavioralInterviewId }
-        });
-        if (!behavioralInterviewExists) {
-            return res.status(404).json({ message: "Behavioral interview not found" });
-        }
-    }
 
         const summary = await prisma.summary.create({
             data: {

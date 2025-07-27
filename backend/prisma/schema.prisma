@@ -254,8 +254,8 @@ model StudentEmails {
   onlineTestId String?
   behavioralInterviewId String?
   codingTestId String?
-  onlinepassword String
-  behaviouralpassword String
+  onlinepassword String?
+  behaviouralpassword String?
   codingpassword String?
   onlineTestShortlistedEmails Json?
   behavioralInterviewShortlistedEmails Json?
