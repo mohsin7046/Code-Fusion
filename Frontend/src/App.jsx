@@ -53,7 +53,11 @@ function App() {
         <Route path='/test' element={<OnlineTest_StartScreen />} />
         <Route path='/AItest' element={<AIInterviewSession />} />
         <Route path='/feed' element={<BehaviourFeedback />} />
+<<<<<<< Updated upstream
         <Route path="/recruiter/testautomation/:jodId" element={<TestAuto />} />
+=======
+        <Route path="/recuriter/testAutomation/:jobId" element={<TestAuto />} />
+>>>>>>> Stashed changes
       </Routes>
       <ToastContainer
         position="bottom-right"
