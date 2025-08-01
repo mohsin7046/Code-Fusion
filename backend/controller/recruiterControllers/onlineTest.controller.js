@@ -70,9 +70,8 @@ const createOnlineTest = async(req,res) =>{
         }
         if(!jobExists.hasOnlineTest){
             return res.status(400).json({ message: "This job does not have an online test" });
-        }
-        // const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
-        const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
+      }
+      
        const onlineTest =  await prisma.onlineTest.create({
             data :{
                 jobId,
@@ -83,7 +82,6 @@ const createOnlineTest = async(req,res) =>{
                 duration,
                 totalQuestions,
                 passingScore,
-                expiresAt: new Date(expiresAt),
                 subjects : {
                 create: 
                     subjects.map((subject) => ({

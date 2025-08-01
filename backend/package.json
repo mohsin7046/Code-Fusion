@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules index.js",
+    "cron": "nodemon cronIndex.js",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

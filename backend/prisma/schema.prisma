@@ -92,11 +92,9 @@ model Job{
   jobId       String
   status      JobApplicationStatus @default(APPLIED) 
   currentPhase TestPhase? @default(YET_TO_START)
-
   onlineTestCompleted Boolean @default(false)
   aiInterviewCompleted Boolean @default(false)
   codingTestCompleted Boolean @default(false)
-
   appliedAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -118,7 +116,7 @@ model Job{
   //TODO:onlineTestCompletionRemainder Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  expiresAt   DateTime
+  expiresAt   DateTime?
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user   User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
   summary Summary[]
@@ -171,6 +169,7 @@ model OnlineTestQuestion {
   evaluationCriteria String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  expiresAt DateTime?
   jobs Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
   summary Summary[]
@@ -208,6 +207,7 @@ model BehavioralInterviewQuestion {
   password String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  expiresAt DateTime?
   jobs Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user User @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
   summary Summary[]
@@ -402,10 +402,13 @@ model TestAutomation{
   recruiterId String
   onlineTestId String?
   onlineTestDate DateTime?
+  onlineEmailSent Boolean @default(false)
   behavioralInterviewId String?
   behavioralInterviewDate DateTime?
+  behavioralEmailSent Boolean @default(false)
   codingTestId String?
   codingTestDate DateTime?
+  codingEmailSent Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

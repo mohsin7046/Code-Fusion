@@ -1,133 +1,375 @@
 import cron from 'node-cron';
 import { PrismaClient } from '@prisma/client';
-import { sendMail } from '../../utilities/emailService.js';
-
+import { testSchedule } from '../../utilities/InterviewSchedule.js';
 
 const prisma = new PrismaClient();
 
-cron.schedule('* * * * *', async() => {
-  console.log('This runs every minute');
-  const now = new Date();
-  const fiveminutesBefore = new Date(now.getTime() + 5 * 60 * 1000);
-
-  try {
-    const res = await prisma.job.findMany({
-        where:{
-            testLinkSend:false,
-            date:{
-                gte: now,
-                lte: fiveminutesBefore
+const onlineTestLinkCron = async()=>{
+    const now = new Date();
+    const tenMinutesBefore = new Date(now.getTime() + 10 * 60 * 1000);
+    try {
+        const res = await prisma.testAutomation.findMany({
+            where:{
+                onlineTestDate :{
+                    gte: now,
+                   lte: tenMinutesBefore
+                },
+                onlineEmailSent: false 
             }
-        }
-    });
+        })
 
-    if(res.length > 0){
-        for (const job of res) {
-            const { id } = job;
-    
-            const emails = await prisma.studentEmails.findFirst({
-            where: { jobId:id },
-            select: { 
-                emails: true, 
-             }
-            });
+        if(res.length >0){
+            for(const test of res){
+                const {jobId} = test;
+                const emails = await prisma.studentEmails.findFirst({
+                    where: { jobId },
+                    select: { emails: true,
+                        onlinepassword : true
+                     }
+                })
 
-        
-            if (!emails || !emails.emails || emails.emails.length === 0) {
-            console.error(`No emails found for job ID ${id}`);
-            continue;
+                console.log(emails.emails);
+                
+                if(!emails || !emails.length===0 || !emails.emails){
+                    console.error(`No emails found for job ID ${jobId}`);
+                    continue;
+                }
+                const allRecipients = String(emails.emails.map(item => item.email).join(','));
+                console.log(`Sending online test link to: ${allRecipients}`);
+                
+                const interviewLink = `http://localhost:5173/testdes/onlineTest/${jobId}`;
+
+                const res = await testSchedule(interviewLink, allRecipients, emails.onlinepassword, "Online Test");
+                if(res){
+                    console.log("Email sent successfully to !!!",allRecipients);
+                    const updateFlag = await prisma.testAutomation.update({
+                    where: { id: test.id },
+                    data: { onlineEmailSent: true }
+                })
+                }else{
+                    console.log("Email not sent");
+                }
+
+                const updateJobStatus = await prisma.jobApplication.updateMany({
+                    where : {jobId},
+                    data:{
+                        status : "ONLINE_TEST_PENDING",
+                        currentPhase : "ONLINE_TEST"
+                    }
+                })
+                if(updateJobStatus){
+                    console.log(`Job applications for job ID ${jobId} updated to ONLINE_TEST_PENDING`);
+                } else {
+                    console.log(`No job applications found for job ID ${jobId}`);
+                }
+
+                const updateCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                    where: { jobId },
+                    data: {
+                        status: "ONLINE_TEST_PENDING",
+                        currentPhase: "ONLINE_TEST"
+                    }
+                })
+                if(updateCandidateStatus){
+                    console.log(`Candidate job applications for job ID ${jobId} updated to ONLINE_TEST_PENDING`);
+                } else {
+                    console.log(`No candidate job applications found for job ID ${jobId}`);
+                }
+
+                const OA = await prisma.onlineTest.findFirst({
+                    where: { jobId: jobId },
+                    select: {
+                        duration: true
+                    }
+                })
+                    const jobStartDateTime = new Date(test.onlineTestDate);
+                    const expiresAt = new Date(jobStartDateTime.getTime() + OA.duration * 60 * 1000);
+                    const onlineTestDBUpdate  = await prisma.onlineTest.updateMany({
+                        where:{jobId: jobId},
+                        data:{
+                            expiresAt : new Date(expiresAt)
+                        }
+                    })
+
+                    if(onlineTestDBUpdate){
+                        console.log(`Online test expiresAt updated for job ID ${jobId}`);
+                    }else{
+                        console.log(`No online test found for job ID ${jobId}`);
+                    }  
             }
-
-            const allRecipients = emails.emails.join(',');
-
-            const interviewLink = `http://localhost:5173/testdes/onlineTest/${id}`;
-    
-            await sendMail({
-                    to: allRecipients,
-                    subject: "⚡ Power Up Your Career - Assessment Time!",
-                    html: `
-                <div style="max-width: 600px; margin: auto; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border-radius: 15px; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                    
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #fff; margin: 0; font-size: 28px; font-weight: 700;">
-                            🎯 CodeFusion's Assessment Portal
-                        </h1>
-                        <div style="width: 80px; height: 4px; background: #ffd700; margin: 15px auto; border-radius: 2px;"></div>
-                    </div>
-
-                    <div style="background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; color: #333; margin: 20px 0;">
-                        <h2 style="color: #4a5568; text-align: center; margin-bottom: 20px;">
-                            🚀 You're Invited to Take Your Assessment!
-                        </h2>
-                        
-                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
-                            Hi there! 👋
-                        </p>
-                        
-                        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
-                            Congratulations on making it to the next step! We're excited to see what you can do. 
-                            Your personalized assessment is ready and waiting for you.
-                        </p>
-
-                        <div style="text-align: center; margin: 35px 0;">
-                            <a href="${interviewLink}" 
-                               style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); 
-                                      color: white; 
-                                      padding: 18px 40px; 
-                                      text-decoration: none; 
-                                      border-radius: 50px; 
-                                      font-weight: bold; 
-                                      font-size: 18px; 
-                                      display: inline-block; 
-                                      box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
-                                      transition: transform 0.3s ease;">
-                                🎯 Start My Assessment
-                            </a>
-                        </div>
-
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #4ecdc4; margin: 25px 0;">
-                            <p style="margin: 0; font-size: 14px; color: #666;">
-                                <strong>💡 Quick Tip:</strong> Make sure you have a stable internet connection and find a quiet space before starting your assessment.
-                            </p>
-                        </div>
-
-                        <div style="text-align: center; margin-top: 30px;">
-                            <p style="font-size: 14px; color: #666; margin: 5px 0;">
-                                🔗 Direct Link: <a href="${interviewLink}" style="color: #4ecdc4; text-decoration: none;">${interviewLink}</a>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">
-                        <p style="font-size: 14px; color: rgba(255,255,255,0.8); margin: 10px 0;">
-                            Need help? We're here for you! 💪
-                        </p>
-                        <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin: 5px 0;">
-                            If you have any questions, feel free to reach out to our support team.
-                        </p>
-                        
-                        <div style="margin-top: 20px;">
-                            <a href="https://google.com" style="color: #ffd700; text-decoration: none; font-weight: bold; font-size: 16px;">
-                                ✨ The CodeFusion's Team
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                `,
-                });
-            
-        await prisma.job.update({
-            where: { id },
-            data: { testLinkSend: true }
-            });
-            console.log(`Email sent to ${recruiter.email} for job ID ${id}`);
+            console.log('Online test link emails sent successfully');
         }
+        console.log('No online test links to send at this time');
+    } catch (error) {
+       console.error("Error in onlineTestLinkCron:", error);
+         return;
     }
-    
-  } catch (error) {
-    console.log('Error in cron job:', error);
-    
-  }
+}
+
+const behaviouralTestLinkCron = async()=>{
+    const now = new Date();
+    const tenMinutesBefore = new Date(now.getTime() + 10 * 60 * 1000);
+    try {
+        const res = await prisma.testAutomation.findMany({
+            where:{
+                behavioralInterviewDate :{
+                    gte: now,
+                    lte: tenMinutesBefore
+                },
+                behavioralEmailSent: false
+            }
+        })
+
+        if(res.length >0){
+            for(const test of res){
+                const {jobId} = test;
+               const hasOnlineTest = await prisma.job.findFirst({
+                    where:{id : jobId},
+                    select:{
+                        hasOnlineTest: true,
+                    }
+                })
+                let emails;
+                let password;
+                if(!hasOnlineTest || !hasOnlineTest.hasOnlineTest){
+                 const studentEmails = await prisma.studentEmails.findFirst({
+                    where: { jobId },
+                    select: { 
+                        emails: true,
+                        behaviouralpassword : true
+                    }
+                })
+                    emails = studentEmails.emails.map(item => item.email);
+                    password = studentEmails.behaviouralpassword;
+                }else{
+                    const onlineTestShortlisted = await prisma.studentEmails.findFirst({
+                    where: { jobId },
+                    select:{
+                        onlineTestShortlistedEmails : true,
+                        behaviouralpassword : true
+                    }
+                    }) 
+                    emails = onlineTestShortlisted.onlineTestShortlistedEmails.map(item => item.email)
+                    password = onlineTestShortlisted.behaviouralpassword;
+                }
+                console.log(emails);
+                if(!emails || !emails.length===0){
+                    console.error(`No emails found for job ID ${jobId}`);
+                    continue;
+                }
+                emails = String(emails.join(','));
+                 const interviewLink = `http://localhost:5173/testdes/behaviouralTest/${jobId}`;
+
+                const res = await testSchedule(interviewLink, emails, password, "Behavioral Test");
+                if(res){
+                    console.log("Email sent successfully to !!!",emails);
+                    const updateFlag = await prisma.testAutomation.update({
+                    where: { id: test.id },
+                    data: { behavioralEmailSent: true }
+                })
+                }else{
+                    console.log("Email not sent");  
+                }
+
+                const updateJobStatus = await prisma.jobApplication.updateMany({
+                    where : {jobId},
+                    data:{
+                        status : "AI_INTERVIEW_PENDING",
+                        currentPhase : "AI_INTERVIEW"
+                    }
+                })
+
+                if(updateJobStatus){
+                    console.log(`Job applications for job ID ${jobId} updated to AI_INTERVIEW_PENDING`);
+                } else {
+                    console.log(`No job applications found for job ID ${jobId}`);
+                }
+
+                const updateCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                    where: { jobId },
+                    data: {
+                        status: "AI_INTERVIEW_PENDING",
+                        currentPhase: "AI_INTERVIEW"
+                    }
+                })
+
+                if(updateCandidateStatus){
+                    console.log(`Candidate job applications for job ID ${jobId} updated to AI_INTERVIEW_PENDING`);
+                } else {
+                    console.log(`No candidate job applications found for job ID ${jobId}`);
+                }
+
+                const BI = await prisma.behavioralInterview.findFirst({
+                    where: { jobId: jobId },
+                    select: {
+                        duration: true
+                    }
+                })
+
+
+                 const jobStartDateTime = new Date(test.behavioralInterviewDate);
+                 const expiresAt = new Date(jobStartDateTime.getTime() + BI.duration * 60 * 1000);
+
+                 const behaviourTestDBUpdate  = await prisma.behavioralInterview.updateMany({
+                        where:{jobId: jobId},
+                        data:{
+                            expiresAt : new Date(expiresAt)
+                        }
+                    })
+
+                    if(behaviourTestDBUpdate){
+                        console.log(`Behaviour test expiresAt updated for job ID ${jobId}`);
+                    }else{
+                        console.log(`No behaviour test found for job ID ${jobId}`);
+                    }
+
+            }
+            console.log('Behavioural test link emails sent successfully');
+        }
+        console.log('No behavioural test links to send at this time');
+    } catch (error) {
+       console.error("Error in behaviouralTest Link Cron:", error);
+       return;
+    }
+}
+
+const codingTestLinkCron = async()=>{
+    const now = new Date();
+    const tenMinutesBefore = new Date(now.getTime() + 10 * 60 * 1000);
+    try {
+        const res = await prisma.testAutomation.findMany({
+            where:{
+                codingTestDate :{
+                    gte: now,
+                    lte: tenMinutesBefore
+                },
+                codingEmailSent: false
+            }
+        }) 
+
+        if(res.length >0){
+            for(const test of res){
+                const {jobId} = test;
+                const hasOnlineTest = await prisma.job.findFirst({
+                    where:{id : jobId},
+                    select:{
+                        hasOnlineTest: true,
+                        hasAIInterview: true,
+                    }
+                }) 
+
+                let emails;
+                let password;
+                if(!hasOnlineTest || (!hasOnlineTest.hasOnlineTest && !hasOnlineTest.hasAIInterview)){
+                 const studentEmails = await prisma.studentEmails.findFirst({
+                    where: { jobId },
+                    select: { 
+                        emails: true,
+                        behaviouralpassword : true
+                    }
+                })
+                     emails = studentEmails.emails.map(item => item.email);
+                    password = studentEmails.behaviouralpassword;
+                }else if((hasOnlineTest.hasAIInterview && !hasOnlineTest.hasOnlineTest)){
+                    const behavioralTestShortlisted = await prisma.studentEmails.findFirst({
+                        where: { jobId },
+                        select:{
+                            behavioralInterviewShortlistedEmails: true,
+                            codingpassword: true
+                        }
+                    })
+                    emails = behavioralTestShortlisted.behavioralInterviewShortlistedEmails.map(item => item.email)
+                    password = behavioralTestShortlisted.codingpassword;
+                }else{
+                    const onlineTestShortlisted = await prisma.studentEmails.findFirst({
+                    where: { jobId },
+                    select:{
+                        onlineTestShortlistedEmails : true,
+                        codingpassword : true
+                    }
+                    })
+                    emails = onlineTestShortlisted.onlineTestShortlistedEmails.map(item => item.email)
+                    password = onlineTestShortlisted.codingpassword;
+                }
+
+                if(!emails || !emails.length===0){
+                    console.error(`No emails found for job ID ${jobId}`);
+                    continue;
+                }
+
+                emails = String(emails.join(','));
+                const interviewLink = `http://localhost:5173/testdes/codingTest/${jobId}`;
+
+                const res = await testSchedule(interviewLink, emails, password, "Coding Test");
+                if(res){
+                    console.log("Email sent successfully to !!!",emails);
+                    const updateFlag = await prisma.testAutomation.update({
+                    where: { id: test.id },
+                    data: { codingEmailSent: true }
+                })
+                }else{
+                    console.log("Email not sent");
+                }
+                const updateJobStatus = await prisma.jobApplication.updateMany({
+                    where : {jobId},
+                    data:{
+                        status : "CODING_TEST_PENDING",
+                        currentPhase : "CODING_TEST"
+                    }
+                })
+                if(updateJobStatus){
+                    console.log(`Job applications for job ID ${jobId} updated to CODING_TEST_PENDING`);
+                } else {
+                    console.log(`No job applications found for job ID ${jobId}`);
+                }
+
+                const updateCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                    where: { jobId },
+                    data: {
+                        status: "CODING_TEST_PENDING",
+                        currentPhase: "CODING_TEST"
+                    }
+                })
+                if(updateCandidateStatus){
+                    console.log(`Candidate job applications for job ID ${jobId} updated to CODING_TEST_PENDING`);
+                } else {
+                    console.log(`No candidate job applications found for job ID ${jobId}`);
+                }
+
+                 const CT = await prisma.codingTest.findFirst({
+                    where: { jobId: jobId },
+                    select: {
+                        duration: true
+                    }
+                })
+
+                 const jobStartDateTime = new Date(test.behavioralInterviewDate);
+                 const expiresAt = new Date(jobStartDateTime.getTime() + CT.duration * 60 * 1000);
+
+                 const codingTestDBUpdate  = await prisma.codingTest.updateMany({
+                        where:{jobId: jobId},
+                        data:{
+                            expiresAt : new Date(expiresAt)
+                        }
+                    })
+
+                    if(codingTestDBUpdate){
+                        console.log(`Coding test expiresAt updated for job ID ${jobId}`);
+                    }else{
+                        console.log(`No coding test found for job ID ${jobId}`);
+                    }
+            }
+
+        }
+        console.log('No coding test links to send at this time');
+    } catch (error) {
+       console.error("Error in codingTest Link Cron:", error);
+       return;
+    }
+}
+
+cron.schedule('* * * * *', async() => {
+    await onlineTestLinkCron();
+    await behaviouralTestLinkCron();
+    await codingTestLinkCron();
 });
-
-

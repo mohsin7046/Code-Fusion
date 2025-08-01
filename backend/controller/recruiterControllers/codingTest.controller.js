@@ -22,6 +22,7 @@ export const createCodingTest = async (req,res)=>{
         if(!jobExists.hasCodingTest){
             return res.status(400).json({ message: "This job does not have an Coding test" });
         }
+
        const codingTest =  await prisma.codingTest.create({
             data:{
                 jobId,

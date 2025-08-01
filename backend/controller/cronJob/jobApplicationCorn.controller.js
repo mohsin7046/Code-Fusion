@@ -13,15 +13,12 @@ cron.schedule('* * * * *', async () => {
 
 const onlineTest_Status = async () => {
     const now = new Date();
-
     try {
-        
         const onlineTests = await prisma.onlineTest.findMany({
             where: {
                 expiresAt: {
                     lte: now,
                 },
-                status: 'ONLINE_TEST_PENDING',
             },
         });
 
@@ -31,7 +28,7 @@ const onlineTest_Status = async () => {
                     where: { jobId: test.jobId },
                     data: { status: 'ONLINE_TEST_COMPLETED',
                         onlineTestCompleted:true,
-                     },
+                    },
                 });
             }
             console.log(`[CRON] Updated ${onlineTests.length} online tests to EXPIRED status.`);
@@ -41,9 +38,9 @@ const onlineTest_Status = async () => {
 
     } catch (error) {
         console.error("Error in onlineTest_Status:", error);
+        return;
     }
 }
-
 
 const behaviourTest_Status = async () => {
     const now = new Date();
@@ -54,7 +51,6 @@ const behaviourTest_Status = async () => {
                 expiresAt: {
                     lte: now,
                 },
-                status: 'BEHAVIOUR_TEST_PENDING',
             },
         });
 
@@ -62,7 +58,7 @@ const behaviourTest_Status = async () => {
             for (const test of behaviourTests) {
                 await prisma.jobApplication.updateMany({
                     where: { jobId: test.jobId },
-                    data: { status: 'BEHAVIOUR_TEST_COMPLETED',
+                    data: { status: 'AI_INTERVIEW_COMPLETED',
                         aiInterviewCompleted: true,
                      },
                 });
@@ -74,5 +70,6 @@ const behaviourTest_Status = async () => {
 
     } catch (error) {
         console.error("Error in behaviourTest_Status:", error);
+        return;
     }
 }

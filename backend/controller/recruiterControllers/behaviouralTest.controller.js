@@ -61,7 +61,7 @@ const createBehaviourTest = async(req,res) =>{
             duration,
             passingScore,
             OverallFeedback: "",
-            evaluationCriteria : evaluationCriteria || "",
+            evaluationCriteria : evaluationCriteria || ""
           },
        })
     
