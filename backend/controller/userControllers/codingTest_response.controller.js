@@ -5,6 +5,8 @@ const prisma = new PrismaClient();
 export const CodingTestResponse = async(req,res) => {
     try {
         const {codingTestId,candidateId,candidateJobApplicationId} = req.body;
+        console.log("Request body in CodingTestResponse:", req.body);
+        
 
         if(!codingTestId || !candidateId || !candidateJobApplicationId){
             return res.status(400).json({message:"All feilds are required!!"})
@@ -24,13 +26,16 @@ export const CodingTestResponse = async(req,res) => {
             data:{
                 codingTestId:codingTestId,
                 candidateId:candidateId,
-                candidateJobApplication:candidateJobApplicationId,
+                candidateJobApplicationId:candidateJobApplicationId,
             }
         })
 
         if(!createCodingResponse){
             return res.status(400).json({message:"Error while creating the CodeTest Response!!"})
         }
+
+        console.log("Created CodingTest Response:", createCodingResponse);
+        
 
         return res.status(200).json({message:"Successfully created",data:createCodingResponse})
 
@@ -84,14 +89,14 @@ export const CodingTestvalidateUser = async (req, res) => {
             },
         })
 
-        const matchingEmail = user?.emails?.find(e => e.email === email && e.isCodingValidate === false);
+        // const matchingEmail = user?.emails?.find(e => e.email === email && e.isCodingValidate === false);
 
-        if (!matchingEmail) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found or email not validated",
-            });
-        }
+        // if (!matchingEmail) {
+        //     return res.status(404).json({
+        //         success: false,
+        //         message: "User not found or email not validated",
+        //     });
+        // }
 
 
         if (!user) {
@@ -102,22 +107,30 @@ export const CodingTestvalidateUser = async (req, res) => {
         }
 
         const dataForTestResponse = await prisma.job.findFirst({
-            where:{
-                id:jobId
-            },
-            select:{
-                codingTests:{
-                    select:{
-                        id:true,
-                    }
-                },
-                CandidateJobApplication:{
-                    select:{
-                        id:true,
-                    }
-                }
-            }
-        })
+  where: {
+    id: jobId
+  },
+  select: {
+    recruiterId: true, 
+    user: {
+      select: {
+        id: true,
+        username: true 
+      }
+    },
+    codingTests: {
+      select: {
+        id: true
+      }
+    },
+    CandidateJobApplication: {
+      select: {
+        id: true
+      }
+    }
+  }
+});
+
 
         return res.status(200).json({
             success: true,
@@ -132,5 +145,32 @@ export const CodingTestvalidateUser = async (req, res) => {
             message: "Internal server error",
             error: error.message,
         });
+    }
+}
+
+
+export const createRoom = async (req, res) => {
+    const { codingTestId, jobId, recruiterId, roomId, host } = req.body;
+    console.log(req.body);
+    
+    try {
+        if (!codingTestId || !jobId || !recruiterId || !roomId || !host) {
+            return res.status(400).json({ message: "All fields are required!" });
+        }
+
+        const room = await prisma.room.create({
+            data: {
+                codingTestId,
+                jobId,
+                recruiterId,
+                roomId,
+                host
+            }
+        });
+
+        return res.status(201).json({ message: "Room created successfully", room });
+    } catch (error) {
+        console.error("Error creating room:", error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 }

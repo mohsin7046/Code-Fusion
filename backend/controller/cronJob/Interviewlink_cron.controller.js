@@ -11,7 +11,6 @@ cron.schedule('* * * * *', async() => {
   const fiveminutesBefore = new Date(now.getTime() + 5 * 60 * 1000);
 
   try {
-
     const res = await prisma.job.findMany({
         where:{
             testLinkSend:false,
@@ -22,7 +21,7 @@ cron.schedule('* * * * *', async() => {
         }
     });
 
-    if(res.length >0){
+    if(res.length > 0){
         for (const job of res) {
             const { id } = job;
     
@@ -124,8 +123,6 @@ cron.schedule('* * * * *', async() => {
             console.log(`Email sent to ${recruiter.email} for job ID ${id}`);
         }
     }
-    
-    
     
   } catch (error) {
     console.log('Error in cron job:', error);

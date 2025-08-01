@@ -19,10 +19,11 @@ import CodingResponse from './routes/userRoutes/codingTest_response.route.js'
 import ScheduleRoute from './routes/recruiterRoutes/automation.route.js'
 import Redis from 'ioredis'
 import { publicMessage } from './rabbitQueue/rabbit.js';
-
+import { setUpRabbitMQ } from './rabbitQueue/rabbit.js';
 
 
 dotenv.config();
+
 
 const app = express();
 const server = createServer(app);
@@ -67,6 +68,8 @@ io.on('connection', (socket) => {
 
     const cached = await redis.get(roomId);
     socket.to(roomId).emit('user-joined', { userId, socketId: socket.id });
+    
+    
     socket.emit('load-code', cached || '');
 
     const allUsers = await redis.smembers(`room:${roomId}`);
@@ -82,7 +85,8 @@ io.on('connection', (socket) => {
 
   socket.on('code-changed',async({roomId,code})=>{
     await redis.set(roomId,code);
-    publicMessage('code-update',{roomId,code});
+    publicMessage('code_updates',{roomId,code});
+   
     socket.to(roomId).emit('realtime-load-code',code);
   })
 
@@ -135,4 +139,5 @@ async function handleUserLeaving(socket, roomId, userId) {
 
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
+    setUpRabbitMQ();
 });

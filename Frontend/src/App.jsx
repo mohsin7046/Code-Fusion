@@ -46,7 +46,7 @@ function App() {
         <Route path="/email-verification" element={<EmailVerificationCode />} />
         <Route path="/dashboard/*" element={<RecuriterProtectedRoute  ><RecuriterSideLayouts /> </RecuriterProtectedRoute>} />
         <Route path="/user/dashboard/*" element={<UserProtectedRoute><UserSideLayouts /> </UserProtectedRoute>} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home/:jobId" element={<Home />} />
         <Route path="/room/:roomId" element={<Room />} />
         <Route path='/email-page/:roomId' element={<EmailPage />} />
         <Route path='/testdes/:name/:JobId' element={<CommonTestAuthenticator />} />

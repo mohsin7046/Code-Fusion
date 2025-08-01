@@ -77,7 +77,7 @@ export const getSchedule = async (req, res) => {
 
 export const createTestSchedule = async(req,res)=>{
     const {jobId,Datetime} = req.body;
-    console.log(Datetime);
+    console.log(new Date(Datetime + ":00+05:30"));
     
     let {status} = req.body;
     status = status.toLowerCase();
@@ -100,7 +100,7 @@ export const createTestSchedule = async(req,res)=>{
             const schedule = await prisma.testAutomation.updateMany({
             where:{jobId:jobId},
             data: {
-                onlineTestDate:new Date(Datetime)
+                onlineTestDate:new Date(Datetime + ":00+05:30")
             }
           });
 
@@ -110,7 +110,7 @@ export const createTestSchedule = async(req,res)=>{
             const schedule = await prisma.testAutomation.updateMany({
                 where: { jobId:jobId },
                 data: {
-                    behavioralInterviewDate:new Date(Datetime)
+                    behavioralInterviewDate:new Date(Datetime + ":00+05:30")
                 }
             });
 
@@ -120,7 +120,7 @@ export const createTestSchedule = async(req,res)=>{
             const schedule = await prisma.testAutomation.updateMany({
                 where: { jobId:jobId },
                 data: {
-                    codingTestDate:new Date(Datetime)
+                    codingTestDate:new Date(Datetime + ":00+05:30")
                 }
             });
             return res.status(201).json({ message: "Coding test schedule created successfully", schedule });

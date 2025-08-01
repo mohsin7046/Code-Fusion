@@ -32,6 +32,11 @@ const Home = () => {
     });
 
     const data = await res.json();
+    console.log("Response from validateUser:", data);
+    
+    console.log(data?.data?.codingTests[0]?.id);
+    console.log(data?.data?.CandidateJobApplication[0]?.id);
+    
     if (!res.ok) {
       toast.error(data.message || "Failed to Validate User");
       throw new Error("Failed to Validate User");
@@ -45,9 +50,9 @@ const Home = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        codingTestId:data?.data?.codingTests?.id,
+        codingTestId:data?.data?.codingTests[0]?.id,
         candidateId:email,
-        candidateJobApplicationId:data?.data?.CandidateJobApplication?.id
+        candidateJobApplicationId:data?.data?.CandidateJobApplication[0]?.id
       }),
     })
 
@@ -55,9 +60,33 @@ const Home = () => {
       toast.error("Error creating your Response!!")
     }
 
+   
     toast.success("Your Response has stored!!")
 
     const roomId = Math.random().toString(36).substr(2, 9);
+
+    console.log("HOST",data?.data?.user?.username);
+    
+
+     const roomCreated = await fetch('/api/user/codingtest/createRoom',{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        codingTestId:data?.data?.codingTests[0]?.id,
+        jobId:jobId,
+        recruiterId:data?.data?.user?.id,
+        roomId:roomId,
+        host:data?.data?.user?.username
+      }),
+    });
+
+    if(!roomCreated.ok){
+      toast.error("Error creating room!!");
+    }
+    toast.success("Room created successfully!");
+
     navigate(`/room/${roomId}`, { state: { name, jobId, userId: data && data.data ? data.data.id : undefined } });
   };
 
