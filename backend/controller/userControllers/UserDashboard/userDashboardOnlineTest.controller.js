@@ -9,8 +9,8 @@ export const getUserDashboardData = async(req,res) => {
         if(!email){
             return res.status(400).json({message:"Email not found"});
         }
-    
-        const onlineTestresponse = await prisma.candidateJobApplication.findFirst({
+
+        const onlineTestresponse = await prisma.candidateJobApplication.findMany({
             where:{
                 candidateId:email
             },
@@ -19,39 +19,38 @@ export const getUserDashboardData = async(req,res) => {
             }
         });
 
+        console.log("onlineTestresponse",onlineTestresponse);
+        
+
         if(!onlineTestresponse){
             return res.status(400).json({message:"candidate Application not found"});
         }
-
-        const jobData = await prisma.job.findMany({
-            where:{
-                id:onlineTestresponse.jobId
-            },
-            select:{
-                id:true,
-                companyName:true,
-                interviewRole:true,
-                date:true,
-                time:true,
-                description:true,
-                applications:{
-                    select:{
-                        status:true,
-                        currentPhase:true,
-                        onlineTestCompleted:true,
-                        aiInterviewCompleted:true,
+        let arr = [];
+        for(const res of onlineTestresponse){
+            const {jobId} = res;
+            const test = await prisma.job.findUnique({
+                where: { id: jobId },
+                select:{
+                     id: true,
+                     description: true,
+                     interviewRole: true,
+                     time: true,
+                     date: true,
+                     CandidateJobApplication:{
+                        select:{
+                            status: true
+                        }
                     }
-                }
+                } 
+            })
+            if(!test) {
+                continue;
             }
-        })
-
-        if(!jobData){
-             return res.status(400).json({message:"There is no JOB"});
+            arr.push(test);
         }
-
-        return res.status(200).json({message:"found successfully", data:jobData})
+        console.log("arr",arr);
         
-
+        return res.status(200).json({message:"found successfully", data : arr})
     } catch (error) {
         return res.status(500).json({message:"Internal Server Error"})
     }

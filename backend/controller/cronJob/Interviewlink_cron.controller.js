@@ -83,7 +83,7 @@ const onlineTestLinkCron = async()=>{
                     }
                 })
                     const jobStartDateTime = new Date(test.onlineTestDate);
-                    const expiresAt = new Date(jobStartDateTime.getTime() + OA.duration * 60 * 1000);
+                    const expiresAt = new Date(jobStartDateTime.getTime() + OA?.duration * 60 * 1000);
                     const onlineTestDBUpdate  = await prisma.onlineTest.updateMany({
                         where:{jobId: jobId},
                         data:{

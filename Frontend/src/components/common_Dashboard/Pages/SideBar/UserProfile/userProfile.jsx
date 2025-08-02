@@ -62,7 +62,7 @@ function UserProfile({ isCollapsed }) {
           <button
             onClick={() => {
               setIsOpen(false);
-              data.role === 'RECRUITER' ? navigate("/dashboard/profile") : navigate("user/dashboard/profile");
+              data.role === 'RECRUITER' ? navigate("/dashboard/profile") : navigate("/user/dashboard/profile");
             }}
             className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
           >

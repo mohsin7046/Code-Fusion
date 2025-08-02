@@ -45,13 +45,13 @@ const TableHeaders = ({ selectedView, selectedTest }) => {
               Email
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
+              Score
+            </th>
+            <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Status
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Date
-            </th>
-            <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
-              Duration
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
                 Add to Shortlist
@@ -107,7 +107,7 @@ const TableHeaders = ({ selectedView, selectedTest }) => {
             Status
           </th>
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
-            Additional Info
+            Passing Score
           </th>
           <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Reject

@@ -22,11 +22,14 @@ const onlineTest_Status = async () => {
             },
         });
 
+
+
         if (onlineTests.length > 0) {
             for (const test of onlineTests) {
                 await prisma.jobApplication.updateMany({
                     where: { jobId: test.jobId },
-                    data: { status: 'ONLINE_TEST_COMPLETED',
+                    data: { 
+                        status: 'ONLINE_TEST_COMPLETED',
                         onlineTestCompleted:true,
                     },
                 });

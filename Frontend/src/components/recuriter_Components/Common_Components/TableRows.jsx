@@ -124,6 +124,9 @@ if (selectedTest === "behavioral") {
               {item?.name}
             </td>
             <td className="px-4 py-3 text-gray-600">{item?.candidateId}</td>
+            <td className="px-4 py-3 text-green-600 font-medium">
+              {item.overallScore}/100
+            </td>
             <td className="px-4 py-3">
               <span
                 className={`px-2 py-1 rounded text-xs border ${getStatusColor(
@@ -135,9 +138,9 @@ if (selectedTest === "behavioral") {
             </td>
 
             <td className="px-4 py-3 text-gray-600">
-              {item?.aiInterviewResponse[0]?.submittedAt.split("T")[0]}
+              {item?.submittedAt.split("T")[0]}
             </td>
-            <td className="px-4 py-3 text-gray-600">{item.duration}</td>
+            
             <td className="px-4 py-3">
               <button
                 className={
