@@ -17,6 +17,7 @@ import BehaviourTestResponse from './routes/userRoutes/behaviourTest_response.ro
 import CodingTest from './routes/recruiterRoutes/codingTest.route.js'
 import CodingResponse from './routes/userRoutes/codingTest_response.route.js'
 import ScheduleRoute from './routes/recruiterRoutes/automation.route.js'
+import UserDataUpload from  './routes/userRoutes/dataUpload.routes.js';
 import Redis from 'ioredis'
 import { publicMessage } from './rabbitQueue/rabbit.js';
 import { setUpRabbitMQ } from './rabbitQueue/rabbit.js';
@@ -53,6 +54,7 @@ app.use('/api/user/behaviouraltest', BehaviourTestResponse);
 app.use('/api/user/codingtest', CodingResponse);
 app.use('/api/recruiter',CodingTest);
 app.use('/api/recruiter/schedule',ScheduleRoute);
+app.use('/api/user', UserDataUpload);
 
 const prisma = new PrismaClient();
 

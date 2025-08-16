@@ -412,3 +412,21 @@ model TestAutomation{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+model UserDocument{
+  id        String   @id @default(cuid()) @map("_id")
+  collegeName String
+  passingYear Int
+  degree String
+  branch String
+  resumeUrl String
+  sscUrl String
+  sscPercentage Float
+  hscUrl String
+  hscPercentage Float
+  lastSemesterMarksheet String
+  lastSemesterCGPA Float
+}
+
+

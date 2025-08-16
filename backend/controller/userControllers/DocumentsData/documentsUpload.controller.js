@@ -1,0 +1,75 @@
+import cloudinary from "../../../utilities/cloudinaryConfig.js";
+import streamifier from 'streamifier';
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+const userDataUpload = async(req,res) =>{
+try {
+     const {
+      collegeName,
+      passingYear,
+      course,
+      specialization,
+      tenthPercentage,
+      twelfthPercentage,
+      cgpa,
+    } = req.body;
+
+    if (!collegeName || !passingYear || !course || !specialization || !tenthPercentage || !twelfthPercentage || !cgpa) {
+        return res.status(400).json({ message: "All fields are required!" });
+    }
+
+    if(!req.files.resume || !req.files.tenth || !req.files.twelfth || !req.files.lastSem || req.files.length === 0){
+        return res.status(400).json({ message: "All files are required!" });
+    }
+
+    let resumeUrl = await uploadToCloudinary(req.files.resume[0].buffer, "resume");
+    let sscUrl = await uploadToCloudinary(req.files.tenth[0].buffer, "tenth");
+    let hscUrl = await uploadToCloudinary(req.files.twelfth[0].buffer, "twelfth");
+    let lastSemUrl = await uploadToCloudinary(req.files.lastSem[0].buffer, "lastSem");
+
+    const newUserDoc = await prisma.userDocument.create({
+      data: {
+        collegeName,
+        passingYear: parseInt(passingYear),
+        degree: course,
+        branch: specialization,
+        resumeUrl : resumeUrl.secure_url,
+        sscUrl : sscUrl.secure_url,
+        sscPercentage: parseFloat(tenthPercentage),
+        hscUrl : hscUrl.secure_url,
+        hscPercentage: parseFloat(twelfthPercentage),
+        lastSemesterMarksheet: lastSemUrl.secure_url,
+        lastSemesterCGPA: parseFloat(cgpa),
+      },
+    });
+
+    return res.status(201).json({ message: "User document uploaded successfully and data saved to db", data: newUserDoc });
+} catch (error) {
+    console.error("Error in userDataUpload:", error.message);
+    return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message
+    });
+}
+}
+
+// helper fuction to upload data;
+const uploadToCloudinary = (fileBuffer, folder) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder },
+      (error, result) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    streamifier.createReadStream(fileBuffer).pipe(uploadStream);
+  });
+};
+
+
+
+export default userDataUpload;
