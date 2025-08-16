@@ -3,7 +3,7 @@ import { hashPassword, comparePassword } from '../utilities/bcrpyt.js';
 import { generateToken } from '../utilities/jwtUtility.js';
 import { sendMail } from '../utilities/emailService.js';
 import crypto from 'crypto';
-import { profile } from 'console';
+
 const prisma = new PrismaClient();
 
 export const signup = async (req, res) => {

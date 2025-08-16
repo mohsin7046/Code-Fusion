@@ -1,6 +1,7 @@
 import cloudinary from "../../../utilities/cloudinaryConfig.js";
 import streamifier from 'streamifier';
 import { PrismaClient } from "@prisma/client";
+import { generateToken } from '../../../utilities/jwtUtility.js';
 
 const prisma = new PrismaClient();
 
@@ -14,9 +15,10 @@ try {
       tenthPercentage,
       twelfthPercentage,
       cgpa,
+      userId
     } = req.body;
 
-    if (!collegeName || !passingYear || !course || !specialization || !tenthPercentage || !twelfthPercentage || !cgpa) {
+    if (!collegeName || !passingYear || !course || !specialization || !tenthPercentage || !twelfthPercentage || !cgpa || !userId) {
         return res.status(400).json({ message: "All fields are required!" });
     }
 
@@ -43,6 +45,37 @@ try {
         lastSemesterMarksheet: lastSemUrl.secure_url,
         lastSemesterCGPA: parseFloat(cgpa),
       },
+    });
+    if (!newUserDoc) {
+        return res.status(500).json({ message: "Failed to save user document" });
+    }
+
+    const userUpdate = await prisma.user.update({
+        where: { id: userId },
+        data: { isUserDocumentUploaded: true },
+    });
+
+    if(!userUpdate){
+      return res.status(500).json({message: "Failed to update user"})
+    }
+
+    const data = {
+      id: userUpdate.id,
+      role: userUpdate.role,
+      isVerified: userUpdate.isVerified,
+      email: userUpdate.email,
+      username: userUpdate.username,
+      profilePicture: userUpdate.profilePicture,
+      bio: userUpdate.bio,
+      isUserDocumentUploaded: userUpdate.isUserDocumentUploaded
+    }
+
+    const token  = generateToken(res, data);
+    res.cookie('token', token, {
+      httpOnly: false,
+      maxAge: 60 * 60 * 60*1000,
+      sameSite: 'strict',
+      secure:false,
     });
 
     return res.status(201).json({ message: "User document uploaded successfully and data saved to db", data: newUserDoc });
