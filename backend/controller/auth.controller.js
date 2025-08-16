@@ -197,8 +197,7 @@ export const login = async (req, res) => {
 
         user.password = undefined;
         user.confirmpassword = undefined;
-        
-        const data = {
+        let data = {
             id: user.id,
             role: user.role,
             isVerified: user.isVerified,
@@ -207,8 +206,14 @@ export const login = async (req, res) => {
             profilePicture: user.profilePicture,
             bio: user.bio,
         }
-
-       const token =  generateToken(res, data);
+        let token;
+        if (user.role === "RECRUITER") {
+            token =  generateToken(res, data);
+        }
+        if (user.role === "CANDIDATE") {
+            data.isDocumentUploaded = user.isUserDocumentUploaded;
+            token =  generateToken(res, data);
+        }
         res.cookie('token', token, {
             httpOnly: false,
             maxAge: 60 * 60 * 60*1000,
