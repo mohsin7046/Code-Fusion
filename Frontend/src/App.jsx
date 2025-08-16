@@ -22,6 +22,8 @@ import AIInterviewSession from "./components/user_Components/BehaviourTest_Scree
 import BehaviourFeedback from "./components/user_Components/BehaviourTest_Screen/BehaviourFeedback.jsx";
 import CommonTestAuthenticator from "./components/user_Components/CommonTestAuthenticator.jsx";
 import {TestAuto} from './components/recuriter_Components/Dashboard/TestAutomationTemplate/testAuto.jsx'
+import StudentForm from "./components/user_Components/User_Documents/user_document.jsx";
+
 
 function App() {
   return (
@@ -54,6 +56,7 @@ function App() {
         <Route path='/AItest' element={<AIInterviewSession />} />
         <Route path='/feed' element={<BehaviourFeedback />} />
         <Route path="/recruiter/testautomation/:jobId" element={<TestAuto />} />
+        <Route path="/student-form" element={<StudentForm />} />
       </Routes>
       <ToastContainer
         position="bottom-right"
