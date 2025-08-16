@@ -185,6 +185,7 @@ export const login = async (req, res) => {
             res.status(400).json({ message: "User does not exist" });
             return;
         }
+
         const isPasswordValid = await comparePassword(password, user.password);
         if (!isPasswordValid) {
             res.status(400).json({ success :false, message: "Invalid credentials" });
@@ -196,6 +197,7 @@ export const login = async (req, res) => {
 
         user.password = undefined;
         user.confirmpassword = undefined;
+        
         const data = {
             id: user.id,
             role: user.role,
@@ -205,6 +207,7 @@ export const login = async (req, res) => {
             profilePicture: user.profilePicture,
             bio: user.bio,
         }
+
        const token =  generateToken(res, data);
         res.cookie('token', token, {
             httpOnly: false,

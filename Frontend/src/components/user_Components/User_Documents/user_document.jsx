@@ -5,7 +5,6 @@ export default function StudentForm() {
   const [tenth, setTenth] = useState(null);
   const [twelfth, setTwelfth] = useState(null);
   const [lastSem, setLastSem] = useState(null);
-
   const [collegeName, setCollegeName] = useState("");
   const [passingYear, setPassingYear] = useState("");
   const [course, setCourse] = useState("");

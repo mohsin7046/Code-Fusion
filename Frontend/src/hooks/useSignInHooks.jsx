@@ -17,8 +17,13 @@ function useSignInHooks() {
             });
             const data = await res.json();
             if (res.ok) {
+                if(data.role === "CANDIDATE" && !data.isUserDocumentUploaded){
+                next("/basic-details");
+                }else{
                 next("/");
+                }
             }
+            
             setLoading(false);
             console.log(data);
             setError(data?.message || "Login failed");

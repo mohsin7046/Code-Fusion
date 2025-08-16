@@ -48,6 +48,7 @@ function App() {
         <Route path="/email-verification" element={<EmailVerificationCode />} />
         <Route path="/dashboard/*" element={<RecuriterProtectedRoute  ><RecuriterSideLayouts /> </RecuriterProtectedRoute>} />
         <Route path="/user/dashboard/*" element={<UserProtectedRoute><UserSideLayouts /> </UserProtectedRoute>} />
+        <Route path="/basic-details" element={<UserProtectedRoute><StudentForm /></UserProtectedRoute>} />
         <Route path="/home/:jobId" element={<Home />} />
         <Route path="/room/:roomId" element={<Room />} />
         <Route path='/email-page/:roomId' element={<EmailPage />} />
@@ -56,7 +57,7 @@ function App() {
         <Route path='/AItest' element={<AIInterviewSession />} />
         <Route path='/feed' element={<BehaviourFeedback />} />
         <Route path="/recruiter/testautomation/:jobId" element={<TestAuto />} />
-        <Route path="/student-form" element={<StudentForm />} />
+        
       </Routes>
       <ToastContainer
         position="bottom-right"
