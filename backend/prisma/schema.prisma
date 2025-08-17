@@ -419,6 +419,7 @@ model TestAutomation{
 
 model UserDocument{
   id        String   @id @default(cuid()) @map("_id")
+  email     String   @unique
   collegeName String
   passingYear Int
   degree String

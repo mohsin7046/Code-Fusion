@@ -5,7 +5,10 @@ export const currentInterviewData = async(req,res)=>{
     const {id,status} = req.body;
 
 try {
-    let applications;
+    if(!id){
+        return res.status(400).json({message : "Recruiter ID is required"});
+    }
+    let applications; 
     if(status === "YET_TO_START"){
         applications = await prisma.job.findMany({
             where: {
@@ -78,7 +81,7 @@ try {
     if(!applications || applications.length === 0){
         return res.status(404).json({message : "No applications found"});
     }
-           
+
     return res.status(200).json({success : true, message : "Applications found", data : applications});
 } catch (error) {
     console.error("Error in currentInterviewData:", error);

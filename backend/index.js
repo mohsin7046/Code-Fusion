@@ -20,6 +20,7 @@ import ScheduleRoute from './routes/recruiterRoutes/automation.route.js'
 import UserDataUpload from  './routes/userRoutes/dataUpload.routes.js';
 import AllJobs from './routes/userRoutes/jobs.routes.js';
 import applyForJob from './routes/userRoutes/applyJobs.routes.js';
+import  GetAllAppliedCandidates from './routes/recruiterRoutes/getAllAppliedCandidate.routes.js';
 import Redis from 'ioredis'
 import { publicMessage } from './rabbitQueue/rabbit.js';
 import { setUpRabbitMQ } from './rabbitQueue/rabbit.js';
@@ -56,6 +57,7 @@ app.use('/api/user/behaviouraltest', BehaviourTestResponse);
 app.use('/api/user/codingtest', CodingResponse);
 app.use('/api/recruiter',CodingTest);
 app.use('/api/recruiter/schedule',ScheduleRoute);
+app.use('/api/recruiter', GetAllAppliedCandidates);
 app.use('/api/user', UserDataUpload);
 app.use('/api/user', AllJobs);
 app.use('/api/user', applyForJob);
