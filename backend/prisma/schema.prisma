@@ -263,7 +263,7 @@ model StudentEmails {
   onlineTestShortlistedEmails Json?
   behavioralInterviewShortlistedEmails Json?
   codingTestShortlistedEmails Json?
-  emails     Json
+  emails     Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
