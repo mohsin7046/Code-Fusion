@@ -7,7 +7,7 @@ export const allInterviews = async (req, res) => {
     try {
         const applications = await prisma.job.findMany({
          where: {
-          recruiterId: id,
+           recruiterId: id,
              applications: {
                 some: {
                      status: {

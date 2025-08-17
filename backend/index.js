@@ -19,6 +19,7 @@ import CodingResponse from './routes/userRoutes/codingTest_response.route.js'
 import ScheduleRoute from './routes/recruiterRoutes/automation.route.js'
 import UserDataUpload from  './routes/userRoutes/dataUpload.routes.js';
 import AllJobs from './routes/userRoutes/jobs.routes.js';
+import applyForJob from './routes/userRoutes/applyJobs.routes.js';
 import Redis from 'ioredis'
 import { publicMessage } from './rabbitQueue/rabbit.js';
 import { setUpRabbitMQ } from './rabbitQueue/rabbit.js';
@@ -57,6 +58,7 @@ app.use('/api/recruiter',CodingTest);
 app.use('/api/recruiter/schedule',ScheduleRoute);
 app.use('/api/user', UserDataUpload);
 app.use('/api/user', AllJobs);
+app.use('/api/user', applyForJob);
 
 const prisma = new PrismaClient();
 

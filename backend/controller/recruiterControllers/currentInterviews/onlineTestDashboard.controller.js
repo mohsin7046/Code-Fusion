@@ -2,52 +2,88 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const currentInterviewData = async(req,res)=>{
-    const {id} = req.body;
+    const {id,status} = req.body;
 
-    try {
-    const applications = await prisma.job.findMany({
-  where: {
-    recruiterId: id,
-    applications: {
-      some: {
-        status: {
-          in: [
-                'ONLINE_TEST_PENDING',
-                'ONLINE_TEST_COMPLETED',
-                'APPLIED',
-                'AI_INTERVIEW_COMPLETED',
-                'AI_INTERVIEW_PENDING',
-                'CODING_TEST_COMPLETED',
-                'CODING_TEST_PENDING',
-                'UNDER_REVIEW'
-          ]
-        }
-      }
+try {
+    let applications;
+    if(status === "YET_TO_START"){
+        applications = await prisma.job.findMany({
+            where: {
+                recruiterId: id,
+                applications: {
+                    some: {
+                        currentPhase: status,
+                    }
+                }
+            },
+             select: {
+                id: true,
+                interviewRole: true,
+                description: true,
+                date: true,
+                time: true 
+            }
+        });
+
+        const jobsWithCounts = await Promise.all(
+            applications.map(async (job) => {
+          const totalApplicants = await prisma.unverifiedEmails.count({
+            where: { jobId: job.id },
+          });
+
+          return {
+            ...job,
+            totalApplicants, 
+          };
+        })
+      );
+
+        applications = jobsWithCounts;
+    } else {
+        applications = await prisma.job.findMany({
+            where: {
+                recruiterId: id,
+                applications: {
+                 some: {
+                     status: {
+                         in: [
+                             'ONLINE_TEST_PENDING',
+                             'ONLINE_TEST_COMPLETED',
+                             'AI_INTERVIEW_COMPLETED',
+                             'APPLIED',
+                             'CODING_TEST_COMPLETED',
+                             'AI_INTERVIEW_PENDING',
+                             'CODING_TEST_PENDING',
+                            'UNDER_REVIEW'
+                            ]
+                         }
+                    }
+                }
+            },
+            select: {
+                id: true,
+                interviewRole: true,
+                description: true,
+                date: true,
+                time: true,
+                applications: {
+                select:{
+                    status: true,
+                }
+                } 
+            }
+    });
     }
-  },
-  select: {
-    id: true,
-    interviewRole: true,
-    description: true,
-    date: true,
-    time: true,
-    applications: {
-      select:{
-        status: true,
-      }
-    } 
-  }
-});
 
     if(!applications || applications.length === 0){
         return res.status(404).json({message : "No applications found"});
     }
-       
-        return res.status(200).json({success : true, message : "Applications found", data : applications});
-    } catch (error) {
-        console.error("Error in currentInterviewData:", error);
-        return res.status(500).json({error : "Internal Server Error"});
-    }
+           
+    return res.status(200).json({success : true, message : "Applications found", data : applications});
+} catch (error) {
+    console.error("Error in currentInterviewData:", error);
+    return res.status(500).json({error : "Internal Server Error"});
+}
 }
 
 export const getOnlineTestDashboard = async (req, res) => {
