@@ -10,7 +10,7 @@ const acceptRejectCandidate = async (req, res) => {
       return res.status(400).json({ error: "jobId, email and status are required" });
     }
 
-     let studentEmailRecord = await prisma.studentEmails.findUnique({
+     let studentEmailRecord = await prisma.studentEmails.findFirst({
         where: { jobId: jobId },
         select: { emails: true },
       });
@@ -32,7 +32,7 @@ const acceptRejectCandidate = async (req, res) => {
         });
       }
 
-      acceptedOrRejected = await prisma.studentEmails.update({
+      acceptedOrRejected = await prisma.studentEmails.updateMany({
         where: { jobId: jobId },
         data: { emails: existingEmails },
       });
@@ -42,7 +42,7 @@ const acceptRejectCandidate = async (req, res) => {
         
       const updatedEmails = existingEmails.filter((e) => e.email !== email);
 
-      acceptedOrRejected = await prisma.studentEmails.update({
+      acceptedOrRejected = await prisma.studentEmails.updateMany({
         where: { jobId: jobId },
         data: { emails: updatedEmails },
       });

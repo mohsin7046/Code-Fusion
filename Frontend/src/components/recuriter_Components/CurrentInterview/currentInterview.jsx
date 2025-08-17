@@ -5,8 +5,10 @@ import {useNavigate} from "react-router-dom"
 
 function currentInterview() {
   const formData = getToken();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const navigate = useNavigate();
   
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [interviews, setInterviews] = useState([]);
 
     useEffect(()=>{
@@ -17,7 +19,7 @@ function currentInterview() {
             headers : {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: formData.userId})
+            body: JSON.stringify({id: formData.userId,status:""})
           });
           const data = await res.json();
           if(!res.ok){

@@ -10,7 +10,7 @@ export const createCodingTest = async (req,res)=>{
 
         console.log(req.body);
         
-         if(!jobId || !recruiterId || !title || !description || !duration || !onlineTestId || !behaviourTestId ) {
+         if(!jobId || !recruiterId || !title || !description || !duration) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const jobExists = await prisma.job.findUnique({
@@ -42,8 +42,8 @@ export const createCodingTest = async (req,res)=>{
             hasAIInterview: jobExists.hasAIInterview,
             hasOnlineTest: jobExists.hasOnlineTest,
             hasCodingTest : jobExists.hasCodingTest,
-            onlineTestId: onlineTestId,
-            behaviourTestId: behaviourTestId,
+            onlineTestId: onlineTestId || null,
+            behaviourTestId: behaviourTestId || null,
             codingTestId : codingTest.id
         }
         updateToken(res, data);

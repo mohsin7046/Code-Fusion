@@ -15,7 +15,8 @@ import AllInterviews from './AllInterviews/AllInterviews';
 import CommonDetailsOverview from './Common_Components/CommonDetailsOverview';
 import GeneratedBehavior from './Dashboard/BehaviourTest/GeneratedBehavior';
 import CodingTest from './Dashboard/CodingTest/codingTest';
-
+import Verify_candidate from './VerifyCandidate/Verify_candidate';
+import CandidateTable from './VerifyCandidate/Candidate_details';
 
 function RecuriterSideLayouts() {
     return (
@@ -42,6 +43,8 @@ function RecuriterSideLayouts() {
                         
                             <Route path='interviews-summary' element = { <InterviewSummary />} />
                             <Route path='info' element = { <BasicInfo />} />
+                            <Route path='verify-candidate' element={<Verify_candidate />} />
+                            <Route path='candidate-details/:id' element={<CandidateTable />} />
                             
                         </Routes>
                     </div>

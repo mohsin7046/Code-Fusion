@@ -25,7 +25,7 @@ const createSummary = async (req, res) => {
             return res.status(404).json({ message: "Recruiter not found" });
         }
 
-        if(onlineTestId !== null || onlineTestId || onlineTestId !== undefined){
+        if(onlineTestId){
         const onlineTestExists = await prisma.onlineTest.findUnique({
             where: { id: onlineTestId }
         });
@@ -34,12 +34,20 @@ const createSummary = async (req, res) => {
         }
     }
 
-        if(behavioralInterviewId !== null || behavioralInterviewId || behavioralInterviewId !== undefined){
+        if(behavioralInterviewId){
         const behavioralInterviewExists = await prisma.behavioralInterview.findUnique({
             where: { id: behavioralInterviewId }
         });
         if (!behavioralInterviewExists) {
             return res.status(404).json({ message: "Behavioral interview not found" });
+        }
+    }
+        if(codingTestId){
+        const codingTestExists = await prisma.codingTest.findUnique({
+            where: { id: codingTestId }
+        });
+        if (!codingTestExists) {
+            return res.status(404).json({ message: "Coding test not found" });
         }
     }
 

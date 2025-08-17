@@ -16,8 +16,10 @@ function useSignInHooks() {
                 body: JSON.stringify({email,password}),
             });
             const data = await res.json();
+            console.log(data);
+            
             if (res.ok) {
-                if(data.role === "CANDIDATE" && !data.isUserDocumentUploaded){
+                if(data?.user?.role === "CANDIDATE" && !data?.user?.isUserDocumentUploaded){
                 next("/basic-details");
                 }else{
                 next("/");

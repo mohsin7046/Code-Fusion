@@ -51,7 +51,6 @@ const getAllAppliedCandidate = async (req, res) => {
             return {
                 ...candidate,
                 isAccepted: isAccepted || false,
-                isRejected : isAccepted ? false : true
             };
         });
 

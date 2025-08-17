@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import getToken from "../../../hooks/role";
 
 export default function StudentForm() {
   const [resume, setResume] = useState(null);
@@ -12,6 +14,9 @@ export default function StudentForm() {
   const [tenthPercentage, setTenthPercentage] = useState("");
   const [twelfthPercentage, setTwelfthPercentage] = useState("");
   const [cgpa, setCgpa] = useState("");
+
+  const next = useNavigate();
+  const form = getToken();
 
   const renderPreview = (file) => {
     if (!file) return null;
@@ -62,6 +67,7 @@ export default function StudentForm() {
     formData.append("tenthPercentage", tenthPercentage);
     formData.append("twelfthPercentage", twelfthPercentage);
     formData.append("cgpa", cgpa);
+    formData.append("userId", form.userId);
 
     
     if (resume) formData.append("resume", resume);
@@ -82,6 +88,8 @@ export default function StudentForm() {
 
       if (response.ok) {
         alert("Form submitted successfully!");
+        next("/");
+
       } else {
         alert("Upload failed!");
       }

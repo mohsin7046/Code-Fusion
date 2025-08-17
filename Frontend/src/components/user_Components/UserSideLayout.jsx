@@ -5,6 +5,7 @@ import UserInterviewFeedback from './Interviews/UserInterviewFeedback';
 import Profile from '../common_Dashboard/Pages/SideBar/UserProfile/profile';
 import Billing from '../common_Dashboard/Pages/SideBar/Billing';
 import UserAllInterviews from './Interviews/UserAllInterviews';
+import Jobs from './AllJobs/allJobs';
 function UserSideLayouts() {
     return (
         <>
@@ -18,6 +19,8 @@ function UserSideLayouts() {
                             <Route path='all-interview/:id' element = { <UserInterviewFeedback />} />
                             <Route path="billings" element={<Billing />} />
                             <Route path="profile" element={<Profile />} />
+                            <Route path="all-jobs" element={<Jobs />} />
+        
                         </Routes>
                     </div>
                 </main>
