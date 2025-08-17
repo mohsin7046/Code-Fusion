@@ -74,7 +74,7 @@ model Job{
   hasOnlineTest Boolean?
   hasAIInterview Boolean?
   hasCodingTest Boolean?
-  //TODO: visibility public or private
+  visibility String
   //TODO:testLinkSend Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

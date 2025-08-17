@@ -7,17 +7,20 @@ function BasicInfo(props) {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]); 
   const [time, setTime] = useState("");
   const [description, setDescription] = useState("");
+  const [test_visibility, setTestVisibility] = useState("");
 
   const formData = {
     company: company,
     role: role,
     date: date,
     time: time,
-    description: description
+    description: description,
+    test_visibility: test_visibility
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Form Data:", formData);
     localStorage.setItem("jobData", JSON.stringify(formData));
     props.Next();
   }
@@ -99,11 +102,37 @@ function BasicInfo(props) {
             ></textarea>
           </div>
         </div>
-        <div className="mt-8 flex justify-end w-full">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200" type="submit">
-                Next ▶️
-            </button>
-        </div>
+        <div className="mt-8 flex justify-end items-center w-full gap-4">
+  <div className="flex items-center gap-2">
+    <label
+      htmlFor="testVisibility"
+      className="block text-gray-700 font-medium"
+    >
+      Test Visibility:
+    </label>
+    <select
+      id="testVisibility"
+      value={test_visibility}
+      onChange={(e) => setTestVisibility(e.target.value)}
+      required
+      className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      <option value="" disabled>
+        ---Select visibility---
+      </option>
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+    </select>
+  </div>
+
+  <button
+    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 shadow-md"
+    type="submit"
+  >
+    Next ▶️
+  </button>
+</div>
+
         </form>
     </div>
   );

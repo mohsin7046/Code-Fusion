@@ -4,9 +4,9 @@ import {schedule} from "../../utilities/schedule.js";
 
 const prisma = new PrismaClient();
 const createJob = async(req,res) =>{
-    const {recruiterId,companyName,interviewRole, date, time,description, hasOnlineTest,hasAIInterview,hasCodingTest} = req.body;
+    const {recruiterId,companyName,interviewRole, date, time,description, hasOnlineTest,hasAIInterview,hasCodingTest,visibility} = req.body;
     try {
-        if (!recruiterId || !companyName || !interviewRole || !date || !time || !description) {
+        if (!recruiterId || !companyName || !interviewRole || !date || !time || !description || !visibility) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const recruiterExists = await prisma.user.findUnique({
@@ -29,7 +29,8 @@ const createJob = async(req,res) =>{
                 description: description,
                 hasOnlineTest: hasOnlineTest || false,
                 hasAIInterview: hasAIInterview || false,
-                hasCodingTest: hasCodingTest || false
+                hasCodingTest: hasCodingTest || false,
+                visibility
             }
         })
         if (!job) {
@@ -41,6 +42,7 @@ const createJob = async(req,res) =>{
             hasAIInterview: job.hasAIInterview,
             hasOnlineTest: job.hasOnlineTest,
             hasCodingTest: job.hasCodingTest,
+            visibility: job.visibility,
         }
         const token =   generateToken(res, data);
         res.cookie('jobToken', token, {

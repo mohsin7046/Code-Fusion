@@ -45,8 +45,9 @@ function PhaseSelection(props) {
        hasOnlineTest: selectedPhases.includes("Online Test"),
        hasAIInterview: selectedPhases.includes("AI Behavioral Interview"),
        hasCodingTest: selectedPhases.includes("Live Coding Interview"),
+       visibility: jobData.test_visibility,
      };
- 
+     
      setLoading(true);
      const response = await fetch("/api/recruiter/create-job", {
          method: "POST",
