@@ -37,11 +37,29 @@ const getAllAppliedCandidate = async (req, res) => {
             })
         }))
 
-        if (!formattedCandidates || formattedCandidates.length === 0) {
+        const acceptedEmails = await prisma.studentEmails.findFirst({
+            where:{
+                jobId: jobId
+            },
+            select:{
+                emails: true
+            }
+        })
+
+        const formattedResponse = formattedCandidates.map((candidate) => {
+            const isAccepted = acceptedEmails?.emails?.some(email => email.email === candidate.email);
+            return {
+                ...candidate,
+                isAccepted: isAccepted || false,
+                isRejected : isAccepted ? false : true
+            };
+        });
+
+        if (!formattedResponse || formattedResponse.length === 0) {
             return res.status(404).json({ message: "No candidates found" });
         }
 
-        return res.status(200).json({ success: true, message: "Candidates found", data: formattedCandidates });
+        return res.status(200).json({ success: true, message: "Candidates found", data: formattedResponse });
     } catch (error) {
         console.log("Error in getAllAppliedCandidate:", error);
         return res.status(500).json({
