@@ -76,6 +76,7 @@ const createBehaviourTest = async(req,res) =>{
         hasCodingTest : JobCreated.hasCodingTest,
         onlineTestId: onlineTestId,
         behaviourTestId: behaviourTest.id,
+        visibility: JobCreated.visibility,
        }
         updateToken(res, data);
         return res.status(201).json({message:"Behaviour Test Created Successfully",behaviourTest});

@@ -1,6 +1,6 @@
 function useCreateSummary() {
     const createSummary = async (jobId,recruiterId,onlineTestId,behavioralInterviewId,codingTestId)=>{
-        console.log(codingTestId);
+        console.log("Fom summary",codingTestId);
         
         try {
             const response = await fetch('/api/recruiter/create-summary', {
