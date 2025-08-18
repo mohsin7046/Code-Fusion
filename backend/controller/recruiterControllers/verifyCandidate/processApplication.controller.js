@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 const processApplication = async(req,res)=>{
     try {
         const {jobId} = req.body;
+        console.log(jobId);
+        
         const findJob = await prisma.job.findUnique({
-            where :{
-                id : jobId
-            }
+            where:{id : jobId}
         })
 
         if(!findJob){
@@ -19,7 +19,7 @@ const processApplication = async(req,res)=>{
             })
         }
 
-        if(findJob.isPublicApplicationProcessed){
+        if(!findJob.isPublicApplicationProcessed){
             return res.status(400).json({
                 message : "Public applications are already processed",
                 success : false

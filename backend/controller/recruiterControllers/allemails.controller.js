@@ -5,12 +5,12 @@ const prisma = new PrismaClient();
 
 export const Addallemails = async (req, res) => {
     try {
-        const { jobId, recruiterId, onlineTestId,behavioralInterviewId, emails,codingTestId} = req.body;
+        const { jobId, recruiterId, onlineTestId,behavioralInterviewId, emails,codingTestId,visibility} = req.body;
 
         console.log(req.body);
         
         
-        if (!jobId || !recruiterId || !emails) {
+        if (!jobId || !recruiterId || !emails || !visibility) {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
         }
 
@@ -50,6 +50,7 @@ export const Addallemails = async (req, res) => {
         })
     }
 
+    if(visibility === 'private') {
         let arrayEmails = [];
 
         for (let email of emails) {
@@ -58,9 +59,9 @@ export const Addallemails = async (req, res) => {
               isValidated: false,
               isBehvaioralValidated: false,
               isCodingValidate:false
-     });
+            });
+        }
     }
-
     const recruiterExists = await prisma.user.findUnique({
             where: { id: recruiterId }
         });
@@ -79,7 +80,7 @@ export const Addallemails = async (req, res) => {
                 onlinepassword: OApassword?.password || null,
                 behaviouralpassword: BIpassword?.password || null,
                 codingpassword : CTpassword?.password || null,
-                emails: arrayEmails
+                emails: arrayEmails || null,
             },
         });
 
@@ -87,7 +88,8 @@ export const Addallemails = async (req, res) => {
             return res.status(400).json({ message: "Failed to add emails" });
         }
 
-     const testDetails = {
+        if (visibility === 'private') {
+         const testDetails = {
                 "email": recruiterExists.email,
                 "jobId":jobId,
             }
@@ -106,8 +108,11 @@ export const Addallemails = async (req, res) => {
             if(!mailSchedule) {
                 return res.status(500).json({ message: "Failed to send schedule email" });
             }
+        }
 
-        return res.status(201).json({ message: "Emails added successfully", addemails});
+        let res = visibility === 'private' ? "Private Test Emails added successfully" :
+            "Public student model entry created successfully";
+        return res.status(201).json({ message: res, addemails});
 
     } catch (error) {
         console.error("Error adding emails:", error);

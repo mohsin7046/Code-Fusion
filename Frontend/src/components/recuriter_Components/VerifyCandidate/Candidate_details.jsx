@@ -7,6 +7,7 @@ export default function CandidateTable() {
 
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [process, setProcess] = useState(false);
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -31,13 +32,14 @@ export default function CandidateTable() {
     };
 
     fetchCandidates();
+    setProcess(localStorage.getItem("processApplication"));
   }, [jobId]);
 
-  const handleClick = async(email,status) => {
+  const handleClick = async (email, status) => {
     const res = await fetch(`/api/recruiter/acceptReject`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, jobId,status}),
+      body: JSON.stringify({ email, jobId, status }),
     });
     if (!res.ok) {
       alert("Error updating candidate status");
@@ -46,7 +48,25 @@ export default function CandidateTable() {
     const data = await res.json();
     console.log("Update Response:", data);
     alert(data.message || "Candidate status updated successfully");
+  };
+
+  const setProcessApplication = async () => {
+    const res = await fetch('/api/recruiter/processApplication', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId }),
+  });
+
+    if(!res.ok) {
+      alert("Error processing applications");
+      return;
+    }
+    const data = await res.json();
+    localStorage.setItem("processApplication", true);
+    console.log("Process Response:", data);
   }
+
+
 
   return (
     <div className="p-4">
@@ -60,7 +80,7 @@ export default function CandidateTable() {
               <th className="px-4 py-2 text-left border">Email</th>
               <th className="px-4 py-2 text-center border">View</th>
               <th className="px-4 py-2 text-center border">Accept</th>
-              <th className="px-4 py-2 text-center border">Reject</th>
+              {/* <th className="px-4 py-2 text-center border">Reject</th> */}
             </tr>
           </thead>
           <tbody>
@@ -79,15 +99,26 @@ export default function CandidateTable() {
                     </button>
                   </td>
                   <td className="px-4 py-2 border text-center">
-                    <button disabled={c.isAccepted} onClick={()=>handleClick(c.email,"accept")}  className={c.isAccepted ? "bg-gray-500 text-white px-3 py-1 rounded cursor-not-allowed" : "bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"}>
-                      Accept
+                    <button
+                      // disabled={c.isAccepted}
+                      onClick={() => c.isAccepted ? handleClick(c.email, "reject") : handleClick(c.email, "accept")}
+                      className={
+                        c.isAccepted
+                          ? "bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                          : "bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                      }
+                    >
+                      {c.isAccepted ? "Reject" : "Accept"}
                     </button>
                   </td>
-                  <td className="px-4 py-2 border text-center">
-                    <button onClick={()=>handleClick(c.email,"reject")} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                  {/* <td className="px-4 py-2 border text-center">
+                    <button
+                      onClick={() => handleClick(c.email, "reject")}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    >
                       Reject
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               ))
             ) : (
@@ -100,10 +131,20 @@ export default function CandidateTable() {
           </tbody>
         </table>
       </div>
+      
+     <div className="flex justify-end mt-4">
+        <button
+        disabled={process}
+          className={process ? "bg-gray-500 cursor-not-allowed  text-white px-6 py-2 rounded-lg shadow-lg":"bg-blue-700 text-white px-6 py-2 rounded-lg shadow-lg hover:scale-105 hover:from-indigo-600 transition-all duration-200 font-semibold"}
+          onClick={setProcessApplication}
+        >
+          Process
+        </button>
+      </div>
 
-      {/* Candidate Popup */}
+
       {selectedCandidate && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center px-4">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center px-4 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
             <button
               className="absolute top-3 right-3 text-gray-500 hover:text-black text-lg"
@@ -147,7 +188,6 @@ export default function CandidateTable() {
               </p>
             </div>
 
-            {/* Documents Section */}
             <div className="mt-5">
               <h4 className="text-lg font-semibold mb-2">📂 Documents</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

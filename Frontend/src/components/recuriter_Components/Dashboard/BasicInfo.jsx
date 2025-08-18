@@ -8,6 +8,7 @@ function BasicInfo(props) {
   const [time, setTime] = useState("");
   const [description, setDescription] = useState("");
   const [test_visibility, setTestVisibility] = useState("");
+  const [jobDeadline, setJobDeadline] = useState(0);
 
   const formData = {
     company: company,
@@ -15,7 +16,8 @@ function BasicInfo(props) {
     date: date,
     time: time,
     description: description,
-    test_visibility: test_visibility
+    test_visibility: test_visibility,
+    deadline: jobDeadline
   }
 
   const handleSubmit = (e) => {
@@ -24,6 +26,8 @@ function BasicInfo(props) {
     localStorage.setItem("jobData", JSON.stringify(formData));
     props.Next();
   }
+  
+
   return (
     <div className="flex flex-col h-auto w-full text-black bg-white border rounded-lg shadow-lg p-6">
       <h1 className="font-semibold text-3xl text-gray-800 mb-8">
@@ -124,6 +128,20 @@ function BasicInfo(props) {
       <option value="private">Private</option>
     </select>
   </div>
+  {test_visibility === "public" && <div>
+    <label>Job Deadline(in days): </label>
+    <input
+      type="number"
+      value={jobDeadline}
+      onChange={(e) => setJobDeadline(e.target.value) }
+      min="1"
+      max="30"
+      placeholder="Enter deadline in days"
+      className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+      required
+    />
+  </div>
+}
 
   <button
     className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 shadow-md"
