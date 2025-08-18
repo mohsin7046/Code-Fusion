@@ -129,6 +129,7 @@ const createOnlineTest = async(req,res) =>{
             hasOnlineTest: jobExists.hasOnlineTest,
             hasCodingTest: jobExists.hasCodingTest,
             onlineTestId: onlineTest.id,
+            visibility: jobExists.visibility,
         }
         updateToken(res, data);
         return res.status(201).json({ message: "Online Test created successfully", test: onlineTest });

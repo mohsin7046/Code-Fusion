@@ -44,7 +44,8 @@ export const createCodingTest = async (req,res)=>{
             hasCodingTest : jobExists.hasCodingTest,
             onlineTestId: onlineTestId || null,
             behaviourTestId: behaviourTestId || null,
-            codingTestId : codingTest.id
+            codingTestId : codingTest.id,
+            visibility: jobExists.visibility,
         }
         updateToken(res, data);
         return res.status(201).json({success: true, message : "Coding Test Created Successfully",data: codingTest});

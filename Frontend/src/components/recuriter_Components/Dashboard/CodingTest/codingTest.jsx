@@ -46,13 +46,14 @@ export default function CodingTest(props) {
       toast.success(data.message || "Coding Test Created Successfully");
       setLoading(true);
 
+      console.log(tokenData);
       
      const resp = await createSummary(
         tokenData.jobId,
         tokenData.recruiterId,
         tokenData.onlineTestId,
         tokenData.behaviourTestId,
-        tokenData.codingTestId
+        data?.data?.id
       )
 
   if(resp.success){

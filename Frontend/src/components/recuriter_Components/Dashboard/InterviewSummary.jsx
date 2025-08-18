@@ -111,7 +111,6 @@ function InterviewSummary() {
   };
 
   
-
   const renderBehavioralSubjects = (subjects) => {
     if (!subjects || !Array.isArray(subjects) || subjects.length === 0) {
       return <span className="text-gray-500">No focus areas available</span>;
@@ -168,6 +167,8 @@ function InterviewSummary() {
 
     try {
       setLoading(true);
+
+      if(tokenData?.visibility ==="private"){
       const emailsResponse = await fetch("/api/recruiter/add-emails", {
         method: "POST",
         headers: {
@@ -193,6 +194,7 @@ function InterviewSummary() {
         toast.error(data.message || "Failed to send interview invitations");
         console.error("Error sending emails");
       }
+    }
       
       const testAutomation = await fetch("/api/recruiter/schedule/createSchedule",{
         method: "POST",
@@ -219,6 +221,10 @@ function InterviewSummary() {
       console.error("Error starting interview process:", error);
     }
 
+    if (tokenData?.visibility ==="private") {
+      
+    
+
     try {
       const response = await fetch("/api/job-applications", {
         method: "POST",
@@ -241,6 +247,7 @@ function InterviewSummary() {
       toast.error("An error occurred while creating job applications");
       console.error("Error creating Job applications", error);
     }
+  }
   };
 
   if (loading) {
@@ -330,6 +337,7 @@ function InterviewSummary() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          { data?.job?.hasOnlineTest && 
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6">
               <div className="flex items-center">
@@ -392,8 +400,9 @@ function InterviewSummary() {
               </div>
             </div>
           </div>
+          }
 
-          {data?.behavioralInterview && (
+          {data?.job?.hasAIInterview && (
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6">
                 <div className="flex items-center">
@@ -469,7 +478,7 @@ function InterviewSummary() {
           )}
         </div>
 
-        {data?.codingTest && (
+        {data?.job?.hasCodingTest && (
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-orange-500 to-red-600 p-6">
               <div className="flex items-center">
@@ -503,7 +512,11 @@ function InterviewSummary() {
                 All interview phases are configured and ready to start
               </p>
             </div>
+
+          
             <div className="flex flex-col sm:flex-row gap-3">
+               {tokenData?.visibility ==="private" ?
+               <>
               <button
                 onClick={() => setIsEditing(true)}
                 className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200 font-medium"
@@ -521,10 +534,21 @@ function InterviewSummary() {
               >
               {loading ?  <LoaderCircle className="animate-spin mx-auto" />  :"Start Interview Process"}
               </button>
+              </> : 
+              <>
+               <button
+                onClick={handleStartInterviewProcess}
+                className='px-8 py-3 rounded-lg font-medium transition duration-200 transform bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg hover:from-blue-700 hover:to-purple-700 hover:scale-105'
+              >
+              {loading ?  <LoaderCircle className="animate-spin mx-auto" />  :"Start Interview Process"}
+              </button>
+              </>
+            }
             </div>
+
           </div>
 
-          {isEditing && (
+          {isEditing && tokenData?.visibility === "private" && (
             <div className="mt-6">
               <label className="block text-gray-700 mb-2 font-medium">
                 Enter Student Emails (comma-separated)
@@ -585,3 +609,4 @@ function InterviewSummary() {
 }
 
 export default InterviewSummary;
+

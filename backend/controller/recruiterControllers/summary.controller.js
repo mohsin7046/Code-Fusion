@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
-
-
 const prisma = new PrismaClient();
+
 
 const createSummary = async (req, res) => {
     const {jobId,recruiterId,onlineTestId,behavioralInterviewId,codingTestId} = req.body;
@@ -132,7 +131,7 @@ const createSummary = async (req, res) => {
         }
         });
 
-        console.log("Summary fetched successfully:", summary[0]);
+        console.log("Summary fetched successfully:", summary);
         
 
         if (summary.length === 0) {
