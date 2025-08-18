@@ -39,11 +39,8 @@ function Verify_candidate() {
     fetchVerifyData();
   }, [formData.userId]);
 
-  const handleNavigate = (index) => {
-    const jobId = interviews[index]?.id;
-    navigate(`/dashboard/candidate-details/${index + 1}`, {
-      state: { jobId: jobId },
-    });
+  const handleNavigate = (index,id) => {
+    navigate(`/dashboard/candidate-details/${id}`);
   };
 
   return (
@@ -81,7 +78,7 @@ function Verify_candidate() {
                   <td className="px-4 py-2 border">{item.totalApplicants ?? 0}</td>
                   <td className="px-4 py-2 border">
                     <button
-                      onClick={() => handleNavigate(index)}
+                      onClick={() => handleNavigate(index, item.id)}
                       className="bg-gray-700 text-white px-3 py-1 rounded"
                     >
                       View Details

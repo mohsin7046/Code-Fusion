@@ -5,12 +5,12 @@ const prisma = new PrismaClient();
 
 export const Addallemails = async (req, res) => {
     try {
-        const { jobId, recruiterId, onlineTestId,behavioralInterviewId, emails,codingTestId,visibility} = req.body;
+        const { jobId, recruiterId, onlineTestId,behavioralInterviewId,emails,codingTestId,visibility} = req.body;
 
         console.log(req.body);
         
         
-        if (!jobId || !recruiterId || !emails || !visibility) {
+        if (!jobId || !recruiterId  || !visibility) {
              return res.status(400).json({ message: "All fields are required and emails must be an array" });
         }
 
@@ -50,9 +50,9 @@ export const Addallemails = async (req, res) => {
         })
     }
 
+    let arrayEmails = [];
     if(visibility === 'private') {
-        let arrayEmails = [];
-
+        
         for (let email of emails) {
            arrayEmails.push({
               email: email,
@@ -110,9 +110,9 @@ export const Addallemails = async (req, res) => {
             }
         }
 
-        let res = visibility === 'private' ? "Private Test Emails added successfully" :
+        let res1 = visibility === 'private' ? "Private Test Emails added successfully" :
             "Public student model entry created successfully";
-        return res.status(201).json({ message: res, addemails});
+        return res.status(201).json({ message: res1, addemails});
 
     } catch (error) {
         console.error("Error adding emails:", error);

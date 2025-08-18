@@ -36,6 +36,25 @@ export const createCodingTest = async (req,res)=>{
         if(!codingTest){
             return res.status(400).json({ message: "Error Creating Coding Test" });
         }
+
+         const jobapp = await prisma.jobApplication.findFirst({
+            where:{
+                jobId: jobId,
+            }
+        })
+
+        if(!jobapp){
+             const job = await prisma.jobApplication.create({
+             data: {
+                jobId: codingTest.jobId,
+               status: 'CODING_TEST_PENDING',
+            },
+           });
+           if (!job) {
+            return res.status(500).json({ message: "Failed to update job applications" });
+           }
+        }
+
         const data = {
             jobId: codingTest.jobId,
             recruiterId: codingTest.recruiterId,

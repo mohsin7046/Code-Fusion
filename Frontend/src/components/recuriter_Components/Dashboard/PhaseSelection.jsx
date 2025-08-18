@@ -34,18 +34,21 @@ function PhaseSelection(props) {
    try {
      const formData = localStorage.getItem("jobData");
      const jobData = JSON.parse(formData);
+     console.log(jobData);
+     
  
      const payload = {
        companyName: jobData.company,
        interviewRole: jobData.role,
-         date: jobData.date,
-         time: jobData.time,
-         description: jobData.description,
-         recruiterId: tokenData.userId,
+       date: jobData.date,
+       time: jobData.time,
+       description: jobData.description,
+       recruiterId: tokenData.userId,
        hasOnlineTest: selectedPhases.includes("Online Test"),
        hasAIInterview: selectedPhases.includes("AI Behavioral Interview"),
        hasCodingTest: selectedPhases.includes("Live Coding Interview"),
        visibility: jobData.test_visibility,
+       deadline: jobData.deadline,
      };
      
      setLoading(true);

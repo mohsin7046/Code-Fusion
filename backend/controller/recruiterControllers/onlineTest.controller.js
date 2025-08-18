@@ -17,7 +17,7 @@ const createJob = async(req,res) =>{
         }
 
 
-        const dateTimeString = `${date}T${time}:00`; // e.g., '2025-06-25T14:30:00'
+        const dateTimeString = `${date}T${time}:00`; 
         
         const job = await prisma.job.create({
             data:{
@@ -31,7 +31,7 @@ const createJob = async(req,res) =>{
                 hasAIInterview: hasAIInterview || false,
                 hasCodingTest: hasCodingTest || false,
                 visibility,
-                deadline: deadline||null,
+                deadline: parseInt(deadline)||null,
             }
         })
         if (!job) {

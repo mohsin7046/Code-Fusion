@@ -168,7 +168,7 @@ function InterviewSummary() {
     try {
       setLoading(true);
 
-      if(tokenData?.visibility ==="private"){
+      
       const emailsResponse = await fetch("/api/recruiter/add-emails", {
         method: "POST",
         headers: {
@@ -180,7 +180,8 @@ function InterviewSummary() {
           onlineTestId: summaryData?.onlineTestId,
           behavioralInterviewId: summaryData?.behavioralInterviewId,
           codingTestId: summaryData?.codingTestId,
-          emails: emailsArray,
+          emails: emailsArray || null,
+          visibility: tokenData?.visibility,
         }),
       });
 
@@ -194,7 +195,7 @@ function InterviewSummary() {
         toast.error(data.message || "Failed to send interview invitations");
         console.error("Error sending emails");
       }
-    }
+    
       
       const testAutomation = await fetch("/api/recruiter/schedule/createSchedule",{
         method: "POST",
@@ -223,8 +224,6 @@ function InterviewSummary() {
 
     if (tokenData?.visibility ==="private") {
       
-    
-
     try {
       const response = await fetch("/api/job-applications", {
         method: "POST",

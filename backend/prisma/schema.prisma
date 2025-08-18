@@ -74,7 +74,7 @@ model Job{
   hasOnlineTest Boolean?
   hasAIInterview Boolean?
   hasCodingTest Boolean?
-  visibility String
+  visibility String @default("public")
   deadline Int? 
   //TODO:testLinkSend Boolean
   isDeadlineMailSent Boolean @default(false)

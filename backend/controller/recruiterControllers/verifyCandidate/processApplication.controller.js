@@ -19,7 +19,7 @@ const processApplication = async(req,res)=>{
             })
         }
 
-        if(!findJob.isPublicApplicationProcessed){
+        if(findJob.isPublicApplicationProcessed !== null && !findJob.isPublicApplicationProcessed){
             return res.status(400).json({
                 message : "Public applications are already processed",
                 success : false

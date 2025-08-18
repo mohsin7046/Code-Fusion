@@ -30,12 +30,15 @@ const createBehaviourTest = async(req,res) =>{
             where:{id:jobId}
         });
 
+
         if(!JobCreated){
             return res.status(400).json({message:"Job is not created!!!"})
         }
         if(!JobCreated.hasAIInterview){
           return res.status(400).json({message:"Behaviour Test is not selected"})
         }
+
+       
 
         const behaviourTest = await prisma.behavioralInterview.create({
            data: {
@@ -68,6 +71,25 @@ const createBehaviourTest = async(req,res) =>{
        if(!behaviourTest){
         return res.status(400).json({message:"Behaviour Test not Created!!!!"})
        }
+
+        const jobapp = await prisma.jobApplication.findFirst({
+            where:{
+                jobId: jobId,
+            }
+        })
+
+        if(!jobapp){
+             const job = await prisma.jobApplication.create({
+             data: {
+                jobId: behaviourTest.jobId,
+               status: 'AI_INTERVIEW_PENDING',
+            },
+           });
+           if (!job) {
+            return res.status(500).json({ message: "Failed to update job applications" });
+           }
+        }
+        
        const data = {
         jobId: behaviourTest.jobId,
         recruiterId: behaviourTest.recruiterId,

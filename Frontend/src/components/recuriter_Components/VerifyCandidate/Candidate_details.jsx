@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function CandidateTable() {
-  const location = useLocation();
-  const { jobId } = location.state;
+  
+  const jobId = useParams().id;
+  console.log("Job ID:", jobId);
+  
 
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -32,7 +34,7 @@ export default function CandidateTable() {
     };
 
     fetchCandidates();
-    setProcess(localStorage.getItem("processApplication"));
+    setProcess(localStorage.getItem(`processApplication`));
   }, [jobId]);
 
   const handleClick = async (email, status) => {
@@ -62,7 +64,7 @@ export default function CandidateTable() {
       return;
     }
     const data = await res.json();
-    localStorage.setItem("processApplication", true);
+    localStorage.setItem(`processApplication`, true);
     console.log("Process Response:", data);
   }
 
@@ -111,14 +113,7 @@ export default function CandidateTable() {
                       {c.isAccepted ? "Reject" : "Accept"}
                     </button>
                   </td>
-                  {/* <td className="px-4 py-2 border text-center">
-                    <button
-                      onClick={() => handleClick(c.email, "reject")}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                    >
-                      Reject
-                    </button>
-                  </td> */}
+                  
                 </tr>
               ))
             ) : (
