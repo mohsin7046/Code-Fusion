@@ -158,8 +158,11 @@ const sendMailToProcessedApplication = async () =>{
             } else if(job.hasCodingTest){
                testDetails.testname = 'CodingTest';
             }
+
+            console.log(job.studentEmails);
                         
-            const emailLength = job.studentEmails.emails.length;
+           const emailLength = job.studentEmails[0].emails.length;
+
             const mailSchedule = await schedule(testDetails, emailLength);
 
             if(!mailSchedule) {
@@ -167,7 +170,7 @@ const sendMailToProcessedApplication = async () =>{
                 continue;
             }
 
-            const updateisPublicApplicationProcessed = await prisma.job.findUnique({
+            const updateisPublicApplicationProcessed = await prisma.job.update({
                 where:{
                     id : job.id
                 },
