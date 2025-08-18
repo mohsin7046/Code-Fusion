@@ -77,6 +77,7 @@ model Job{
   visibility String
   deadline Int? 
   //TODO:testLinkSend Boolean
+  isDeadlineMailSent Boolean @default(false)
   isPublicApplicationProcessed Boolean?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,8 +90,7 @@ model Job{
   CandidateJobApplication CandidateJobApplication[]
   codingTests       CodingTest[]
   rooms Room[]
-   unverifiedEmails UnverifiedEmails[] 
-  
+  unverifiedEmails UnverifiedEmails[] 
  }
 
  model  JobApplication {

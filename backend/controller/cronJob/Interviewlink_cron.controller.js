@@ -5,11 +5,6 @@ import { testSchedule } from '../../utilities/InterviewSchedule.js';
 const prisma = new PrismaClient();
 
 
-
-const recruiterInterviewPublicLinkCron = async()=>{
-    
-}
-
 const onlineTestLinkCron = async()=>{
     const now = new Date();
     const tenMinutesBefore = new Date(now.getTime() + 10 * 60 * 1000);
