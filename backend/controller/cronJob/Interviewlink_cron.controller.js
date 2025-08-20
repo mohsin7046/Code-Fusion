@@ -63,19 +63,38 @@ const onlineTestLinkCron = async()=>{
                 } else {
                     console.log(`No job applications found for job ID ${jobId}`);
                 }
-
-                const updateCandidateStatus = await prisma.candidateJobApplication.updateMany({
-                    where: { jobId },
+    
+            const passedEmails = emails.emails.map(item => item.email);
+            for(const email of passedEmails){
+                const updateAcceptedCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                    where: { jobId, candidateId: email },
                     data: {
                         status: "ONLINE_TEST_PENDING",
                         currentPhase: "ONLINE_TEST"
                     }
                 })
-                if(updateCandidateStatus){
+                if(updateAcceptedCandidateStatus){
                     console.log(`Candidate job applications for job ID ${jobId} updated to ONLINE_TEST_PENDING`);
                 } else {
                     console.log(`No candidate job applications found for job ID ${jobId}`);
                 }
+            }
+
+            const updateRejectedCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                where: {jobId ,candidateId :{
+                    notIn : passedEmails
+                }},
+                data:{
+                    status: "REJECTED",
+                    currentPhase: "REJECTED"
+                }
+            })
+
+            if(updateRejectedCandidateStatus){
+                console.log(`Candidate job applications for job ID ${jobId} updated to REJECTED`);
+            } else {
+                console.log(`No candidate job applications found for job ID ${jobId}`);
+            }
 
                 const OA = await prisma.onlineTest.findFirst({
                     where: { jobId: jobId },
@@ -83,6 +102,7 @@ const onlineTestLinkCron = async()=>{
                         duration: true
                     }
                 })
+
                     const jobStartDateTime = new Date(test.onlineTestDate);
                     const expiresAt = new Date(jobStartDateTime.getTime() + OA?.duration * 60 * 1000);
                     const onlineTestDBUpdate  = await prisma.onlineTest.updateMany({
@@ -172,6 +192,7 @@ const behaviouralTestLinkCron = async()=>{
                     console.log("Email not sent");  
                 }
 
+
                 const updateJobStatus = await prisma.jobApplication.updateMany({
                     where : {jobId},
                     data:{
@@ -186,19 +207,39 @@ const behaviouralTestLinkCron = async()=>{
                     console.log(`No job applications found for job ID ${jobId}`);
                 }
 
-                const updateCandidateStatus = await prisma.candidateJobApplication.updateMany({
-                    where: { jobId },
+            for(const email of emails.split(',')){
+                const updateAcceptedCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                    where: { jobId, candidateId : email },
                     data: {
                         status: "AI_INTERVIEW_PENDING",
                         currentPhase: "AI_INTERVIEW"
                     }
                 })
-
-                if(updateCandidateStatus){
+                if(updateAcceptedCandidateStatus){
                     console.log(`Candidate job applications for job ID ${jobId} updated to AI_INTERVIEW_PENDING`);
                 } else {
                     console.log(`No candidate job applications found for job ID ${jobId}`);
                 }
+            }
+
+            const updateRejectedCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                where :{
+                    jobId,
+                    candidateId :{
+                        notIn : emails.split(',')
+                    }
+                },
+                data:{
+                    status: "REJECTED",
+                    currentPhase: "REJECTED"
+                }
+            })
+
+            if(updateRejectedCandidateStatus){
+                console.log(`Candidate job applications for job ID ${jobId} updated to REJECTED`);
+            } else {
+                console.log(`No candidate job applications found for job ID ${jobId}`);
+            }
 
                 const BI = await prisma.behavioralInterview.findFirst({
                     where: { jobId: jobId },
@@ -324,18 +365,40 @@ const codingTestLinkCron = async()=>{
                     console.log(`No job applications found for job ID ${jobId}`);
                 }
 
-                const updateCandidateStatus = await prisma.candidateJobApplication.updateMany({
-                    where: { jobId },
+            for(const email of emails.split(',')){
+
+                const updateAcceptedCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                    where: { jobId, candidateId : email },
                     data: {
                         status: "CODING_TEST_PENDING",
                         currentPhase: "CODING_TEST"
                     }
                 })
-                if(updateCandidateStatus){
+                if(updateAcceptedCandidateStatus){
                     console.log(`Candidate job applications for job ID ${jobId} updated to CODING_TEST_PENDING`);
                 } else {
                     console.log(`No candidate job applications found for job ID ${jobId}`);
                 }
+            }
+
+            const updateRejectedCandidateStatus = await prisma.candidateJobApplication.updateMany({
+                where:{
+                    jobId,
+                    candidateId : {
+                        notIn : emails.split(',')
+                    }
+                },
+                data :{
+                    status: "REJECTED",
+                    currentPhase: "REJECTED"
+                }
+            })
+
+            if(updateRejectedCandidateStatus){
+                console.log(`Candidate job applications for job ID ${jobId} updated to REJECTED`);
+            } else {
+                console.log(`No candidate job applications found for job ID ${jobId}`);
+            }
 
                  const CT = await prisma.codingTest.findFirst({
                     where: { jobId: jobId },
@@ -369,8 +432,88 @@ const codingTestLinkCron = async()=>{
     }
 }
 
+const changeStatusToUnderReview = async () =>{
+    try {
+        const allCompletedJobs = await prisma.jobApplication.findMany({
+            where:{
+                status  : {
+                    in : ['ONLINE_TEST_COMPLETED', 'AI_INTERVIEW_COMPLETED', 'CODING_TEST_COMPLETED']
+                }
+            }
+        })
+        if (!allCompletedJobs) {
+            console.error("No completed job applications found");
+        }
+
+        for(const job of allCompletedJobs){
+            const {jobId} = job;
+            const findAllBooleanTags = await prisma.job.findUnique({
+                where :{
+                    id : jobId
+                },
+                select:{
+                    hasOnlineTest : true,
+                    hasAIInterview : true,
+                    hasCodingTest : true
+                }
+            })
+            if(job.status === 'ONLINE_TEST_COMPLETED' && !findAllBooleanTags.hasAIInterview && !findAllBooleanTags.hasCodingTest){
+                await updateStatusUtility(jobId);
+            }else if(job.status === 'AI_INTERVIEW_COMPLETED' && !findAllBooleanTags.hasCodingTest){
+                await updateStatusUtility(jobId);
+            }else{
+               await updateStatusUtility(jobId);
+            }
+
+        }
+        console.log("All job applications have been updated to UNDER_REVIEW status.");
+    } catch (error) {
+        console.error("Error in changeStatusToUnderReview:", error);
+        return;
+    }
+}
+
+const updateStatusUtility = async(jobId) =>{
+    try {
+        const underReview =  await prisma.jobApplication.updateMany({
+            where: {
+               jobId
+            },
+            data: {
+                status : 'UNDER_REVIEW'
+            }
+        })
+        if(!underReview){
+            console.log(`Failed to update job application status to UNDER_REVIEW for job ID: ${jobId}`);
+        }else{
+            console.log(`Job application for job ID ${jobId} updated to UNDER_REVIEW`);
+        }
+
+        const underCandidateReview =  await prisma.candidateJobApplication.updateMany({
+            where: {
+               jobId,
+               status: { notIn: ['REJECTED'] }
+            },
+            data: {
+                status: 'UNDER_REVIEW'
+            }
+        })
+        if(!underCandidateReview){
+            console.log(`Failed to update Candidate job application status to UNDER_REVIEW for job ID: ${jobId}`);
+        }else{
+            console.log(`Candidate job application for job ID ${jobId} updated to UNDER_REVIEW`);
+        }
+
+    } catch (error) {
+       console.error(`Error updating job application status for job ID ${jobId}:`, error);
+       return;
+    }
+}
+
+
 cron.schedule('* * * * *', async() => {
     await onlineTestLinkCron();
     await behaviouralTestLinkCron();
     await codingTestLinkCron();
+    await changeStatusToUnderReview();
 });
