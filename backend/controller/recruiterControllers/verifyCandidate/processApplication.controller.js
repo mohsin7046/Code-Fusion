@@ -19,6 +19,9 @@ const processApplication = async(req,res)=>{
             })
         }
 
+
+        
+
         if(findJob.isPublicApplicationProcessed !== null && !findJob.isPublicApplicationProcessed){
             return res.status(400).json({
                 message : "Public applications are already processed",
@@ -26,6 +29,41 @@ const processApplication = async(req,res)=>{
             })
         }
 
+        const studentEmails = await prisma.studentEmails.findFirst({
+            where:{
+                jobId,
+            },
+            
+        })
+
+        console.log(studentEmails);
+        
+
+        if(!studentEmails){
+             return res.status(400).json({
+                message : "Emails not Found",
+                success : false
+            })
+        }
+
+        const allEmails = studentEmails?.emails.map((e)=> e.email)
+        console.log(allEmails);
+        
+
+        const updateEmails = await prisma.candidateJobApplication.createMany({
+           data : allEmails.map(email => ({
+                jobId: jobId,
+                candidateId: email
+            }))
+        })
+
+        if(!updateEmails){
+            return res.status(400).json({
+                message : "Error in Creating Candidate Job Application",
+                success : false
+            })
+        }
+        
         const updateApplicationProcessed = await prisma.job.updateMany({
             where:{
                 id : jobId
@@ -43,7 +81,7 @@ const processApplication = async(req,res)=>{
         }
 
         return res.status(200).json({
-            message : "Job application processed successfully",
+            message : "Job application processed successfully with candidateJobApplication Created",
             success : true
         })
 

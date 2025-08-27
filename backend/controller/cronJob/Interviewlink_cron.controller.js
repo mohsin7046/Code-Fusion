@@ -457,9 +457,9 @@ const changeStatusToUnderReview = async () =>{
                     hasCodingTest : true
                 }
             })
-            if(job.status === 'ONLINE_TEST_COMPLETED' && !findAllBooleanTags.hasAIInterview && !findAllBooleanTags.hasCodingTest){
+            if(job.status === 'ONLINE_TEST_COMPLETED' && !findAllBooleanTags?.hasAIInterview && !findAllBooleanTags?.hasCodingTest){
                 await updateStatusUtility(jobId);
-            }else if(job.status === 'AI_INTERVIEW_COMPLETED' && !findAllBooleanTags.hasCodingTest){
+            }else if(job.status === 'AI_INTERVIEW_COMPLETED' && !findAllBooleanTags?.hasCodingTest){
                 await updateStatusUtility(jobId);
             }else{
                await updateStatusUtility(jobId);
@@ -477,7 +477,11 @@ const updateStatusUtility = async(jobId) =>{
     try {
         const underReview =  await prisma.jobApplication.updateMany({
             where: {
-               jobId
+               jobId,
+               status : {
+                notIn : ["UNDER_REVIEW"]
+               }
+
             },
             data: {
                 status : 'UNDER_REVIEW'
@@ -492,7 +496,7 @@ const updateStatusUtility = async(jobId) =>{
         const underCandidateReview =  await prisma.candidateJobApplication.updateMany({
             where: {
                jobId,
-               status: { notIn: ['REJECTED'] }
+               status: { notIn: ['REJECTED','UNDER_REVIEW'] }
             },
             data: {
                 status: 'UNDER_REVIEW'

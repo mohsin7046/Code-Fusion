@@ -17,7 +17,7 @@ model User {
   role                Role
   isUserDocumentUploaded Boolean @default(false)
   profilePicture      String?            @default("https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1749699722~exp=1749703322~hmac=39f48a05e7eaabd3b0686036e2a2ede1e605a7bd97d5d7a20a1c7892d42b075d&w=2000")
-  bio                 String?
+  bio                 String           @default("")
   location            String?
   skills              String[]
   socialLinks         String[]
@@ -323,6 +323,7 @@ model StudentEmails {
 
   finalFeedback String?
   hired Boolean @default(false)
+  offerLetterUrl String?
   appliedAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)

@@ -400,6 +400,65 @@ export const me = async (req, res) => {
 
 
 
+export const getProfile = async (req, res) => {
+  const { email, role } = req.body;
+
+  if (!email || !role) {
+    return res.status(400).json({ error: "Email and role are required" });
+  }
+
+  try {
+    let user;
+
+    if (role === "RECRUITER") {
+      
+      user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          role: true,
+          profilePicture: true,
+          bio: true,
+          location: true,
+          company_name: true,
+          company_description: true,
+          company_role: true,
+          company_website: true,
+          company_location: true,
+        },
+      });
+    } else if (role === "CANDIDATE") {
+      
+      user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          role: true,
+          profilePicture: true,
+          bio: true,
+          location: true,
+          skills: true,
+          socialLinks: true,
+        },
+      });
+    } else {
+      return res.status(400).json({ error: "Invalid role" });
+    }
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+
 export const updateProfile = async (req, res) => {
     const {username,bio,userId} = req.body;
  console.log("Update Profile Data:", req.body);

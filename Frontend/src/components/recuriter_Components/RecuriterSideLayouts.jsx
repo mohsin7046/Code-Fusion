@@ -17,7 +17,8 @@ import GeneratedBehavior from './Dashboard/BehaviourTest/GeneratedBehavior';
 import CodingTest from './Dashboard/CodingTest/codingTest';
 import Verify_candidate from './VerifyCandidate/Verify_candidate';
 import CandidateTable from './VerifyCandidate/Candidate_details';
-
+import ShortList_Job from './shortListCandidate/ShortList_Job';
+import ShortlistDetails from './shortListCandidate/ShortList_Details';
 function RecuriterSideLayouts() {
     return (
         <>
@@ -45,7 +46,8 @@ function RecuriterSideLayouts() {
                             <Route path='info' element = { <BasicInfo />} />
                             <Route path='verify-candidate' element={<Verify_candidate />} />
                             <Route path='candidate-details/:id' element={<CandidateTable />} />
-                            
+                            <Route path='shortlist-job' element={<ShortList_Job />} />
+                            <Route path='shortlist-details/:id' element={<ShortlistDetails />} />
                         </Routes>
                     </div>
                 </main>

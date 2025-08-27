@@ -26,6 +26,7 @@ const navigation = [
   { name: "All Meetings", icon: Settings, href: "/dashboard/meetings" },
   { name: "Billing", icon: HelpCircle, href: "/dashboard/billings" },
   {name:"VerfiyCandidate", icon: Users, href: "/dashboard/verify-candidate"},
+  {name:"ShortListCandidate", icon: Users, href: "/dashboard/shortlist-job"},
 ];
 
 const usernavigation = [
