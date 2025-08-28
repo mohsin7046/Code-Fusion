@@ -308,11 +308,11 @@ const codingTestLinkCron = async()=>{
                     where: { jobId },
                     select: { 
                         emails: true,
-                        behaviouralpassword : true
+                        codingpassword : true
                     }
                 })
                      emails = studentEmails.emails.map(item => item.email);
-                    password = studentEmails.behaviouralpassword;
+                    password = studentEmails.codingpassword;
                 }else if((hasOnlineTest.hasAIInterview && !hasOnlineTest.hasOnlineTest)){
                     const behavioralTestShortlisted = await prisma.studentEmails.findFirst({
                         where: { jobId },

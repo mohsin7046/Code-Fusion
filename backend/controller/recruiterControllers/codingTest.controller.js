@@ -73,3 +73,79 @@ export const createCodingTest = async (req,res)=>{
         return res.status(500).json({success : false,message: "Internal Server Error"})
     }
 }
+
+export const updateCodingTestResponse = async(req,res)=>{
+    const {id} = req.body;
+   try {
+     const existingResponse = await prisma.codingTestResponse.findUnique({
+            where: { id },
+        });
+
+        if (!existingResponse) {
+            return res.status(404).json({ success: false, message: "Response not found" });
+        }
+
+        const updatedResponse = await prisma.codingTestResponse.update({
+            where: { id },
+            data: {
+                passed: !existingResponse.passed,
+            },
+        });
+        if (!updatedResponse) {
+            return res.status(500).json({ success: false, message: "Failed to update Coding Test Response" });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Coding Test Response updated successfully"
+        });
+   } catch (error) {
+         console.error("Error updating Coding Test Response:", error);
+         return res.status(500).json({ success: false, message: "Internal server error" });
+   }
+}
+
+export const codeFeedback = async(req,res)=>{
+    try {
+        const {candidateId,feedback} = req.body;
+
+        const candidateResponse = await prisma.codingTestResponse.findFirst({
+            where:{
+               candidateId
+            }
+        })
+
+        if(!candidateResponse){
+            return res.status(404).json({
+                success : false,
+                message: "Candidate Response Not Found"
+            });
+        }
+
+        const feedbackGiven = await prisma.codingTestResponse.updateMany({
+            where : {
+                candidateId
+            },
+            data:{
+                feedback
+            }
+        })
+
+        if(!feedbackGiven){
+            return res.status(500).json({
+                success : false,
+                message: "Failed to give feedback"
+            });
+        }
+
+        return res.status(200).json({
+            success : true,
+            message: "Feedback Given Successfully"
+        });
+    } catch (error) {
+        console.error("Error in Coding Feedback:",error.message);
+        return res.status(500).json({
+            success : false,
+            message: "Internal Server Error"
+        });
+    } 
+}

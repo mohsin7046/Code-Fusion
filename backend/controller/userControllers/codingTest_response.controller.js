@@ -45,28 +45,6 @@ export const CodingTestResponse = async(req,res) => {
     }
 }
 
-
-export const CodingTestFeedbackResponse = async(req,res) => {
-    const {feedback,timeTaken,codingTestResponseId} = req.body;
-
-    if(!timeTaken || !codingTestResponseId){
-        return res.status(400).json({message:"All feilds are required!!"})
-    }
-
-    const updatefeedback = await prisma.codingTestResponse.update({
-        where:{
-            id:codingTestResponseId
-        },
-
-        data:{
-            feedback:feedback,
-            timeTaken:timeTaken
-        }
-    })
-}
-
-
-
 export const CodingTestvalidateUser = async (req, res) => {
     try {
         
