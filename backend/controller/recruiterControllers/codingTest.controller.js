@@ -74,9 +74,12 @@ export const createCodingTest = async (req,res)=>{
     }
 }
 
-export const updateCodingTestResponse = async(req,res)=>{
+export const shortlistCandidate_Coding = async(req,res)=>{
     const {id} = req.body;
    try {
+    if(!id){
+        return res.status(400).json({ success: false, message: "ID is required" });
+    }
      const existingResponse = await prisma.codingTestResponse.findUnique({
             where: { id },
         });
@@ -104,9 +107,50 @@ export const updateCodingTestResponse = async(req,res)=>{
    }
 }
 
+export const allAllEmailstoFinalShortlisted = async(req,res)=>{
+    try {
+        const {jobId,emails} = req.body;
+        if(!jobId || !emails || emails.length === 0){
+            return res.status(400).json({ success: false, message: "Job ID and emails are required" });
+        }
+        const findJobInStudentEmails = await prisma.studentEmails.findFirst({
+            where : {
+                jobId
+            }
+        })
+        if(!findJobInStudentEmails){
+            return res.status(404).json({ success: false, message: "Job not found in student emails" });
+        }
+
+        const addemails = await prisma.studentEmails.updateMany({
+            where:{
+                jobId
+            },
+            data:{
+               codingTestShortlistedEmails : {
+                   set: emails
+               }
+            }
+        })
+        if(!addemails){
+            return res.status(500).json({ success: false, message: "Failed to add emails to final shortlisted" });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Emails added to final shortlisted successfully"
+        });
+    } catch (error) {
+        console.error("Error in allAllEmailstoFinalShortlisted:", error.message);
+      return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
 export const codeFeedback = async(req,res)=>{
     try {
         const {candidateId,feedback} = req.body;
+        if(!candidateId || !feedback){  
+            return res.status(400).json({ success: false, message: "Candidate ID and feedback are required" });
+        }
 
         const candidateResponse = await prisma.codingTestResponse.findFirst({
             where:{

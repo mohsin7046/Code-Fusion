@@ -25,7 +25,6 @@ export const getCodingTestDashboard = async (req, res) => {
                     select: {
                         id: true,
                         duration: true,
-                        
                     }
                 },
                 CandidateJobApplication:{

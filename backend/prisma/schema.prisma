@@ -229,6 +229,7 @@ model BehavioralInterviewQuestion {
   code String?
   feedback Json?
   timeTaken Int?
+  passed Boolean @default(false)
   submittedAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   candidateJobApplication CandidateJobApplication @relation(fields: [candidateJobApplicationId], references: [id], onDelete: Cascade)
