@@ -297,12 +297,13 @@ const codingTestLinkCron = async()=>{
                     select:{
                         hasOnlineTest: true,
                         hasAIInterview: true,
+                        hasCodingTest:true
                     }
                 }) 
 
                 let emails;
                 let password;
-                if(!hasOnlineTest || (!hasOnlineTest.hasOnlineTest && !hasOnlineTest.hasAIInterview)){
+                if(hasOnlineTest?.hasCodingTest &&!hasOnlineTest || (!hasOnlineTest.hasOnlineTest && !hasOnlineTest.hasAIInterview)){
                  const studentEmails = await prisma.studentEmails.findFirst({
                     where: { jobId },
                     select: { 
@@ -446,7 +447,7 @@ const changeStatusToUnderReview = async () =>{
         }
 
         for(const job of allCompletedJobs){
-            const {jobId} = job;
+            const {jobId,status} = job;
             const findAllBooleanTags = await prisma.job.findUnique({
                 where :{
                     id : jobId
@@ -457,12 +458,19 @@ const changeStatusToUnderReview = async () =>{
                     hasCodingTest : true
                 }
             })
-            if(job.status === 'ONLINE_TEST_COMPLETED' && !findAllBooleanTags?.hasAIInterview && !findAllBooleanTags?.hasCodingTest){
+
+            const needsOnline = findAllBooleanTags?.hasOnlineTest;
+            const needsAI = findAllBooleanTags?.hasAIInterview;
+            const needsCoding = findAllBooleanTags?.hasCodingTest;
+
+ 
+            const allCompleted =
+             (!needsOnline || status === "ONLINE_TEST_COMPLETED") &&
+             (!needsAI || status === "AI_INTERVIEW_COMPLETED") &&
+             (!needsCoding || status === "CODING_TEST_COMPLETED");
+
+            if (allCompleted) {
                 await updateStatusUtility(jobId);
-            }else if(job.status === 'AI_INTERVIEW_COMPLETED' && !findAllBooleanTags?.hasCodingTest){
-                await updateStatusUtility(jobId);
-            }else{
-               await updateStatusUtility(jobId);
             }
 
         }
@@ -496,7 +504,7 @@ const updateStatusUtility = async(jobId) =>{
         const underCandidateReview =  await prisma.candidateJobApplication.updateMany({
             where: {
                jobId,
-               status: { notIn: ['REJECTED','UNDER_REVIEW'] }
+               status: { notIn: ['REJECTED','SELECTED','UNDER_REVIEW'] }
             },
             data: {
                 status: 'UNDER_REVIEW'

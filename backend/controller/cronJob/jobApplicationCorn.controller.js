@@ -205,11 +205,12 @@ const onlineTest_Status = async () => {
         });
 
 
-
         if (onlineTests.length > 0) {
             for (const test of onlineTests) {
                 await prisma.jobApplication.updateMany({
-                    where: { jobId: test.jobId },
+                    where: { jobId: test.jobId,
+                        status:{notIn:["AI_INTERVIEW_PENDING","AI_INTERVIEW_COMPLETED","CODING_TEST_PENDING","CODING_TEST_COMPLETED","UNDER_REVIEW","SELECTED","REJECTED","HIRED"]}
+                     },
                     data: { 
                         status: 'ONLINE_TEST_COMPLETED',
                         onlineTestCompleted:true,
@@ -242,7 +243,9 @@ const behaviourTest_Status = async () => {
         if (behaviourTests.length > 0) {
             for (const test of behaviourTests) {
                 await prisma.jobApplication.updateMany({
-                    where: { jobId: test.jobId },
+                    where: { jobId: test.jobId,
+                        status:{notIn:["CODING_TEST_PENDING","CODING_TEST_COMPLETED","UNDER_REVIEW","SELECTED","REJECTED","HIRED"]}
+                     },
                     data: { status: 'AI_INTERVIEW_COMPLETED',
                         aiInterviewCompleted: true,
                      },
