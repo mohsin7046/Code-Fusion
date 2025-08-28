@@ -204,6 +204,7 @@ const updatedBehaviourShortlistedEmails = async(req,res)=>{
                behavioralInterviewShortlistedEmails : arrayEmails,
             }
         })
+
         if (!updatedEmails) {
             return res.status(500).json({ success: false, message: "Failed to update Behaviour Shortlisted Emails" });
         }

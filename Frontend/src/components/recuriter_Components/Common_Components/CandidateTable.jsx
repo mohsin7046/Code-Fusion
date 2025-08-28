@@ -41,6 +41,7 @@ const CandidateTable = ({
             setShortlistItem={setShortlistItem}
             handleOnlineShortlist={handleOnlineShortlist}
             handleBehaviouralShortlist={handleBehaviouralShortlist}
+            handleCodingShortlist={handleCodingShortlist}
             setSelectedCandidate={setSelectedCandidate}
             setShowDetailedOverview={setShowDetailedOverview}
             handleDecline={handleDecline}

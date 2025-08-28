@@ -18,7 +18,7 @@ const EmailPage = () => {
 
     try {
       await fetch(`${import.meta.env.VITE_PORT}/api/chat/send-email`, {
-        method: 'POST',
+        method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to: emailList, link: meetingLink }),
       });

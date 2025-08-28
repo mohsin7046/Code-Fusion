@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import getToken from "../../../hooks/role.js";
 import { UseCandidateShortlist } from "../../../hooks/useCandidateShortlistOnline.jsx";
 import { UseCandidateBehavioural } from '../../../hooks/useCandidateBehavioural.jsx';
+import { UseCandidateCodingTest } from "../../../hooks/useCandidateCodingTest.jsx";
 import TestDropdown from './TestDropdown.jsx';
 import ViewButtons from './ViewButtons.jsx';
 import CandidateTable from './CandidateTable.jsx';
@@ -25,6 +26,7 @@ const CommonDetailsOverview = () => {
   const recruiterToken = getToken();
   const {onlineTestShortList} = UseCandidateShortlist();
   const {behaviouralTestShortList} = UseCandidateBehavioural();
+  const {codingTestShortList} = UseCandidateCodingTest();
 
   const [ShortlistItem,setShortlistItem] = useState([])
 
@@ -180,6 +182,24 @@ const CommonDetailsOverview = () => {
     }
   }
 
+  const handleCodingShortlist = async(index)=>{
+    const totalData = getCurrentData();
+    const codingTestId = totalData?.CandidateJobApplication[0]?.codingTestResponse[index]?.id;
+     try {
+      const res = await codingTestShortList(codingTestId);
+      if(!res.success){
+        console.error("Error updating behaviour test response:", res.message);
+        alert("Failed to update behaviour test response. Please try again.");
+        return;
+      }
+      console.log("Updated behaviour test response:", res.message);
+      alert("Behaviour test response updated successfully.");
+    } catch (error) {
+      console.error("Error updating behaviour test response:", error.message);
+      alert("Failed to update behaviour test response. Please try again.");
+    }
+  }
+
   const handleAcceptAll = async (selectedTest) => {
     let emails;
     let totalData;
@@ -218,6 +238,32 @@ const CommonDetailsOverview = () => {
       emails = totalData?.CandidateJobApplication.map(item => item.aiInterviewResponse[0].passed ? item.candidateId : null).filter(email => email !== null);
       try {
         const res = await fetch('/api/recruiter/updateBehaviouralShortlistedEmails',{
+          method : 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobId : jobId,
+            emails: emails
+          })
+        })
+        const data = await res.json();
+        if(!res.ok){
+          console.error("Error accepting all behavioral test responses:", data.message);
+          alert("Failed to accept all behavioral test responses. Please try again.");
+          return;
+        }
+        console.log("Accepted all behavioral test responses:", data.message);
+        alert("All behavioral test responses accepted successfully.");
+      } catch (error) {
+        console.error("Error accepting all behavioral test responses:", error.message);
+        alert("Failed to accept all behavioral test responses. Please try again.");
+      }
+    }else if(selectedTest === 'coding'){
+      totalData = getCurrentData();
+      emails = totalData?.CandidateJobApplication.map(item => item.codingTestResponse[0].passed ? item.candidateId : null).filter(email => email !== null);
+      try {
+        const res = await fetch('/api/recruiter/updateCodingTestShortlistedEmails',{
           method : 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -310,6 +356,7 @@ const CommonDetailsOverview = () => {
             setShortlistItem={setShortlistItem}
             handleOnlineShortlist={handleOnlineShortlist}
             handleBehaviouralShortlist={handleBehaviouralShortlist}
+            handleCodingShortlist={handleCodingShortlist}
             setSelectedCandidate={setSelectedCandidate}
             setShowDetailedOverview={setShowDetailedOverview}
             handleDecline={handleDecline}

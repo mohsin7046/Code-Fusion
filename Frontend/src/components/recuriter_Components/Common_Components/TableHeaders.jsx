@@ -80,7 +80,7 @@ const TableHeaders = ({ selectedView, selectedTest }) => {
               Date
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
-              Platform
+              Add to Shortlist
             </th>
             <th className="px-4 py-3 text-left text-gray-700 bg-gray-100 font-medium">
               Action

@@ -11,6 +11,7 @@ const TableRows = ({
   setShortlistItem, 
   handleOnlineShortlist, 
   handleBehaviouralShortlist, 
+  handleCodingShortlist,
   setSelectedCandidate, 
   setShowDetailedOverview, 
   handleDecline, 
@@ -198,7 +199,19 @@ if (selectedTest === "behavioral") {
             </td>
             <td className="px-4 py-3 text-gray-600">{item.interviewer}</td>
             <td className="px-4 py-3 text-gray-600">{item.date}</td>
-            <td className="px-4 py-3 text-gray-600">{item.platform}</td>
+            <td className="px-4 py-3">
+              <button
+                className={
+                  getShortlistCondition(item)
+                  ?"bg-gray-400 cursor-not-allowed px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                  :"bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                }
+                onClick={() => handleCodingShortlist(index)}
+                disabled={getShortlistCondition(item)}
+              >
+                ShortList
+                </button>
+            </td>
             <td className="px-4 py-3">
               <button
                 onClick={() => {

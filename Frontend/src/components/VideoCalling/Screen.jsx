@@ -6,8 +6,6 @@ import MonacoEditor from './MonacoEditor';
 import Split from 'react-split';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { systemPrompt } from "../../hooks/GeminiApi/geminiPrompt.js";
-import { generateResponse } from "../../hooks/GeminiApi/gemini.js";
 
 const socket = io(import.meta.env.VITE_PORT);
 
@@ -50,86 +48,7 @@ const Room = () => {
     setExecutionStatus(status);
   };
 
-  const generateFeedback = async() => {
-    try {
-      if(!currentCode || !currentOutput || !executionStatus){
-        toast.error("Code or output is missing")
-      }
 
-      const prompt = `
-You are an AI code review assistant for an online technical interview platform. Your job is to analyze the candidate's submitted code and its output, then generate structured, constructive feedback.
-
-Given the following information:
-- Submitted Code:
-\`\`\`
-${currentCode}
-\`\`\`
-
-- Execution Output:
-\`\`\`
-${currentOutput}
-\`\`\`
-
-Please analyze the candidate’s performance and generate feedback with the following structured fields in JSON format:
-
-{
-  "correctness": "Evaluate if the code produces the correct output based on the provided input and problem. Mention any incorrect logic or mistakes.",
-  "codeQuality": "Assess the code style, readability, naming conventions, and maintainability.",
-  "efficiency": "Comment on the algorithmic efficiency. Is it optimized? Can time/space complexity be improved?",
-  "strengths": "What did the candidate do well? Any notable positives?",
-  "weaknesses": "Point out areas where the candidate can improve.",
-  "recommendations": "Suggest actionable improvements to enhance the code.",
-  "overallScore": "Give an overall rating between 1 to 10."
-}
-
-Rules:
-- The feedback must match the level of the code (beginner/intermediate/advanced).
-- Do not hallucinate information; base your response strictly on the provided code and output.
-- Output must be valid JSON only. No markdown, comments, or additional text.
-`;
-
-      
-        const fullPrompt =`
-        ${systemPrompt}
-      
-        USER: ${prompt}
-        `
-
-        const response = await generateResponse(fullPrompt);
-        const getResponse = JSON.parse(response);
-
-        console.log("Generate Response",getResponse);
-        
-
-        if(!getResponse){
-          toast.error("Error in generating the Feedback")
-        }
-
-        const createFeedback = await fetch('/api/user/codingtest',{
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            jobId: formData.jobId,
-            feedback:getResponse,
-            timeTaken:45
-          }),
-        })
-
-        if(!createFeedback){
-          toast.error("Error in creating the Feedback")
-        }
-
-        toast.success("Feedback creating successfully");
-
-    } catch (error) {
-      toast.error("Failed to Generate Feedback");
-      console.log("Error",error);
-    }
-  }
-
-  
   const chat = useRef('');
   const name  = useRef('');
 
@@ -273,11 +192,16 @@ Rules:
   };
 
   const endCall = async() => {
+
+    if(!currentCode || !currentOutput){
+      toast.error("Code or Output is missing!!")
+    }
+
     socket.emit('leave-room', { roomId, userId: socket.id });
     localStreamRef.current?.getTracks().forEach(track => track.stop());
     peerConnections.current.forEach(connection => connection.close());
-    await generateFeedback();
-    navigate('/');
+    
+    navigate('/feedback',{state:{currentOutput,currentCode,jobId:formData.jobId,candidateId:formData?.email}});
   };
 
   const handleSendMessage = () => {
@@ -436,7 +360,7 @@ Rules:
         </Split>
       )}
 
-      {/* Chat panel */}
+      
       {isChatOpen && (
         <div className="bg-gray-800 overflow-y-auto flex flex-col border-l border-gray-700 w-[300px]">
           <div className="p-4 flex-1 flex flex-col min-h-0">
@@ -468,7 +392,7 @@ Rules:
       )}
     </div>
 
-    {/* Control bar */}
+    
     <div className="bg-gray-800 p-4 flex justify-center items-center border-t border-gray-700">
       <div className="flex flex-wrap justify-center gap-4 md:gap-6">
         <button

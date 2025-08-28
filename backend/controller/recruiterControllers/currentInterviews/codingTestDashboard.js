@@ -5,11 +5,14 @@ export const getCodingTestDashboard = async (req, res) => {
     try {
         const {recruiterId,jobId} = req.body;
 
+        console.log("Coding Res",req.body);
+        
+
         if(!recruiterId || !jobId) {
             return res.status(400).json({message: "Recruiter not found"});
         }
 
-        const onlineTestData = await prisma.job.findFirst({
+        const codingTestRes = await prisma.job.findFirst({
             where: {
                 id: jobId,
                 recruiterId: recruiterId,
@@ -38,7 +41,6 @@ export const getCodingTestDashboard = async (req, res) => {
                                 id:true,
                                 code:true,
                                 feedback:true,
-                                timeTaken:true,
                             }
                         }
                     }
@@ -46,10 +48,13 @@ export const getCodingTestDashboard = async (req, res) => {
             }
         })
         
-        if(!onlineTestData ) {
+        if(!codingTestRes ) {
             return res.status(404).json({message: "Coding test not found"});
         }
-        return res.status(200).json({success: true, message: "Coding test data found", data: onlineTestData});
+
+        console.log(codingTestRes);
+        
+        return res.status(200).json({success: true, message: "Coding test data found", data: codingTestRes});
     } catch (error) {
         console.error("Error in getCodingTestDashboard:", error);
         return res.status(500).json({error: "Internal Server Error"});

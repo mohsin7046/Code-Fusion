@@ -87,7 +87,7 @@ const Home = () => {
     }
     toast.success("Room created successfully!");
 
-    navigate(`/room/${roomId}`, { state: { name, jobId, userId: data && data.data ? data.data.id : undefined } });
+    navigate(`/room/${roomId}`, { state: { name, jobId, userId: data && data.data ? data.data.id : undefined,email } });
   };
 
   return (

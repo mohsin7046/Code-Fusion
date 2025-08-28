@@ -23,6 +23,7 @@ import BehaviourFeedback from "./components/user_Components/BehaviourTest_Screen
 import CommonTestAuthenticator from "./components/user_Components/CommonTestAuthenticator.jsx";
 import {TestAuto} from './components/recuriter_Components/Dashboard/TestAutomationTemplate/testAuto.jsx'
 import StudentForm from "./components/user_Components/User_Documents/user_document.jsx";
+import Feedback from "./components/VideoCalling/Feedback.jsx";
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
         <Route path="/home/:jobId" element={<Home />} />
         <Route path="/room/:roomId" element={<Room />} />
         <Route path='/email-page/:roomId' element={<EmailPage />} />
+        <Route path='/feedback' element={<Feedback />} />
         <Route path='/testdes/:name/:JobId' element={<CommonTestAuthenticator />} />
         <Route path='/test' element={<OnlineTest_StartScreen />} />
         <Route path='/AItest' element={<AIInterviewSession />} />

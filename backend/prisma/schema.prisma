@@ -390,7 +390,6 @@ enum AIInterviewStatus {
   SELECTED
 }
 
-
 model Room {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   jobId     String
